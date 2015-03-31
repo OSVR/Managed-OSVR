@@ -56,10 +56,10 @@ namespace OSVR
             public extern static Byte osvrClientShutdown(IntPtr /*OSVR_ClientContext*/ ctx);
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrClientGetStringParameterLength(IntPtr /*OSVR_ClientContext*/ ctx, string path, out int /* TODO size_t */ len);
+            public extern static Byte osvrClientGetStringParameterLength(IntPtr /*OSVR_ClientContext*/ ctx, string path, out UIntPtr len);
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrClientGetStringParameter(IntPtr /*OSVR_ClientContext*/ ctx, string path, StringBuilder buf, int /* TODO size_t */ len);
+            public extern static Byte osvrClientGetStringParameter(IntPtr /*OSVR_ClientContext*/ ctx, string path, StringBuilder buf, UIntPtr len);
 
             #endregion
 
@@ -141,19 +141,19 @@ namespace OSVR
             /// exist or is not a string.
             public string getStringParameter(string path)
             {
-                int length = 0;
+                UIntPtr length = UIntPtr.Zero;
                 Byte ret = osvrClientGetStringParameterLength(m_context, path, out length);
                 if (OSVR_RETURN_SUCCESS != ret)
                 {
                     throw new ArgumentException("Invalid context or null reference to length variable.");
                 }
 
-                if (0 == length)
+                if (UIntPtr.Zero == length)
                 {
                     return "";
                 }
 
-                StringBuilder buf = new StringBuilder(length);
+                StringBuilder buf = new StringBuilder((int)(length.ToUInt32()));
                 ret = osvrClientGetStringParameter(m_context, path, buf, length);
                 if (OSVR_RETURN_SUCCESS != ret)
                 {
