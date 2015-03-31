@@ -3,47 +3,69 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AB9F53D-1F42-4045-8DFC-9D389D44BB35}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>ClientKit</RootNamespace>
-    <AssemblyName>ClientKit</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ProjectGuid Condition=" '$(ProjectGuid)' == '' ">{9AB9F53D-1F42-4045-8DFC-9D389D44BB35}</ProjectGuid>
+    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v2.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
+  </PropertyGroup>
+
+  <!-- Set framework version to 4.5 for the 45 configs. -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug45' ">
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release45 '">
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>OSVR.ClientKit</RootNamespace>
+    <AssemblyName>OSVR.ClientKit</AssemblyName>
+    <WarningLevel>4</WarningLevel>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  
+  <!-- Handle different framework versions, inspired by
+  http://stackoverflow.com/a/2928835/265522
+  and
+  http://stackoverflow.com/a/4457508/265522
+  -->
+  <PropertyGroup>
+    <OutputPath>bin\$(TargetFrameworkVersion)\$(Configuration)</OutputPath>
+    <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\$(Configuration)</IntermediateOutputPath>
+    <!-- Sets up a property FrameworkString with a value of something like net20 or net45 -->
+    <FrameworkString>$(TargetFrameworkVersion.Replace("v", "net").Replace(".", ""))</FrameworkString>
+    <!-- Adds compile definitions that are the uppercased FrameworkString -->
+    <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(FrameworkString.ToUpper())</DefineConstants>
+    <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));$(FrameworkString.ToUpper())</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release45|AnyCPU'">
+    <OutputPath>bin\Release45\</OutputPath>
+    <DefineConstants>;NET20</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug45|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <OutputPath>bin\Debug45\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -76,7 +98,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)CopyToUnity.cmd "$(TargetPath)" "$(TargetDir)" $(PlatformName)</PostBuildEvent>
-  </PropertyGroup>
 </Project>
