@@ -66,6 +66,10 @@ namespace OSVR
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameter(IntPtr /*OSVR_ClientContext*/ ctx, string path, StringBuilder buf, UIntPtr len);
 
+            #endregion ClientKit C functions
+
+            #region Support for locating native libraries
+
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
 
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -74,28 +78,13 @@ namespace OSVR
 
 #endif
 
-            #endregion ClientKit C functions
-
             /// <summary>
             /// Static constructor - Try finding the right path for the p/invoked DLL before p/invoke tries to.
             /// </summary>
             static ClientContext()
             {
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
-                // This line based on http://stackoverflow.com/a/864497/265522
-                var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
-                var path = Path.GetDirectoryName(assembly);
-                System.Diagnostics.Debug.WriteLine("OSVR.ClientKit assembly directory: " + path);
-
-                if (IntPtr.Size == 8)
-                {
-                    var pathx64 = Path.Combine(path, "x64");
-                    if (Directory.Exists(pathx64))
-                    {
-                        path = pathx64;
-                    }
-                }
-
+                var path = GetNativeLibraryDir();
                 System.Diagnostics.Debug.WriteLine("OSVR.ClientKit DLL directory: " + path);
                 // @todo cross-platform this: can we change the name of the pinvoked native module or something? Right now we just catch and ignore the p/invoke exception here.
                 try
@@ -108,6 +97,63 @@ namespace OSVR
                 }
 #endif
             }
+
+#if !MANAGED_OSVR_INTERNAL_PINVOKE
+
+            static private string GetNativeLibraryDir()
+            {
+                // This line based on http://stackoverflow.com/a/864497/265522
+                var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
+                var assemblyPath = Path.GetDirectoryName(assembly);
+                System.Diagnostics.Debug.WriteLine("OSVR.ClientKit assembly directory: " + assemblyPath);
+                if (IntPtr.Size == 8)
+                {
+                    return new PathChecker(assemblyPath).Check("x86_64").Check("x64").Check("64").Result;
+                }
+                else
+                {
+                    return new PathChecker(assemblyPath).Check("x86").Check("32").Result;
+                }
+            }
+
+            private class PathChecker
+            {
+                public PathChecker(string path)
+                {
+                    AssemblyPath = path; DllPath = path;
+                }
+
+                public PathChecker Check(string suffix)
+                {
+                    if (FoundOne)
+                    {
+                        return this;
+                    }
+                    var pathSuffixed = Path.Combine(AssemblyPath, suffix);
+                    if (Directory.Exists(pathSuffixed))
+                    {
+                        DllPath = pathSuffixed;
+                        FoundOne = true;
+                    }
+                    return this;
+                }
+
+                public string Result
+                {
+                    get
+                    {
+                        return DllPath;
+                    }
+                }
+
+                private string AssemblyPath;
+                private string DllPath;
+                private bool FoundOne;
+            }
+
+#endif
+
+            #endregion Support for locating native libraries
 
             /// @brief Initialize the library.
             /// @param applicationIdentifier A string identifying your application.
