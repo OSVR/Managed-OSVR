@@ -1,71 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid Condition=" '$(ProjectGuid)' == '' ">{9AB9F53D-1F42-4045-8DFC-9D389D44BB35}</ProjectGuid>
-    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v2.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <ProjectGuid>{9AB9F53D-1F42-4045-8DFC-9D389D44BB35}</ProjectGuid>
   </PropertyGroup>
 
-  <!-- Set framework version to 4.5 for the 45 configs. -->
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug45' ">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release45 '">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-  </PropertyGroup>
-
+  <Import Project="..\MultiFramework.targets" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>OSVR.ClientKit</RootNamespace>
     <AssemblyName>OSVR.ClientKit</AssemblyName>
     <WarningLevel>4</WarningLevel>
     <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  
-  <!-- Handle different framework versions, inspired by
-  http://stackoverflow.com/a/2928835/265522
-  and
-  http://stackoverflow.com/a/4457508/265522
-  -->
-  <PropertyGroup>
-    <OutputPath>bin\$(TargetFrameworkVersion)\$(Configuration)</OutputPath>
-    <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\$(Configuration)</IntermediateOutputPath>
-    <!-- Sets up a property FrameworkString with a value of something like net20 or net45 -->
-    <FrameworkString>$(TargetFrameworkVersion.Replace("v", "net").Replace(".", ""))</FrameworkString>
-    <!-- Adds compile definitions that are the uppercased FrameworkString -->
-    <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(FrameworkString.ToUpper())</DefineConstants>
-    <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));$(FrameworkString.ToUpper())</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release45|AnyCPU'">
-    <OutputPath>bin\Release45\</OutputPath>
-    <DefineConstants>;NET20</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug45|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug45\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

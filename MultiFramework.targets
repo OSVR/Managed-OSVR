@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Handle different framework versions, inspired by
+  http://stackoverflow.com/a/2928835/265522
+  and
+  http://stackoverflow.com/a/4457508/265522
+  -->
+  
+  <!-- Default configuration and framework -->
+  <PropertyGroup>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' and '$(TargetFrameworkVersion)' == '' ">Debug20</Configuration>
+  </PropertyGroup>
+  
+  <!-- Framework version specified - populate props appropriately -->
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' != '' ">
+    <TargetFrameworkBareVersion>$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
+
+    <!-- Appropriately re-construct the configuration -->
+    <BaseConfiguration Condition=" $(Configuration.Contains('Debug')) ">Debug</BaseConfiguration>
+    <BaseConfiguration Condition=" $(Configuration.Contains('Release')) ">Release</BaseConfiguration>
+    <BaseConfiguration Condition=" '$(Configuration)' == '' ">Debug</BaseConfiguration>
+    <Configuration>$(BaseConfiguration)(TargetFrameworkBareVersion)</Configuration>
+  </PropertyGroup>
+  
+  <!-- OK, so by here, we should have the configuration set to some value, now let's parse it. -->
+
+  <PropertyGroup>
+    <!-- Parse out framework version -->
+    <TargetFrameworkVersion Condition=" $(Configuration.Contains('45')) ">v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition=" $(Configuration.Contains('20')) ">v2.0</TargetFrameworkVersion>
+    <!-- Parse out base configurations -->
+    <BaseConfiguration Condition=" $(Configuration.Contains('Debug')) ">Debug</BaseConfiguration>
+    <BaseConfiguration Condition=" $(Configuration.Contains('Release')) ">Release</BaseConfiguration>
+  </PropertyGroup>
+
+  <PropertyGroup>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(BaseConfiguration)' == 'Release' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BaseConfiguration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants Condition=" '$(DefineConstants)' != '' ">$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <DefineConstants Condition=" '$(DefineConstants)' == '' ">DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworkBareVersion>$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
+    <BaseConfiguration Condition=" $(Configuration.Contains('Debug')) ">Debug</BaseConfiguration>
+    <BaseConfiguration Condition=" $(Configuration.Contains('Release')) ">Release</BaseConfiguration>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <OutputPath>bin\$(TargetFrameworkVersion)\$(Configuration)</OutputPath>
+    <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\$(Configuration)</IntermediateOutputPath>
+
+    <TargetFrameworkBareVersion Condition=" '$(TargetFrameworkBareVersion)' == '' ">$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
+    <!-- Sets up a property FrameworkString with a value of something like net20 or net45 -->
+    <FrameworkString>net$(TargetFrameworkBareVersion)</FrameworkString>
+    <!-- Adds compile definitions that are the uppercased FrameworkString -->
+    <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);NET$(TargetFrameworkBareVersion)</DefineConstants>
+    <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));NET$(TargetFrameworkBareVersion)</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Explicitly list out configurations for the sake of Visual Studio, I hope. -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug45' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug20' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release45' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release20' "></PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Platform)' == 'AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+</Project>
