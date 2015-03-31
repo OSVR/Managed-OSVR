@@ -20,6 +20,12 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
+#if !MANAGED_OSVR_INTERNAL_PINVOKE
+
+using System.IO;
+
+#endif
+
 namespace OSVR
 {
     namespace ClientKit
@@ -32,7 +38,8 @@ namespace OSVR
         {
             #region ClientKit C functions
 
-#if UNITY_IPHONE || UNITY_XBOX360
+            // Should be defined if used with Unity and UNITY_IOS or UNITY_XBOX360 are defined
+#if MANAGED_OSVR_INTERNAL_PINVOKE
             // On iOS and Xbox 360, plugins are statically linked into
             // the executable, so we have to use __Internal as the
             // library name.
