@@ -6,13 +6,13 @@
   and
   http://stackoverflow.com/a/4457508/265522
   -->
-  
+
   <!-- Default configuration and framework -->
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <Configuration Condition=" '$(Configuration)' == '' and '$(TargetFrameworkVersion)' == '' ">Debug20</Configuration>
   </PropertyGroup>
-  
+
   <!-- Framework version specified - populate props appropriately -->
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' != '' ">
     <TargetFrameworkBareVersion>$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
@@ -23,7 +23,7 @@
     <BaseConfiguration Condition=" '$(Configuration)' == '' ">Debug</BaseConfiguration>
     <Configuration>$(BaseConfiguration)(TargetFrameworkBareVersion)</Configuration>
   </PropertyGroup>
-  
+
   <!-- OK, so by here, we should have the configuration set to some value, now let's parse it. -->
 
   <PropertyGroup>
@@ -47,15 +47,21 @@
     <DefineConstants Condition=" '$(DefineConstants)' != '' ">$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <DefineConstants Condition=" '$(DefineConstants)' == '' ">DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <!--<TargetFrameworkBareVersion Condition=" '$(TargetFrameworkBareVersion)' == '' ">$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>-->
     <TargetFrameworkBareVersion>$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
+
     <!-- Sets up a property FrameworkString with a value of something like net20 or net45 -->
     <FrameworkString>net$(TargetFrameworkBareVersion)</FrameworkString>
-    <ManagedOSVRRoot>$(MSBuildProjectDirectory)</ManagedOSVRRoot>
-    <OutputPath>$(ManagedOSVRRoot)\bin\$(FrameworkString)\$(BaseConfiguration)</OutputPath>
-    <IntermediateOutputPath>$(ManagedOSVRRoot)\obj\$(FrameworkString)\$(BaseConfiguration)</IntermediateOutputPath>
+
+    <!-- Default root directory -->
+    <ManagedOSVRRoot Condition=" '$(ManagedOSVRRoot)' == '' ">$(MSBuildProjectDirectory)</ManagedOSVRRoot>
+
+    <!-- Sets up build product locations. If the BuildRoot property is not specified (such as a VS IDE build) it is assumed to be the root of the repository. -->
+    <BuildRoot Condition=" '$(BuildRoot)' == '' ">$(ManagedOSVRRoot)</BuildRoot>
+    <OutputPath>$(BuildRoot)\bin\$(FrameworkString)\$(BaseConfiguration)</OutputPath>
+    <IntermediateOutputPath>$(BuildRoot)\obj\$(FrameworkString)\$(BaseConfiguration)</IntermediateOutputPath>
 
     <!-- Adds compile definitions that are the uppercased FrameworkString -->
     <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);NET$(TargetFrameworkBareVersion)</DefineConstants>
@@ -67,7 +73,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug20' "></PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release45' "></PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release20' "></PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Platform)' == 'AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

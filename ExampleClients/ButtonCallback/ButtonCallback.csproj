@@ -6,8 +6,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ButtonCallback</RootNamespace>
     <AssemblyName>ButtonCallback</AssemblyName>
+    <ManagedOSVRRoot>$(MSBuildProjectDirectory)\..\..</ManagedOSVRRoot>
   </PropertyGroup>
-  <Import Project="..\..\MultiFramework.targets" />
+  <Import Project="$(ManagedOSVRRoot)\MultiFramework.targets" />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>

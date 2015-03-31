@@ -2,9 +2,9 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{9AB9F53D-1F42-4045-8DFC-9D389D44BB35}</ProjectGuid>
+    <ManagedOSVRRoot>$(MSBuildProjectDirectory)\..</ManagedOSVRRoot>
   </PropertyGroup>
-
-  <Import Project="..\MultiFramework.targets" />
+  <Import Project="$(ManagedOSVRRoot)\MultiFramework.targets" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>OSVR.ClientKit</RootNamespace>
@@ -42,5 +42,8 @@
     <Content Include="osvrUtil.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MultiFramework.targets" />
   </ItemGroup>
 </Project>

@@ -5,8 +5,9 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>TrackerCallback</RootNamespace>
     <AssemblyName>TrackerCallback</AssemblyName>
+    <ManagedOSVRRoot>$(MSBuildProjectDirectory)\..\..</ManagedOSVRRoot>
   </PropertyGroup>
-  <Import Project="..\..\MultiFramework.targets" />
+  <Import Project="$(ManagedOSVRRoot)\MultiFramework.targets" />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>

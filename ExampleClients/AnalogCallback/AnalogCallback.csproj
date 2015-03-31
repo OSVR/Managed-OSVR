@@ -6,8 +6,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AnalogCallback</RootNamespace>
     <AssemblyName>AnalogCallback</AssemblyName>
+    <ManagedOSVRRoot>$(MSBuildProjectDirectory)\..\..</ManagedOSVRRoot>
   </PropertyGroup>
-  <Import Project="..\..\MultiFramework.targets" />
+  <Import Project="$(ManagedOSVRRoot)\MultiFramework.targets" />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
