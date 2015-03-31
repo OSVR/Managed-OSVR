@@ -44,4 +44,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <Import Project="$(ManagedOSVRRoot)\CopyNativeLibraries.targets" />
+  <Target Name="AfterBuild" DependsOnTargets="CopyNativeLibraries">
+  </Target>
 </Project>

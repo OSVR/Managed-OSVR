@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Set up default source locations for native libraries, can override at any level -->
+  <PropertyGroup>
+    <NativeRoot Condition=" '$(NativeRoot)' == ''">$(ManagedOSVRRoot)\osvr-core-snapshots</NativeRoot>
+    <NativeSubdir Condition=" '$(NativeSubdir)' == ''">bin</NativeSubdir>
+    <NativeRoot32 Condition=" '$(NativeRoot32)' == ''">$(NativeRoot)\32</NativeRoot32>
+    <NativeRoot64 Condition=" '$(NativeRoot64)' == ''">$(NativeRoot)\64</NativeRoot64>
+    <NativeDir32 Condition=" '$(NativeDir32)' == ''">$(NativeRoot32)\$(NativeSubdir)</NativeDir32>
+    <NativeDir64 Condition=" '$(NativeDir64)' == ''">$(NativeRoot64)\$(NativeSubdir)</NativeDir64>
+    <OutputPath32>$(OutputPath)</OutputPath32>
+    <OutputPath64>$(OutputPath)\x64</OutputPath64>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvailableItemName Include="NativeLibrary32"/>
+    <AvailableItemName Include="NativeLibrary64"/>
+  </ItemGroup>
+  <!-- Native libraries to grab - a transform gets the equivalent for 64-bit -->
+  <ItemGroup>
+    <NativeLibrary32 Include="$(NativeDir32)\osvrClient.*;
+                     $(NativeDir32)\osvrClientKit.*;
+                     $(NativeDir32)\osvrCommon.*;
+                     $(NativeDir32)\osvrUtil.*;
+                     $(NativeDir32)\osvrClient.*;
+                     $(NativeDir32)\msvc*.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <NativeLibrary64 Include="@(NativeLibrary32->'$(NativeDir64)\%(filename)%(extension)')" />
+  </ItemGroup>
+  <Target Name="CopyNativeLibraries32" Inputs="@(NativeLibrary32)" Outputs="@(NativeLibrary32->'$(OutputPath32)\%(filename)%(extension)')">
+    <PropertyGroup>
+      <OutputPath>$(OutputPath32)</OutputPath>
+    </PropertyGroup>
+    <MakeDir Directories="$(OutputPath)" />
+    <Message Text="32-bit libraries: @(NativeLibrary32)" Importance="high" />
+    <Copy SourceFiles="@(NativeLibrary32)"  DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CopyNativeLibraries64" Inputs="@(NativeLibrary64)" Outputs="@(NativeLibrary64->'$(OutputPath64)\%(filename)%(extension)')">
+    <MakeDir Directories="$(OutputPath64)" />
+    <Message Text="64-bit libraries: @(NativeLibrary64)" Importance="high" />
+    <Copy SourceFiles="@(NativeLibrary64)" DestinationFolder="$(OutputPath64)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CopyNativeLibraries" DependsOnTargets="CopyNativeLibraries32;CopyNativeLibraries64" />
+</Project>
