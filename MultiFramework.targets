@@ -58,8 +58,8 @@
     <!-- Default root directory -->
     <ManagedOSVRRoot Condition=" '$(ManagedOSVRRoot)' == '' ">$(MSBuildProjectDirectory)</ManagedOSVRRoot>
 
-    <!-- Sets up build product locations. If the BuildRoot property is not specified (such as a VS IDE build) it is assumed to be the root of the repository. -->
-    <BuildRoot Condition=" '$(BuildRoot)' == '' ">$(ManagedOSVRRoot)</BuildRoot>
+    <!-- Sets up build product locations. If the BuildRoot property is not specified (such as a VS IDE build) it is assumed to be a directory named build in the root of the repository. -->
+    <BuildRoot Condition=" '$(BuildRoot)' == '' ">$(ManagedOSVRRoot)\build</BuildRoot>
     <OutputPath>$(BuildRoot)\bin\$(FrameworkString)\$(BaseConfiguration)</OutputPath>
     <IntermediateOutputPath>$(BuildRoot)\obj\$(FrameworkString)\$(BaseConfiguration)</IntermediateOutputPath>
 
