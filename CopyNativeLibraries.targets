@@ -28,12 +28,8 @@
     <NativeLibrary64 Include="@(NativeLibrary32->'$(NativeDir64)\%(filename)%(extension)')" />
   </ItemGroup>
   <Target Name="CopyNativeLibraries32" Inputs="@(NativeLibrary32)" Outputs="@(NativeLibrary32->'$(OutputPath32)\%(filename)%(extension)')">
-    <PropertyGroup>
-      <OutputPath>$(OutputPath32)</OutputPath>
-    </PropertyGroup>
-    <MakeDir Directories="$(OutputPath)" />
-    <Message Text="32-bit libraries: @(NativeLibrary32)" Importance="high" />
-    <Copy SourceFiles="@(NativeLibrary32)"  DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(OutputPath32)" />
+    <Copy SourceFiles="@(NativeLibrary32)"  DestinationFolder="$(OutputPath32)" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="CopyNativeLibraries64" Inputs="@(NativeLibrary64)" Outputs="@(NativeLibrary64->'$(OutputPath64)\%(filename)%(extension)')">
     <MakeDir Directories="$(OutputPath64)" />
