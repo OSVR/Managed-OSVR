@@ -119,6 +119,9 @@ namespace OSVR
 
             public ClientContext(string applicationIdentifier)
             {
+                // Since this is likely the first p/invoke call, may throw
+                // System.BadImageFormatException if our DLL-path magic didn't
+                // put the right bitness of DLL in the path
                 this.m_context = osvrClientInit(applicationIdentifier, 0);
             }
 
