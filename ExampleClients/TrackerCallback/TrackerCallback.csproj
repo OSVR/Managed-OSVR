@@ -25,6 +25,13 @@
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <!-- Explicitly list out configurations for the sake of Visual Studio, I hope. -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug45' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug20' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release45' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release20' "></PropertyGroup>
+
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

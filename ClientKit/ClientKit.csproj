@@ -27,6 +27,13 @@
     <Compile Include="TimeValue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <!-- Explicitly list out configurations for the sake of Visual Studio, I hope. -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug45' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug20' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release45' "></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release20' "></PropertyGroup>
+
   <Import Project="$(ManagedOSVRRoot)\CopyNativeLibraries.targets" />
   <Target Name="AfterBuild" DependsOnTargets="CopyNativeLibraries">
   </Target>
