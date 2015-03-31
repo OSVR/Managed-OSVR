@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ClientKitProj>ClientKit\ClientKit.csproj</ClientKitProj>
+  </PropertyGroup>
+  <ItemGroup>
+    <BuildConfiguration Include="Release20;Release45">
+      <Flavor>Release</Flavor>
+    </BuildConfiguration>
+    <BuildConfiguration Include="Debug20;Debug45">
+      <Flavor>Debug</Flavor>
+    </BuildConfiguration>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Examples Include="ExampleClients\**\*.csproj" />
+  </ItemGroup>
+
+  <Target Name="ClientKit">
+    <MSBuild Projects="$(ClientKitProj)"
+             Properties="Configuration=%(BuildConfiguration.Identity)"
+             Targets="Build" />
+  </Target>
+  <Target Name="Examples">
+    <MSBuild Projects="@(Examples)"
+             Properties="Configuration=%(BuildConfiguration.Identity)"
+             Targets="Build" />
+  </Target>
+
+  <Target Name="Build">
+    <MSBuild Projects="$(ClientKitProj);@(Examples)"
+             Properties="Configuration=%(BuildConfiguration.Identity)"
+             Targets="Build" />
+  </Target>
+  <Target Name="Clean">
+    <MSBuild Projects="$(ClientKitProj);@(Examples)"
+             Properties="Configuration=%(BuildConfiguration.Identity)"
+             Targets="Clean" />
+  </Target>
+</Project>
