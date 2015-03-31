@@ -18,15 +18,12 @@
 
 ﻿using System;
 using System.Runtime.InteropServices;
-using OSVR.ClientKit;
 using System.Text;
 
 namespace OSVR
 {
-
     namespace ClientKit
     {
-
         /// @brief Client context object: Create and keep one in your application.
         /// Handles lifetime management and provides access to ClientKit
         /// functionality.
@@ -34,6 +31,7 @@ namespace OSVR
         public class ClientContext : IDisposable
         {
             #region ClientKit C functions
+
 #if UNITY_IPHONE || UNITY_XBOX360
             // On iOS and Xbox 360, plugins are statically linked into
             // the executable, so we have to use __Internal as the
@@ -61,7 +59,7 @@ namespace OSVR
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameter(IntPtr /*OSVR_ClientContext*/ ctx, string path, StringBuilder buf, UIntPtr len);
 
-            #endregion
+            #endregion ClientKit C functions
 
             /// @brief Initialize the library.
             /// @param applicationIdentifier A string identifying your application.
@@ -90,7 +88,6 @@ namespace OSVR
                     osvrClientShutdown(this.m_context);
                     this.m_context = IntPtr.Zero;
                 }
-
             }
 
             /// @brief Destructor: Shutdown the library.
@@ -165,7 +162,5 @@ namespace OSVR
 
             private IntPtr /*OSVR_ClientContext*/ m_context;
         }
-
     } // end namespace ClientKit
-
 } // end namespace OSVR
