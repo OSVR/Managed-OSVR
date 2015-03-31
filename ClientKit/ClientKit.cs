@@ -38,27 +38,27 @@ namespace OSVR
             // On iOS and Xbox 360, plugins are statically linked into
             // the executable, so we have to use __Internal as the
             // library name.
-            const string OSVR_CORE_DLL = "__Internal";
+            private const string OSVRCoreDll = "__Internal";
 #else
-            const string OSVR_CORE_DLL = "osvrClientKit";
+            private const string OSVRCoreDll = "osvrClientKit";
 #endif
 
             public static Byte OSVR_RETURN_SUCCESS = 0x0;
             public static Byte OSVR_RETURN_FAILURE = 0x1;
 
-            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static IntPtr /*OSVR_ClientContext*/ osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags);
 
-            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientUpdate(IntPtr /*OSVR_ClientContext*/ ctx);
 
-            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientShutdown(IntPtr /*OSVR_ClientContext*/ ctx);
 
-            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameterLength(IntPtr /*OSVR_ClientContext*/ ctx, string path, out int /* TODO size_t */ len);
 
-            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameter(IntPtr /*OSVR_ClientContext*/ ctx, string path, StringBuilder buf, int /* TODO size_t */ len);
 
             #endregion
