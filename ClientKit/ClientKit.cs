@@ -66,7 +66,47 @@ namespace OSVR
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameter(IntPtr /*OSVR_ClientContext*/ ctx, string path, StringBuilder buf, UIntPtr len);
 
+#if !MANAGED_OSVR_INTERNAL_PINVOKE
+
+            [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            private static extern bool SetDllDirectory(string lpPathName);
+
+#endif
+
             #endregion ClientKit C functions
+
+            /// <summary>
+            /// Static constructor - Try finding the right path for the p/invoked DLL before p/invoke tries to.
+            /// </summary>
+            static ClientContext()
+            {
+#if !MANAGED_OSVR_INTERNAL_PINVOKE
+                var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
+                var path = Path.GetDirectoryName(assembly);
+                System.Diagnostics.Debug.WriteLine("OSVR.ClientKit assembly directory: " + path);
+
+                if (IntPtr.Size == 8)
+                {
+                    var pathx64 = Path.Combine(path, "x64");
+                    if (Directory.Exists(pathx64))
+                    {
+                        path = pathx64;
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine("OSVR.ClientKit DLL directory: " + path);
+                // @todo cross-platform this: can we change the name of the pinvoked native module or something? Right now we just catch and ignore the p/invoke exception here.
+                try
+                {
+                    SetDllDirectory(path);
+                }
+                catch (DllNotFoundException e)
+                {
+                    System.Diagnostics.Debug.WriteLine(String.Format("Failed to set DLL directory: {0}", e));
+                }
+#endif
+            }
 
             /// @brief Initialize the library.
             /// @param applicationIdentifier A string identifying your application.
