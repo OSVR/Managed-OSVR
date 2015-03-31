@@ -43,7 +43,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="MultiFramework.targets" />
-  </ItemGroup>
 </Project>
