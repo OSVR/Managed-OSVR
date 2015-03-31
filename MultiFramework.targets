@@ -35,8 +35,6 @@
     <BaseConfiguration Condition=" $(Configuration.Contains('Release')) ">Release</BaseConfiguration>
   </PropertyGroup>
 
-  <PropertyGroup>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(BaseConfiguration)' == 'Release' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -49,19 +47,16 @@
     <DefineConstants Condition=" '$(DefineConstants)' != '' ">$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <DefineConstants Condition=" '$(DefineConstants)' == '' ">DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup>
-    <TargetFrameworkBareVersion>$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
-    <BaseConfiguration Condition=" $(Configuration.Contains('Debug')) ">Debug</BaseConfiguration>
-    <BaseConfiguration Condition=" $(Configuration.Contains('Release')) ">Release</BaseConfiguration>
-  </PropertyGroup>
   
   <PropertyGroup>
-    <OutputPath>bin\$(TargetFrameworkVersion)\$(Configuration)</OutputPath>
-    <IntermediateOutputPath>obj\$(TargetFrameworkVersion)\$(Configuration)</IntermediateOutputPath>
-
-    <TargetFrameworkBareVersion Condition=" '$(TargetFrameworkBareVersion)' == '' ">$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
+    <!--<TargetFrameworkBareVersion Condition=" '$(TargetFrameworkBareVersion)' == '' ">$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>-->
+    <TargetFrameworkBareVersion>$(TargetFrameworkVersion.Replace("v", "").Replace(".", ""))</TargetFrameworkBareVersion>
     <!-- Sets up a property FrameworkString with a value of something like net20 or net45 -->
     <FrameworkString>net$(TargetFrameworkBareVersion)</FrameworkString>
+    <ManagedOSVRRoot>$(MSBuildProjectDirectory)</ManagedOSVRRoot>
+    <OutputPath>$(ManagedOSVRRoot)\bin\$(FrameworkString)\$(BaseConfiguration)</OutputPath>
+    <IntermediateOutputPath>$(ManagedOSVRRoot)\obj\$(FrameworkString)\$(BaseConfiguration)</IntermediateOutputPath>
+
     <!-- Adds compile definitions that are the uppercased FrameworkString -->
     <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);NET$(TargetFrameworkBareVersion)</DefineConstants>
     <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));NET$(TargetFrameworkBareVersion)</DefineConstants>
