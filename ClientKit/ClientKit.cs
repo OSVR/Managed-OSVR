@@ -82,6 +82,7 @@ namespace OSVR
             static ClientContext()
             {
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
+                // This line based on http://stackoverflow.com/a/864497/265522
                 var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
                 var path = Path.GetDirectoryName(assembly);
                 System.Diagnostics.Debug.WriteLine("OSVR.ClientKit assembly directory: " + path);
