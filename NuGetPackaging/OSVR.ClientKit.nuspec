@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>OSVR.ClientKit</id>
+    <version>0.1.5570.40638</version>
+    <title>OSVR ClientKit (.NET 2.0)</title>
+    <authors>OSVR/Sensics, Inc.</authors>
+    <owners>OSVR/Sensics, Inc.</owners>
+    <licenseUrl>https://raw.githubusercontent.com/OSVR/Managed-OSVR/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/OSVR/Managed-OSVR</projectUrl>
+    <iconUrl>https://avatars2.githubusercontent.com/u/10343613</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>.NET 2.0/Debug</description>
+    <releaseNotes>Initial version.</releaseNotes>
+    <copyright>Copyright 2015 Sensics, Inc.</copyright>
+    <tags>VR</tags>
+  </metadata>
+</package>
