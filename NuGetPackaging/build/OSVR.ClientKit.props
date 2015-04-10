@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\64\bin\msvcp120.dll">
+      <Link>x64\msvcp120.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\64\bin\msvcr120.dll">
+      <Link>x64\msvcr120.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\64\bin\osvrClient.dll">
+      <Link>x64\osvrClient.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\64\bin\osvrClientKit.dll">
+      <Link>x64\osvrClientKit.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\64\bin\osvrCommon.dll">
+      <Link>x64\osvrCommon.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\64\bin\osvrUtil.dll">
+      <Link>x64\osvrUtil.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\32\bin\msvcp120.dll">
+      <Link>msvcp120.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\32\bin\msvcr120.dll">
+      <Link>msvcr120.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\32\bin\osvrClient.dll">
+      <Link>osvrClient.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\32\bin\osvrClientKit.dll">
+      <Link>osvrClientKit.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\32\bin\osvrCommon.dll">
+      <Link>osvrCommon.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\osvr-core-snapshots\32\bin\osvrUtil.dll">
+      <Link>osvrUtil.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <!--<ItemGroup Condition=" '$(OS)' == 'Unix' And Exists('/Library/Frameworks') ">
+    <None Include="$(MSBuildThisFileDirectory)\..\libgit2\libgit2-e0902fb.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(OS)' == 'Unix' And !Exists('/Library/Frameworks') ">
+    <None Include="$(MSBuildThisFileDirectory)\..\libgit2\libgit2-e0902fb.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>-->
+</Project>
