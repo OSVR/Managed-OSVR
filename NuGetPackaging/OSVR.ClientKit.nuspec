@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>OSVR.ClientKit</id>
-    <version>0.1.5570.40638</version>
+    <version>0.1.0-alpha</version>
     <title>OSVR ClientKit</title>
     <authors>OSVR/Sensics, Inc.</authors>
     <owners>OSVR/Sensics, Inc.</owners>
