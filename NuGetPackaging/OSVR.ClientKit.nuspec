@@ -3,16 +3,16 @@
   <metadata>
     <id>OSVR.ClientKit</id>
     <version>0.1.5570.40638</version>
-    <title>OSVR ClientKit (.NET 2.0)</title>
+    <title>OSVR ClientKit</title>
     <authors>OSVR/Sensics, Inc.</authors>
     <owners>OSVR/Sensics, Inc.</owners>
-    <licenseUrl>https://raw.githubusercontent.com/OSVR/Managed-OSVR/master/LICENSE</licenseUrl>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/OSVR/Managed-OSVR</projectUrl>
-    <iconUrl>https://avatars2.githubusercontent.com/u/10343613</iconUrl>
+    <iconUrl>https://cdn.rawgit.com/OSVR/Managed-OSVR/a5bb54fb9766b6dbc7e176fe40b02107d93cd6b2/osvr-logo-nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>.NET 2.0/Debug</description>
+    <description>OSVR ClientKit .NET/CLR bindings for building virtual reality applications or integrating virtual reality capabilities into game engines.</description>
     <releaseNotes>Initial version.</releaseNotes>
-    <copyright>Copyright 2015 Sensics, Inc.</copyright>
+    <copyright>Copyright 2014, 2015 Sensics, Inc., OSVR contributors</copyright>
     <tags>VR</tags>
   </metadata>
 </package>

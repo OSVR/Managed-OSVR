@@ -1,6 +1,5 @@
 echo Building Managed-OSVR.sln. If this fails, try running under the visual studio command prompt, or adding devenv.exe to your path.
-devenv Managed-OSVR.sln /build Release20 /project ClientKit
-devenv Managed-oSVR.sln /build Release45 /project ClientKit
+msbuild Managed-OSVR.proj /t:ClientKit
 rmdir /S /Q NuGetPackaging\osvr-core-snapshots
 rmdir /S /Q NuGetPackaging\lib
 mkdir NuGetPackaging\lib\net20
