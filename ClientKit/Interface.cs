@@ -1,11 +1,28 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 
 namespace OSVR
 {
 
     namespace ClientKit
     {
+        [SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        public sealed class SafeClientInterfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
+        {
+            public SafeClientInterfaceHandle() : base(true) { }
+
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+            override protected bool ReleaseHandle()
+            {
+                System.Diagnostics.Debug.WriteLine("Interface shutdown");
+                return Interface.osvrClientFreeInterface(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
+            }
+        }
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void PositionCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref PositionReport report);
 
@@ -23,7 +40,7 @@ namespace OSVR
 
         /// @brief Interface handle object. Typically acquired from a ClientContext.
         /// @ingroup ClientKitCPP
-        public class Interface
+        public class Interface : IDisposable
         {
 
             #region ClientKit C functions
@@ -42,31 +59,31 @@ namespace OSVR
 
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrRegisterPositionCallback(IntPtr /*OSVR_ClientInterface*/ iface, [MarshalAs(UnmanagedType.FunctionPtr)] PositionCallback cb, IntPtr /*void**/ userdata);
+            public extern static Byte osvrRegisterPositionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] PositionCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrRegisterPoseCallback(IntPtr /*OSVR_ClientInterface*/ iface, PoseCallback cb, IntPtr /*void**/ userdata);
+            public extern static Byte osvrRegisterPoseCallback(SafeClientInterfaceHandle iface, PoseCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrRegisterOrientationCallback(IntPtr /*OSVR_ClientInterface*/ iface, [MarshalAs(UnmanagedType.FunctionPtr)] OrientationCallback cb, IntPtr /*void**/ userdata);
+            public extern static Byte osvrRegisterOrientationCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] OrientationCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrRegisterButtonCallback(IntPtr /*OSVR_ClientInterface*/ iface, [MarshalAs(UnmanagedType.FunctionPtr)] ButtonCallback cb, IntPtr /*void**/ userdata);
+            public extern static Byte osvrRegisterButtonCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] ButtonCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrRegisterAnalogCallback(IntPtr /*OSVR_ClientInterface*/ iface, [MarshalAs(UnmanagedType.FunctionPtr)] AnalogCallback cb, IntPtr /*void**/ userdata);
+            public extern static Byte osvrRegisterAnalogCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] AnalogCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            static public extern Byte osvrClientGetInterface(IntPtr /*OSVR_ClientContext*/ ctx, string path, ref IntPtr /*OSVR_ClientInterface*/ iface);
+            static public extern Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            static public extern Byte osvrClientFreeInterface(IntPtr /*OSVR_ClientInterface*/ iface);
+            static public extern Byte osvrClientFreeInterface(IntPtr iface);
 
             #endregion
 
             /// @brief Constructs an Interface object from an OSVR_ClientInterface
             /// object.
-            public Interface(IntPtr /*OSVR_ClientInterface*/ iface)
+            public Interface(SafeClientInterfaceHandle iface)
             {
                 this.m_interface = iface;
             }
@@ -97,7 +114,28 @@ namespace OSVR
                 osvrRegisterAnalogCallback(m_interface, cb, userdata);
             }
 
-            private IntPtr /*OSVR_ClientInterface*/ m_interface;
+            private SafeClientInterfaceHandle m_interface;
+
+            public void Dispose()
+            {
+                System.Diagnostics.Debug.WriteLine("In Interface.Dispose()");
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+            protected virtual void Dispose(bool disposing)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("In Interface.Dispose({0})", disposing));
+                if (disposing)
+                {
+                    if (m_interface != null && !m_interface.IsInvalid)
+                    {
+                        m_interface.Dispose();
+                        m_interface = null;
+                    }
+                }
+            }
         }
 
     } // end namespace ClientKit

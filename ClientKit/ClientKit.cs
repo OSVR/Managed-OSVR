@@ -19,6 +19,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Security.Permissions;
+using Microsoft.Win32.SafeHandles;
+using System.Runtime.ConstrainedExecution;
 
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
 
@@ -30,6 +33,20 @@ namespace OSVR
 {
     namespace ClientKit
     {
+        [SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        public sealed class SafeClientContextHandle : SafeHandleZeroOrMinusOneIsInvalid
+        {
+            public SafeClientContextHandle() : base(true) { }
+
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+            protected override bool ReleaseHandle()
+            {
+                System.Diagnostics.Debug.WriteLine("Client shutdown");
+                return ClientContext.osvrClientShutdown(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
+            }
+        }
+
         /// @brief Client context object: Create and keep one in your application.
         /// Handles lifetime management and provides access to ClientKit
         /// functionality.
@@ -52,19 +69,19 @@ namespace OSVR
             public static Byte OSVR_RETURN_FAILURE = 0x1;
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-            public extern static IntPtr /*OSVR_ClientContext*/ osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags);
+            public extern static SafeClientContextHandle osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags);
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrClientUpdate(IntPtr /*OSVR_ClientContext*/ ctx);
+            public extern static Byte osvrClientUpdate(SafeClientContextHandle ctx);
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientShutdown(IntPtr /*OSVR_ClientContext*/ ctx);
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrClientGetStringParameterLength(IntPtr /*OSVR_ClientContext*/ ctx, string path, out UIntPtr len);
+            public extern static Byte osvrClientGetStringParameterLength(SafeClientContextHandle ctx, string path, out UIntPtr len);
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrClientGetStringParameter(IntPtr /*OSVR_ClientContext*/ ctx, string path, StringBuilder buf, UIntPtr len);
+            public extern static Byte osvrClientGetStringParameter(SafeClientContextHandle ctx, string path, StringBuilder buf, UIntPtr len);
 
             #endregion ClientKit C functions
 
@@ -177,20 +194,10 @@ namespace OSVR
                 Dispose(false);
             }
 
-            public void shutdown()
-            {
-                if (this.m_context != IntPtr.Zero)
-                {
-                    System.Diagnostics.Debug.WriteLine("Client shutdown");
-                    osvrClientShutdown(this.m_context);
-                    this.m_context = IntPtr.Zero;
-                }
-            }
-
             /// @brief Destructor: Shutdown the library.
             public void Dispose()
             {
-                System.Diagnostics.Debug.WriteLine("In Dispose()");
+                System.Diagnostics.Debug.WriteLine("In ClientContext.Dispose()");
                 Dispose(true);
                 // No need to call the finalizer since we've now cleaned
                 // up the unmanaged memory.
@@ -199,8 +206,15 @@ namespace OSVR
 
             protected virtual void Dispose(bool disposing)
             {
-                System.Diagnostics.Debug.WriteLine(String.Format("In Dispose({0})", disposing));
-                shutdown();
+                System.Diagnostics.Debug.WriteLine(String.Format("In ClientContext.Dispose({0})", disposing));
+                if (disposing)
+                {
+                    if (this.m_context != null && !this.m_context.IsInvalid)
+                    {
+                        this.m_context.Dispose();
+                        this.m_context = null;
+                    }
+                }
             }
 
             /// @brief Updates the state of the context - call regularly in your
@@ -219,7 +233,7 @@ namespace OSVR
             /// @returns The interface object.
             public Interface getInterface(string path)
             {
-                IntPtr /*OSVR_ClientInterface*/ iface = IntPtr.Zero;
+                SafeClientInterfaceHandle iface = new SafeClientInterfaceHandle();
                 Byte ret = Interface.osvrClientGetInterface(this.m_context, path, ref iface);
                 if (OSVR_RETURN_SUCCESS != ret)
                 {
@@ -257,7 +271,7 @@ namespace OSVR
                 return buf.ToString();
             }
 
-            private IntPtr /*OSVR_ClientContext*/ m_context;
+            private SafeClientContextHandle m_context;
         }
     } // end namespace ClientKit
 } // end namespace OSVR
