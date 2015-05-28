@@ -25,13 +25,15 @@ namespace DisplayParameter
     {
         static void Main(string[] args)
         {
-            OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("org.opengoggles.exampleclients.managed.DisplayParameter");
-            string displayDescription = context.getStringParameter("/display");
+            using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("org.opengoggles.exampleclients.managed.DisplayParameter"))
+            {
+                string displayDescription = context.getStringParameter("/display");
 
-            Console.WriteLine("Got value of /display:");
-            Console.WriteLine(displayDescription);
+                Console.WriteLine("Got value of /display:");
+                Console.WriteLine(displayDescription);
 
-            Console.WriteLine("Library shut down; exiting.");
+                Console.WriteLine("Library shut down; exiting.");
+            }
         }
     }
 }
