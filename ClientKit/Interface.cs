@@ -2,15 +2,12 @@
 using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 
 namespace OSVR
 {
 
     namespace ClientKit
     {
-        [SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public sealed class SafeClientInterfaceHandle : SafeHandleZeroOrMinusOneIsInvalid
         {
             public SafeClientInterfaceHandle() : base(true) { }
@@ -123,7 +120,6 @@ namespace OSVR
                 GC.SuppressFinalize(this);
             }
 
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             protected virtual void Dispose(bool disposing)
             {
                 System.Diagnostics.Debug.WriteLine(String.Format("In Interface.Dispose({0})", disposing));

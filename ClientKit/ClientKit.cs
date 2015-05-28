@@ -19,7 +19,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Security.Permissions;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.ConstrainedExecution;
 
@@ -33,8 +32,6 @@ namespace OSVR
 {
     namespace ClientKit
     {
-        [SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public sealed class SafeClientContextHandle : SafeHandleZeroOrMinusOneIsInvalid
         {
             public SafeClientContextHandle() : base(true) { }
