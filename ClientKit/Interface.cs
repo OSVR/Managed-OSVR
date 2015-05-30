@@ -15,7 +15,7 @@ namespace OSVR
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
             override protected bool ReleaseHandle()
             {
-                System.Diagnostics.Debug.WriteLine("Interface shutdown");
+                System.Diagnostics.Debug.WriteLine("[OSVR] Interface shutdown");
                 return Interface.osvrClientFreeInterface(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
             }
         }
@@ -115,14 +115,14 @@ namespace OSVR
 
             public void Dispose()
             {
-                System.Diagnostics.Debug.WriteLine("In Interface.Dispose()");
+                System.Diagnostics.Debug.WriteLine("[OSVR] In Interface.Dispose()");
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
 
             protected virtual void Dispose(bool disposing)
             {
-                System.Diagnostics.Debug.WriteLine(String.Format("In Interface.Dispose({0})", disposing));
+                System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] In Interface.Dispose({0})", disposing));
                 if (disposing)
                 {
                     if (m_interface != null && !m_interface.IsInvalid)

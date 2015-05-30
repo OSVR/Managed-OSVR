@@ -39,7 +39,7 @@ namespace OSVR
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
             protected override bool ReleaseHandle()
             {
-                System.Diagnostics.Debug.WriteLine("Client shutdown");
+                System.Diagnostics.Debug.WriteLine("[OSVR] ClientContext shutdown");
                 return ClientContext.osvrClientShutdown(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
             }
         }
@@ -99,7 +99,7 @@ namespace OSVR
             {
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
                 var path = GetNativeLibraryDir();
-                System.Diagnostics.Debug.WriteLine("OSVR.ClientKit DLL directory: " + path);
+                System.Diagnostics.Debug.WriteLine("[OSVR] ClientKit DLL directory: " + path);
                 // @todo cross-platform this: can we change the name of the pinvoked native module or something? Right now we just catch and ignore the p/invoke exception here.
                 try
                 {
@@ -107,7 +107,7 @@ namespace OSVR
                 }
                 catch (DllNotFoundException e)
                 {
-                    System.Diagnostics.Debug.WriteLine(String.Format("Failed to set DLL directory: {0}", e));
+                    System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] Failed to set DLL directory: {0}", e));
                 }
 #endif
             }
@@ -119,7 +119,7 @@ namespace OSVR
                 // This line based on http://stackoverflow.com/a/864497/265522
                 var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
                 var assemblyPath = Path.GetDirectoryName(assembly);
-                System.Diagnostics.Debug.WriteLine("OSVR.ClientKit assembly directory: " + assemblyPath);
+                System.Diagnostics.Debug.WriteLine("[OSVR] ClientKit assembly directory: " + assemblyPath);
                 if (IntPtr.Size == 8)
                 {
                     return new PathChecker(assemblyPath).Check("x86_64").Check("x64").Check("64").Result;
@@ -194,7 +194,7 @@ namespace OSVR
             /// @brief Destructor: Shutdown the library.
             public void Dispose()
             {
-                System.Diagnostics.Debug.WriteLine("In ClientContext.Dispose()");
+                System.Diagnostics.Debug.WriteLine("[OSVR] In ClientContext.Dispose()");
                 Dispose(true);
                 // No need to call the finalizer since we've now cleaned
                 // up the unmanaged memory.
@@ -203,7 +203,7 @@ namespace OSVR
 
             protected virtual void Dispose(bool disposing)
             {
-                System.Diagnostics.Debug.WriteLine(String.Format("In ClientContext.Dispose({0})", disposing));
+                System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] In ClientContext.Dispose({0})", disposing));
                 if (disposing)
                 {
                     if (this.m_context != null && !this.m_context.IsInvalid)
