@@ -23,7 +23,7 @@ namespace ButtonCallback
 {
     class ButtonCallback
     {
-        static void myButtonCallback(IntPtr userdata, ref TimeValue timestamp, ref ButtonReport report)
+        static void button1_StateChanged(object sender, TimeValue timestamp, ButtonReport report)
         {
             Console.WriteLine("Got report: button is {0}", report.state == 1 ? "pressed" : "released");
         }
@@ -34,11 +34,14 @@ namespace ButtonCallback
                 // This is just one of the paths: specifically, the Hydra's left
                 // controller's button labelled "1". More are in the docs and/or listed on
                 // startup
-                using (Interface button1 = context.getInterface("/controller/left/1"))
+#if NET20
+                using (var button1 = ButtonInterface.GetInterface(context, "/controller/left/1"))
+#else
+                using (var button1 = context.GetButtonInterface("/controller/left/1"))
+#endif
                 {
-                    OSVR.ClientKit.ButtonCallback mycb = new OSVR.ClientKit.ButtonCallback(myButtonCallback);
-                    button1.registerCallback(mycb, IntPtr.Zero);
-
+                    button1.StateChanged += button1_StateChanged;
+                    button1.Start();
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)
                     {

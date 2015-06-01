@@ -23,7 +23,7 @@ namespace AnalogCallback
 {
     class AnalogCallback
     {
-        static void myAnalogCallback(IntPtr userdata, ref TimeValue timestamp, ref AnalogReport report)
+        static void analogTrigger_StateChanged(object sender, TimeValue timestamp, AnalogReport report)
         {
             Console.WriteLine("Got report: channel is {0}", report.state);
         }
@@ -34,11 +34,14 @@ namespace AnalogCallback
                 // This is just one of the paths: specifically, the Hydra's left
                 // controller's analog trigger. More are in the docs and/or listed on
                 // startup
-                using (Interface analogTrigger = context.getInterface("/controller/left/trigger"))
+#if NET20
+                using (var analogTrigger = AnalogInterface.GetInterface(context, "/controller/left/trigger"))
+#else
+                using (var analogTrigger = context.GetAnalogInterface("/controller/left/trigger"))
+#endif
                 {
-                    OSVR.ClientKit.AnalogCallback mycb = new OSVR.ClientKit.AnalogCallback(myAnalogCallback);
-                    analogTrigger.registerCallback(mycb, IntPtr.Zero);
-
+                    analogTrigger.StateChanged += analogTrigger_StateChanged;
+                    analogTrigger.Start();
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)
                     {
