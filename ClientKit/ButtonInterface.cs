@@ -36,6 +36,9 @@ namespace OSVR.ClientKit
     /// </summary>
     public class ButtonInterface: InterfaceBase<ButtonReport, Byte>
     {
+        public const Byte Pressed = 1;
+        public const Byte Released = 0;
+
 #if NET45
         [Obsolete("Use the GetButtonInterface extension method on ClientContext instead.")]
 #endif
