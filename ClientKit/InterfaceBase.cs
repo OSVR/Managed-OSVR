@@ -89,7 +89,8 @@ namespace OSVR.ClientKit
     /// <summary>
     /// Base class for interface wrappers.
     /// </summary>
-    /// <typeparam name="T">The type of the interface report.</typeparam>
+    /// <typeparam name="TReport">The type of the interface report.</typeparam>
+    /// <typeparam name="TState">The type of the state value.</typeparam>
     public abstract class InterfaceBase<TReport, TState> : IInterface<TReport, TState>
     {
         protected Interface iface;

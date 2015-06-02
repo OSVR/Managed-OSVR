@@ -24,8 +24,10 @@ namespace OSVR.ClientKit
     /// a new IInterface of TDest. This is useful when converting the raw report data
     /// from the generic OSVR types into a framework specific type./>
     /// </summary>
-    /// <typeparam name="TSource">The report type of the wrapped interface.</typeparam>
-    /// <typeparam name="TDest">The report type of the new wrapper interface.</typeparam>
+    /// <typeparam name="TReportSource">The report type of the wrapped interface.</typeparam>
+    /// <typeparam name="TReportDest">The report type of the new wrapper interface.</typeparam>
+    /// <typeparam name="TStateSource">The type of the state value of the wrapped interface.</typeparam>
+    /// <typeparam name="TStateDest">The type of the state value of the new wrapper interface.</typeparam>
     public abstract class InterfaceAdapter<TReportSource, TReportDest, TStateSource, TStateDest> : IInterface<TReportDest, TStateDest>
     {
         protected IInterface<TReportSource, TStateSource> iface;
