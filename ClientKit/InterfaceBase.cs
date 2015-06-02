@@ -63,7 +63,7 @@ namespace OSVR.ClientKit
     /// Example: OrientationReport for an orientation interface.</typeparam>
     /// <typeparam name="TState">The type of the interface state.
     /// Example: Quaternion for an orientation interface.</typeparam>
-    public interface IInterface<TReport, TState>
+    public interface IInterface<TReport, TState> : IDisposable
     {
         /// <summary>
         /// Initialize the interface and start producing events. 
@@ -90,7 +90,7 @@ namespace OSVR.ClientKit
     /// Base class for interface wrappers.
     /// </summary>
     /// <typeparam name="T">The type of the interface report.</typeparam>
-    public abstract class InterfaceBase<TReport, TState> : IInterface<TReport, TState>, IDisposable
+    public abstract class InterfaceBase<TReport, TState> : IInterface<TReport, TState>
     {
         protected Interface iface;
         protected readonly GetStateFunc<TState> stateGetter;
