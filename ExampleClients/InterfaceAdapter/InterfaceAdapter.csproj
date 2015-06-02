@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{EF103A38-3E44-41E5-874B-F7B7BD0B9D4C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>InterfaceAdapter</RootNamespace>
+    <AssemblyName>InterfaceAdapter</AssemblyName>
+    <ManagedOSVRRoot>$(MSBuildProjectDirectory)\..\..</ManagedOSVRRoot>
+  </PropertyGroup>
+  <Import Project="$(ManagedOSVRRoot)\MultiFramework.targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="InterfaceAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ClientKit\ClientKit.csproj">
+      <Project>{9AB9F53D-1F42-4045-8DFC-9D389D44BB35}</Project>
+      <Name>ClientKit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- Explicitly list out configurations for the sake of Visual Studio, I hope. -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug45' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug20' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release45' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release20' ">
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
