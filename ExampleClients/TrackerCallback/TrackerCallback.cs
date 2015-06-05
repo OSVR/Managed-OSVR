@@ -24,35 +24,38 @@ namespace TrackerCallback
     public class TrackerCallbacks
     {
         // Pose callback
-        public static void myTrackerCallback(Object sender, TimeValue timestamp, PoseReport report)
+        public static void myTrackerCallback(Object sender, TimeValue timestamp, Int32 sensor, Pose3 report)
         {
-            Console.WriteLine("Got POSE report: Position = ({0}, {1}, {2}), orientation ({3}, {4}, {5}, {6})",
-                report.pose.translation.x,
-                report.pose.translation.y,
-                report.pose.translation.z,
-                report.pose.rotation.w,
-                report.pose.rotation.x,
-                report.pose.rotation.y,
-                report.pose.rotation.z);
-        }
-
-        // Orientation callback
-        public static void myOrientationCallback(Object sender, TimeValue timestamp, OrientationReport report)
-        {
-            Console.WriteLine("Got ORIENTATION report: Orientation = ({0}, {1}, {2}, {3})",
+            Console.WriteLine("Got POSE report: Position = ({0}, {1}, {2}), orientation ({3}, {4}, {5}, {6}), sensor ({7})",
+                report.translation.x,
+                report.translation.y,
+                report.translation.z,
                 report.rotation.w,
                 report.rotation.x,
                 report.rotation.y,
-                report.rotation.z);
+                report.rotation.z,
+                sensor);
+        }
+
+        // Orientation callback
+        public static void myOrientationCallback(Object sender, TimeValue timestamp, Int32 sensor, Quaternion report)
+        {
+            Console.WriteLine("Got ORIENTATION report: Orientation = ({0}, {1}, {2}, {3}), Sensor = ({4})",
+                report.w,
+                report.x,
+                report.y,
+                report.z,
+                sensor);
         }
 
         // Position callback
-        public static void myPositionCallback(Object sender, TimeValue timestamp, PositionReport report)
+        public static void myPositionCallback(Object sender, TimeValue timestamp, Int32 sensor, Vec3 report)
         {
-            Console.WriteLine("Got POSITION report: Position = ({0}, {1}, {2})",
-                report.xyz.x,
-                report.xyz.y,
-                report.xyz.z);
+            Console.WriteLine("Got POSITION report: Position = ({0}, {1}, {2}), Sensor = ({3})",
+                report.x,
+                report.y,
+                report.z,
+                sensor);
         }
     }
 

@@ -34,7 +34,7 @@ namespace OSVR.ClientKit
     /// Interface representing a button from an input device (either a
     /// physical button or a simulated button invoked by a gesture, etc...)
     /// </summary>
-    public class ButtonInterface: InterfaceBase<ButtonReport, Byte>
+    public class ButtonInterface: InterfaceBase<Byte>
     {
         public const Byte Pressed = 1;
         public const Byte Released = 0;
@@ -60,7 +60,7 @@ namespace OSVR.ClientKit
 
         protected void InterfaceCallback(IntPtr userdata, ref TimeValue timestamp, ref ButtonReport report)
         {
-            OnStateChanged(timestamp, report);
+            OnStateChanged(timestamp, report.sensor, report.state);
         }
     }
 }

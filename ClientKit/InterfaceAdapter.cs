@@ -17,6 +17,7 @@
 /// </copyright>
 ///
 
+using System;
 namespace OSVR.ClientKit
 {
     /// <summary>
@@ -24,16 +25,14 @@ namespace OSVR.ClientKit
     /// a new IInterface of TDest. This is useful when converting the raw report data
     /// from the generic OSVR types into a framework specific type./>
     /// </summary>
-    /// <typeparam name="TReportSource">The report type of the wrapped interface.</typeparam>
-    /// <typeparam name="TReportDest">The report type of the new wrapper interface.</typeparam>
-    /// <typeparam name="TStateSource">The type of the state value of the wrapped interface.</typeparam>
-    /// <typeparam name="TStateDest">The type of the state value of the new wrapper interface.</typeparam>
-    public abstract class InterfaceAdapter<TReportSource, TReportDest, TStateSource, TStateDest> : IInterface<TReportDest, TStateDest>
+    /// <typeparam name="TSource">The type of the wrapped interface.</typeparam>
+    /// <typeparam name="TDest">The type of the new wrapper interface.</typeparam>
+    public abstract class InterfaceAdapter<TSource, TDest> : IInterface<TDest>
     {
-        protected IInterface<TReportSource, TStateSource> iface;
+        protected IInterface<TSource> iface;
         protected bool started = false;
 
-        public InterfaceAdapter(IInterface<TReportSource, TStateSource> iface)
+        public InterfaceAdapter(IInterface<TSource> iface)
         {
             this.iface = iface;
         }
@@ -50,44 +49,36 @@ namespace OSVR.ClientKit
         }
 
         /// <summary>
-        /// Implemented in a derived class to convert an instance of TReportSource into an
-        /// instance of TReportDest.
+        /// Implemented in a derived class to convert an instance of TSource into an
+        /// instance of TDest.
         /// </summary>
         /// <param name="sourceValue">The source value to convert.</param>
-        /// <returns>The TReportDest equivalent of sourceValue.</returns>
-        protected abstract TReportDest ConvertReportValue(TReportSource sourceValue);
-
-        /// <summary>
-        /// Implemented in a derived class to convert an instance of TStateSource into an
-        /// instance of TStateDest.
-        /// </summary>
-        /// <param name="sourceValue">The source value to convert.</param>
-        /// <returns>The TStateDest equivalent of sourceValue</returns>
-        protected abstract TStateDest ConvertStateValue(TStateSource sourceValue);
+        /// <returns>The TDest equivalent of sourceValue.</returns>
+        protected abstract TDest Convert(TSource sourceValue);
 
         /// <summary>
         /// Callback for the original interface's StateChanged event. It shouldn't
         /// be common to override this in a derived class implementation.
         /// </summary>
-        protected virtual void iface_StateChanged(object sender, TimeValue timestamp, TReportSource report)
+        protected virtual void iface_StateChanged(object sender, TimeValue timestamp, Int32 sensor, TSource report)
         {
             if(StateChanged != null)
             {
-                this.StateChanged(this, timestamp, ConvertReportValue(report));
+                this.StateChanged(this, timestamp, sensor, Convert(report));
             }
         }
 
-        public InterfaceState<TStateDest> GetState()
+        public InterfaceState<TDest> GetState()
         {
             var state = this.iface.GetState();
-            return new InterfaceState<TStateDest>
+            return new InterfaceState<TDest>
             {
                 Timestamp = state.Timestamp,
-                Value = ConvertStateValue(state.Value)
+                Value = Convert(state.Value)
             };
         }
 
-        public event StateChangedHandler<TReportDest> StateChanged;
+        public event StateChangedHandler<TDest> StateChanged;
 
         public void Dispose()
         {

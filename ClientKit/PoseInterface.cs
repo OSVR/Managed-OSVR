@@ -33,7 +33,7 @@ namespace OSVR.ClientKit
     /// <summary>
     /// Interface representing a combined position and orientation sensor.
     /// </summary>
-    public class PoseInterface: InterfaceBase<PoseReport, Pose3>
+    public class PoseInterface: InterfaceBase<Pose3>
     {
 #if NET45
         [Obsolete("Use the GetPoseInterface method on ClientContext instead.")]
@@ -56,7 +56,7 @@ namespace OSVR.ClientKit
 
         protected void InterfaceCallback(IntPtr userdata, ref TimeValue timestamp, ref PoseReport report)
         {
-            OnStateChanged(timestamp, report);
+            OnStateChanged(timestamp, report.sensor, report.pose);
         }
     }
 }

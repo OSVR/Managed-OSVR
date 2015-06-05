@@ -33,7 +33,7 @@ namespace OSVR.ClientKit
     /// <summary>
     /// Interface representing a position sensor.
     /// </summary>
-    public class PositionInterface: InterfaceBase<PositionReport, Vec3>
+    public class PositionInterface: InterfaceBase<Vec3>
     {
 #if NET45
         [Obsolete("Use the GetPositionInterface extension method on ClientContext instead.")]
@@ -56,7 +56,7 @@ namespace OSVR.ClientKit
 
         protected void InterfaceCallback(IntPtr userdata, ref TimeValue timestamp, ref PositionReport report)
         {
-            OnStateChanged(timestamp, report);
+            OnStateChanged(timestamp, report.sensor, report.xyz);
         } 
     }
 }

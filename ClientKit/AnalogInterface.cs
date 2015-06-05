@@ -35,7 +35,7 @@ namespace OSVR.ClientKit
     /// for example an analog trigger or one of the axes of
     /// a joystick.
     /// </summary>
-    public class AnalogInterface: InterfaceBase<AnalogReport, Double>
+    public class AnalogInterface: InterfaceBase<Double>
     {
 #if NET45
         [Obsolete("Use the GetAnalogInterface extension method on ClientContext instead.")]
@@ -58,7 +58,7 @@ namespace OSVR.ClientKit
 
         protected void InterfaceCallback(IntPtr userdata, ref TimeValue timestamp, ref AnalogReport report)
         {
-            OnStateChanged(timestamp, report);
+            OnStateChanged(timestamp, report.sensor, report.state);
         }
     }
 }

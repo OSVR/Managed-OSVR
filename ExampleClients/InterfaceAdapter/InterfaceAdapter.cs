@@ -37,7 +37,7 @@ namespace InterfaceAdapter
     /// The purpose of this class is to convert position reports from Vec3 to Vector3f.
     /// Note: for Vector3fPositionInterface, the report and state types are the same (Vector3f)
     /// </summary>
-    class Vector3fPositionInterface : InterfaceAdapter<PositionReport, Vector3f, Vec3, Vector3f>
+    class Vector3fPositionInterface : InterfaceAdapter<Vec3, Vector3f>
     {
         // note: in .net > 2, the preferred way is to create an extension method instead.
         public static Vector3fPositionInterface GetVector3fPositionInterface(ClientContext context, string path)
@@ -46,7 +46,9 @@ namespace InterfaceAdapter
             return new Vector3fPositionInterface(positionInterface);
         }
 
-        static Vector3f Convert(Vec3 sourceValue)
+        public Vector3fPositionInterface(IInterface<Vec3> iface) : base(iface) { }
+
+        override protected Vector3f Convert(Vec3 sourceValue)
         {
             return new Vector3f
             {
@@ -55,29 +57,18 @@ namespace InterfaceAdapter
                 Z = (float)sourceValue.z,
             };
         }
-
-        public Vector3fPositionInterface(IInterface<PositionReport, Vec3> iface) : base(iface) { }
-
-        protected override Vector3f ConvertReportValue(PositionReport sourceValue)
-        {
-            return Convert(sourceValue.xyz);
-        }
-
-        protected override Vector3f ConvertStateValue(Vec3 sourceValue)
-        {
-            return Convert(sourceValue);
-        }
     }
 
     class MainClass
     {
         // Position callback. Notice we're getting Vector3f reports, and not the native OSVR PositionReport (with Vec3 values).
-        public static void myPositionCallback(Object sender, TimeValue timestamp, Vector3f report)
+        public static void myPositionCallback(Object sender, TimeValue timestamp, Int32 sensor, Vector3f report)
         {
-            Console.WriteLine("Got POSITION report: Position = ({0}, {1}, {2})",
+            Console.WriteLine("Got POSITION report: Position = ({0}, {1}, {2}), Sensor = ({3})",
                 report.X,
                 report.Y,
-                report.Z);
+                report.Z,
+                sensor);
         }
 
         public static void Main(string[] args)

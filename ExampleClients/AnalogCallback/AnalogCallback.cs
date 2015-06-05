@@ -23,10 +23,11 @@ namespace AnalogCallback
 {
     class AnalogCallback
     {
-        static void analogTrigger_StateChanged(object sender, TimeValue timestamp, AnalogReport report)
+        static void analogTrigger_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Double report)
         {
-            Console.WriteLine("Got report: channel is {0}", report.state);
+            Console.WriteLine("Got report: channel is {0}, sensor is {1}", report, sensor);
         }
+
         static void Main(string[] args)
         {
             using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("org.opengoggles.exampleclients.managed.AnalogCallback"))

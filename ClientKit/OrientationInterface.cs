@@ -33,7 +33,7 @@ namespace OSVR.ClientKit
     /// <summary>
     /// Interface representing an orientation sensor.
     /// </summary>
-    public class OrientationInterface: InterfaceBase<OrientationReport, Quaternion>
+    public class OrientationInterface: InterfaceBase<Quaternion>
     {
 #if NET45
         [Obsolete("Use the GetOrientationInterface extension method on ClientContext instead.")]
@@ -56,7 +56,7 @@ namespace OSVR.ClientKit
 
         protected void InterfaceCallback(IntPtr userdata, ref TimeValue timestamp, ref OrientationReport report)
         {
-            OnStateChanged(timestamp, report);
+            OnStateChanged(timestamp, report.sensor, report.rotation);
         }
     }
 }

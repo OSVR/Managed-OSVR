@@ -25,7 +25,7 @@ namespace OSVR.ClientKit
     /// <summary>
     /// Delegate of the StateChanged event on IInterface."/>
     /// </summary>
-    public delegate void StateChangedHandler<T>(Object sender, TimeValue timestamp, T report);
+    public delegate void StateChangedHandler<T>(Object sender, TimeValue timestamp, Int32 sensor, T report);
 
     /// <summary>
     /// Used internally by InterfaceBase to pass the native method used to
@@ -59,11 +59,9 @@ namespace OSVR.ClientKit
     /// .Net interface for an OSVR interface. Provides methods for getting the current
     /// state of the interface and an event for when the interface receives a new report.
     /// </summary>
-    /// <typeparam name="TReport">The type of the interface report.
-    /// Example: OrientationReport for an orientation interface.</typeparam>
-    /// <typeparam name="TState">The type of the interface state.
+    /// <typeparam name="T">The type of the interface value.
     /// Example: Quaternion for an orientation interface.</typeparam>
-    public interface IInterface<TReport, TState> : IDisposable
+    public interface IInterface<T> : IDisposable
     {
         /// <summary>
         /// Initialize the interface and start producing events. 
@@ -76,31 +74,30 @@ namespace OSVR.ClientKit
         /// is recommended that you cache this state rather than call this method multiple times.
         /// </summary>
         /// <returns>The current state of the interface.</returns>
-        InterfaceState<TState> GetState();
+        InterfaceState<T> GetState();
 
         /// <summary>
         /// An event which is fired when the interface receives a new report. This usually
         /// occurs when the ClientContext is updated. Implementations MUST allow subscriptions
         /// to this event prior to Start.
         /// </summary>
-        event StateChangedHandler<TReport> StateChanged;
+        event StateChangedHandler<T> StateChanged;
     }
 
     /// <summary>
     /// Base class for interface wrappers.
     /// </summary>
-    /// <typeparam name="TReport">The type of the interface report.</typeparam>
-    /// <typeparam name="TState">The type of the state value.</typeparam>
-    public abstract class InterfaceBase<TReport, TState> : IInterface<TReport, TState>
+    /// <typeparam name="T">The type of the interface value.</typeparam>
+    public abstract class InterfaceBase<T> : IInterface<T>
     {
         protected Interface iface;
-        protected readonly GetStateFunc<TState> stateGetter;
-        // It might be possible to have a RegisterCallbackFunc<TReport> type
+        protected readonly GetStateFunc<T> stateGetter;
+        // It might be possible to have a RegisterCallbackFunc<T> type
         // here and implement Start generically, but I kept getting type errors
         // when referencing the native methods.
 
-        public InterfaceBase(Interface iface, 
-            GetStateFunc<TState> stateGetter)
+        public InterfaceBase(Interface iface,
+            GetStateFunc<T> stateGetter)
         {
             // Take ownership of the Interface instance.
             this.iface = iface;
@@ -110,30 +107,31 @@ namespace OSVR.ClientKit
         public string Path { get; private set; }
         public abstract void Start();
 
-        public virtual InterfaceState<TState> GetState()
+        public virtual InterfaceState<T> GetState()
         {
             TimeValue timestamp = default(TimeValue);
-            TState state = default(TState);
+            T state = default(T);
             stateGetter(this.iface.Handle, ref timestamp, ref state);
-            return new InterfaceState<TState>
+            return new InterfaceState<T>
             {
                 Timestamp = timestamp,
                 Value = state,
             };
         }
 
-        public event StateChangedHandler<TReport> StateChanged;
+        public event StateChangedHandler<T> StateChanged;
 
         /// <summary>
         /// Called by derived classes to invoke the StateChanged event.
         /// </summary>
         /// <param name="timestamp">The timestamp of the report.</param>
+        /// <param name="sensor">The native OSVR sensor ID.</param>
         /// <param name="report">The value of the interface report.</param>
-        protected virtual void OnStateChanged(TimeValue timestamp, TReport report)
+        protected virtual void OnStateChanged(TimeValue timestamp, Int32 sensor, T report)
         {
             if (StateChanged != null)
             {
-                StateChanged(this, timestamp, report);
+                StateChanged(this, timestamp, sensor, report);
             }
         }
 

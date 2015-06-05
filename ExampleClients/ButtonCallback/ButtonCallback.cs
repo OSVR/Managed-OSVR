@@ -23,9 +23,9 @@ namespace ButtonCallback
 {
     class ButtonCallback
     {
-        static void button1_StateChanged(object sender, TimeValue timestamp, ButtonReport report)
+        static void button1_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Byte report)
         {
-            Console.WriteLine("Got report: button is {0}", report.state == 1 ? "pressed" : "released");
+            Console.WriteLine("Got report: button from sensor {0} is {1}", sensor, report == ButtonInterface.Pressed ? "pressed" : "released");
         }
         static void Main(string[] args)
         {
