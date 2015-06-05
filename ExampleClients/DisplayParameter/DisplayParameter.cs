@@ -28,10 +28,9 @@ namespace DisplayParameter
             using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("org.opengoggles.exampleclients.managed.DisplayParameter"))
             {
                 string displayDescription = context.getStringParameter("/display");
-
+                var deviceDescription = DeviceDescriptor.Parse(displayDescription);
                 Console.WriteLine("Got value of /display:");
-                Console.WriteLine(displayDescription);
-
+                Console.WriteLine(deviceDescription.ToString());
                 Console.WriteLine("Library shut down; exiting.");
             }
         }
