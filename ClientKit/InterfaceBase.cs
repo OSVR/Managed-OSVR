@@ -73,8 +73,7 @@ namespace OSVR.ClientKit
 
         /// <summary>
         /// An event which is fired when the interface receives a new report. This usually
-        /// occurs when the ClientContext is updated. Implementations MUST allow subscriptions
-        /// to this event prior to Start.
+        /// occurs when the ClientContext is updated. Not gauranteed to be thread-safe.
         /// </summary>
         event StateChangedHandler<T> StateChanged;
     }
@@ -114,32 +113,25 @@ namespace OSVR.ClientKit
             };
         }
 
-		private bool started = false;
-		private object stateChangedLock = new Object();
+        private bool started = false;
         private event StateChangedHandler<T> stateChanged;
-		public event StateChangedHandler<T> StateChanged
-		{
-			add
-			{
-				lock(stateChangedLock)
-				{
-					stateChanged += value;
-					if (!started)
-					{
-						Start();
-						started = true;
-					}
-				}
-			}
+        public event StateChangedHandler<T> StateChanged
+        {
+            add
+            {
+                stateChanged += value;
+                if (!started)
+                {
+                    Start();
+                    started = true;
+                }
+            }
 
-			remove
-			{
-				lock(stateChangedLock)
-				{
-					stateChanged -= value;
-				}
-			}
-		}
+            remove
+            {
+                stateChanged -= value;
+            }
+        }
 
         /// <summary>
         /// Called by derived classes to invoke the StateChanged event.
