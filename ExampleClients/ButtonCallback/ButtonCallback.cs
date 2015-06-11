@@ -1,7 +1,7 @@
 ﻿/// Managed-OSVR binding
 ///
 /// <copyright>
-/// Copyright 2014 Sensics, Inc.
+/// Copyright 2014, 2015 Sensics, Inc. and contributors
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace ButtonCallback
         }
         static void Main(string[] args)
         {
-            using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("org.opengoggles.exampleclients.managed.ButtonCallback"))
+			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.ButtonCallback"))
             {
                 // This is just one of the paths: specifically, the Hydra's left
                 // controller's button labelled "1". More are in the docs and/or listed on
@@ -41,7 +41,6 @@ namespace ButtonCallback
 #endif
                 {
                     button1.StateChanged += button1_StateChanged;
-                    button1.Start();
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)
                     {

@@ -1,7 +1,7 @@
 /// Managed-OSVR binding
 ///
 /// <copyright>
-/// Copyright 2014 Sensics, Inc.
+/// Copyright 2014, 2015 Sensics, Inc. and contributors
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ namespace TrackerCallback
     {
         public static void Main(string[] args)
         {
-            using (ClientContext context = new ClientContext("org.opengoggles.exampleclients.managed.TrackerCallback"))
+			using (ClientContext context = new ClientContext("com.osvr.exampleclients.managed.TrackerCallback"))
             {
                 // This is just one of the paths. You can also use:
                 // /me/hands/right
@@ -74,17 +74,14 @@ namespace TrackerCallback
                     TrackerCallbacks callbacks = new TrackerCallbacks();
                     // The coordinate system is right-handed, withX to the right, Y up, and Z near.
                     var poseInterface = new PoseInterface(lefthand);
-                    poseInterface.Start();
                     poseInterface.StateChanged += TrackerCallbacks.myTrackerCallback;
 
                     // If you just want orientation
                     var orientationInterface = new OrientationInterface(lefthand);
-                    orientationInterface.Start();
                     orientationInterface.StateChanged += TrackerCallbacks.myOrientationCallback;
 
                     // or position
                     var positionInterface = new PositionInterface(lefthand);
-                    positionInterface.Start();
                     positionInterface.StateChanged += TrackerCallbacks.myPositionCallback;
 
                     // Pretend that this is your application's main loop

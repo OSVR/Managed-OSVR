@@ -1,7 +1,7 @@
 ﻿/// Managed-OSVR binding
 ///
 /// <copyright>
-/// Copyright 2014 Sensics, Inc.
+/// Copyright 2014, 2015 Sensics, Inc. and contributors
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ namespace OSVR.ClientKit
         public ButtonInterface(Interface iface) :
             base(iface, Interface.osvrGetButtonState) { }
 
-        public override void Start()
+		protected override void Start()
         {
             cb = new ButtonCallback(this.InterfaceCallback);
             Interface.osvrRegisterButtonCallback(iface.Handle, cb, IntPtr.Zero);

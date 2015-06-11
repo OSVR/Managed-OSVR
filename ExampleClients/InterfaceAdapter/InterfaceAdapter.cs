@@ -1,7 +1,7 @@
 /// Managed-OSVR binding
 ///
 /// <copyright>
-/// Copyright 2014 Sensics, Inc.
+/// Copyright 2014, 2015 Sensics, Inc. and contributors
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ namespace InterfaceAdapter
 
         public static void Main(string[] args)
         {
-            using (ClientContext context = new ClientContext("org.opengoggles.exampleclients.managed.TrackerCallback"))
+			using (ClientContext context = new ClientContext("com.osvr.exampleclients.managed.TrackerCallback"))
             {
                 // We're creating an adapter from the OSVR native PositionInterface to a custom interface where the
                 // report and state types are both Vector3f.

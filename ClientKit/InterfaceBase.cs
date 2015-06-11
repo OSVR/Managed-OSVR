@@ -64,11 +64,6 @@ namespace OSVR.ClientKit
     public interface IInterface<T> : IDisposable
     {
         /// <summary>
-        /// Initialize the interface and start producing events. 
-        /// </summary>
-        void Start();
-
-        /// <summary>
         /// Get the current state of the interface. Depending on the implementation, this
         /// may call into the native OSVR ClientKit DLL to get the current state, so it
         /// is recommended that you cache this state rather than call this method multiple times.
@@ -105,7 +100,7 @@ namespace OSVR.ClientKit
         }
 
         public string Path { get; private set; }
-        public abstract void Start();
+        protected abstract void Start();
 
         public virtual InterfaceState<T> GetState()
         {
@@ -119,7 +114,32 @@ namespace OSVR.ClientKit
             };
         }
 
-        public event StateChangedHandler<T> StateChanged;
+		private bool started = false;
+		private object stateChangedLock = new Object();
+        private event StateChangedHandler<T> stateChanged;
+		public event StateChangedHandler<T> StateChanged
+		{
+			add
+			{
+				lock(stateChangedLock)
+				{
+					stateChanged += value;
+					if (!started)
+					{
+						Start();
+						started = true;
+					}
+				}
+			}
+
+			remove
+			{
+				lock(stateChangedLock)
+				{
+					stateChanged -= value;
+				}
+			}
+		}
 
         /// <summary>
         /// Called by derived classes to invoke the StateChanged event.
@@ -129,9 +149,9 @@ namespace OSVR.ClientKit
         /// <param name="report">The value of the interface report.</param>
         protected virtual void OnStateChanged(TimeValue timestamp, Int32 sensor, T report)
         {
-            if (StateChanged != null)
+            if (stateChanged != null)
             {
-                StateChanged(this, timestamp, sensor, report);
+                stateChanged(this, timestamp, sensor, report);
             }
         }
 

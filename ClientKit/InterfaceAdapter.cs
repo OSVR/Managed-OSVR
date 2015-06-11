@@ -42,7 +42,6 @@ namespace OSVR.ClientKit
             // not thread safe.
             if (!started)
             {
-                this.iface.Start();
                 this.iface.StateChanged += iface_StateChanged;
                 started = true;
             }

@@ -1,7 +1,7 @@
 ﻿/// Managed-OSVR binding
 ///
 /// <copyright>
-/// Copyright 2014 Sensics, Inc.
+/// Copyright 2014, 2015 Sensics, Inc. and contributors
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ namespace AnalogCallback
 
         static void Main(string[] args)
         {
-            using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("org.opengoggles.exampleclients.managed.AnalogCallback"))
+			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.AnalogCallback"))
             {
                 // This is just one of the paths: specifically, the Hydra's left
                 // controller's analog trigger. More are in the docs and/or listed on
@@ -42,7 +42,6 @@ namespace AnalogCallback
 #endif
                 {
                     analogTrigger.StateChanged += analogTrigger_StateChanged;
-                    analogTrigger.Start();
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)
                     {
