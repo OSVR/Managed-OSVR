@@ -1,4 +1,4 @@
-﻿/// Managed-OSVR binding
+/// Managed-OSVR binding
 ///
 /// <copyright>
 /// Copyright 2014, 2015 Sensics, Inc. and contributors
@@ -16,35 +16,45 @@
 /// limitations under the License.
 /// </copyright>
 
-using System;
+﻿using System;
 using OSVR.ClientKit;
 
-namespace ButtonCallback
+namespace ButtonState
 {
-    class ButtonCallback
+    class MainClass
     {
-        static void button1_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Byte report)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Got report: button from sensor {0} is {1}", sensor, report == ButtonInterface.Pressed ? "pressed" : "released");
-        }
-        static void Main(string[] args)
-        {
-			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.ButtonCallback"))
+			using (ClientContext context = new ClientContext("com.osvr.exampleclients.managed.TrackerCallback"))
             {
-                // This is just one of the paths: specifically, the Hydra's left
-                // controller's button labelled "1". More are in the docs and/or listed on
-                // startup
 #if NET20
                 using (var button1 = ButtonInterface.GetInterface(context, "/controller/left/1"))
+                using (var button2 = ButtonInterface.GetInterface(context, "/controller/left/2"))
 #else
                 using (var button1 = context.GetButtonInterface("/controller/left/1"))
+                using (var button2 = context.GetButtonInterface("/controller/left/2"))
 #endif
                 {
-                    button1.StateChanged += button1_StateChanged;
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)
                     {
                         context.update();
+
+                        // getting the current state calls into the native DLL, so
+                        // try to get the state only once per frame.
+                        var button1State = button1.GetState();
+                        var button2State = button2.GetState();
+                        if (button1State.Value == ButtonInterface.Pressed)
+                        {
+                            Console.WriteLine("Pressing button 1!");
+                        }
+
+                        // re-using button1State
+                        if(button1State.Value == ButtonInterface.Pressed
+                            && button2State.Value == ButtonInterface.Pressed)
+                        {
+                            Console.WriteLine("Pressing both button 1 and 2!");
+                        }
                     }
 
                     Console.WriteLine("Library shut down; exiting.");

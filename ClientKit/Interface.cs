@@ -1,4 +1,21 @@
-﻿using Microsoft.Win32.SafeHandles;
+﻿/// Managed-OSVR binding
+///
+/// <copyright>
+/// Copyright 2014, 2015 Sensics, Inc. and contributors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// </copyright>
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
@@ -71,10 +88,25 @@ namespace OSVR
             public extern static Byte osvrRegisterAnalogCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] AnalogCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            static public extern Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
+            public extern static Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            static public extern Byte osvrClientFreeInterface(IntPtr iface);
+            public extern static Byte osvrGetPoseState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Pose3 state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetPositionState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec3 state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetOrientationState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Quaternion state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetButtonState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Byte state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetAnalogState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Double state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrClientFreeInterface(IntPtr iface);
 
             #endregion
 
@@ -83,6 +115,11 @@ namespace OSVR
             public Interface(SafeClientInterfaceHandle iface)
             {
                 this.m_interface = iface;
+            }
+
+            internal SafeClientInterfaceHandle Handle
+            {
+                get { return m_interface; }
             }
 
             /// @brief Register a callback for some report type.

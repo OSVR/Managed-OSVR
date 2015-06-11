@@ -1,7 +1,7 @@
 ﻿/// Managed-OSVR binding
 ///
 /// <copyright>
-/// Copyright 2014 Sensics, Inc.
+/// Copyright 2014, 2015 Sensics, Inc. and contributors
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -23,22 +23,25 @@ namespace AnalogCallback
 {
     class AnalogCallback
     {
-        static void myAnalogCallback(IntPtr userdata, ref TimeValue timestamp, ref AnalogReport report)
+        static void analogTrigger_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Double report)
         {
-            Console.WriteLine("Got report: channel is {0}", report.state);
+            Console.WriteLine("Got report: channel is {0}, sensor is {1}", report, sensor);
         }
+
         static void Main(string[] args)
         {
-            using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("org.opengoggles.exampleclients.managed.AnalogCallback"))
+			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.AnalogCallback"))
             {
                 // This is just one of the paths: specifically, the Hydra's left
                 // controller's analog trigger. More are in the docs and/or listed on
                 // startup
-                using (Interface analogTrigger = context.getInterface("/controller/left/trigger"))
+#if NET20
+                using (var analogTrigger = AnalogInterface.GetInterface(context, "/controller/left/trigger"))
+#else
+                using (var analogTrigger = context.GetAnalogInterface("/controller/left/trigger"))
+#endif
                 {
-                    OSVR.ClientKit.AnalogCallback mycb = new OSVR.ClientKit.AnalogCallback(myAnalogCallback);
-                    analogTrigger.registerCallback(mycb, IntPtr.Zero);
-
+                    analogTrigger.StateChanged += analogTrigger_StateChanged;
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)
                     {
