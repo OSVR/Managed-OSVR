@@ -84,71 +84,57 @@ namespace OSVR
 
             #region Support for locating native libraries
 
-#if !MANAGED_OSVR_INTERNAL_PINVOKE
-
-            [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            private static extern bool SetDllDirectory(string lpPathName);
-
-#endif
-
             /// <summary>
-            /// Static constructor - Try finding the right path for the p/invoked DLL before p/invoke tries to.
+            /// Try finding the right path for the p/invoked DLLs before p/invoke tries to.
             /// </summary>
-            static ClientContext()
+            static public void PreloadNativeLibraries()
             {
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
-                var path = GetNativeLibraryDir();
-                System.Diagnostics.Debug.WriteLine("[OSVR] ClientKit DLL directory: " + path);
-                // @todo cross-platform this: can we change the name of the pinvoked native module or something? Right now we just catch and ignore the p/invoke exception here.
-                try
-                {
-                    SetDllDirectory(path);
-                }
-                catch (DllNotFoundException e)
-                {
-                    System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] Failed to set DLL directory: {0}", e));
-                }
-#endif
-            }
-
-#if !MANAGED_OSVR_INTERNAL_PINVOKE
-
-            static private string GetNativeLibraryDir()
-            {
+                String path;
                 // This line based on http://stackoverflow.com/a/864497/265522
                 var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
                 var assemblyPath = Path.GetDirectoryName(assembly);
                 System.Diagnostics.Debug.WriteLine("[OSVR] ClientKit assembly directory: " + assemblyPath);
                 if (IntPtr.Size == 8)
                 {
-                    return new PathChecker(assemblyPath).Check("x86_64").Check("x64").Check("64").Result;
+                    path = new PathChecker(assemblyPath).Check("x86_64").Check("x64").Check("64").Result;
                 }
                 else
                 {
-                    return new PathChecker(assemblyPath).Check("x86").Check("32").Result;
+                    path = new PathChecker(assemblyPath).Check("x86").Check("32").Result;
                 }
+                if (path.Length > 0)
+                {
+                    System.Diagnostics.Debug.WriteLine("[OSVR] Found ClientKit native libraries in directory: " + path);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[OSVR] Could not preload ClientKit native libraries");
+                }
+#endif
             }
+
+#if !MANAGED_OSVR_INTERNAL_PINVOKE
 
             private class PathChecker
             {
+                [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+                private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
+
                 public PathChecker(string path)
                 {
-                    AssemblyPath = path; DllPath = path;
+                    AssemblyPath = path;
+                    CheckDir("");
+                    CheckDir(path);
                 }
 
                 public PathChecker Check(string suffix)
                 {
-                    if (FoundOne)
+                    if (!KeepTrying)
                     {
                         return this;
                     }
-                    var pathSuffixed = Path.Combine(AssemblyPath, suffix);
-                    if (Directory.Exists(pathSuffixed))
-                    {
-                        DllPath = pathSuffixed;
-                        FoundOne = true;
-                    }
+                    CheckDir(Path.Combine(AssemblyPath, suffix));
                     return this;
                 }
 
@@ -160,9 +146,68 @@ namespace OSVR
                     }
                 }
 
+                private void CheckDir(string dir)
+                {
+                    if (!KeepTrying)
+                    {
+                        return;
+                    }
+                    if (CheckDir(dir, "", ".dll") || CheckDir(dir, "lib", ".so"))
+                    {
+                        DllPath = dir;
+                        KeepTrying = false;
+                    }
+                }
+
+                private bool CheckDir(string dir, string prefix, string suffix)
+                {
+                    if (!KeepTrying)
+                    {
+                        return false;
+                    }
+                    bool success = true;
+                    // @todo cross-platform this: can we change the name
+                    // of the pinvoked native module or something? Right
+                    // now we just catch and ignore the p/invoke
+                    // exception here.
+                    try
+                    {
+                        foreach (var lib in NativeLibs)
+                        {
+                            var libName = produceLibPath(dir, prefix, suffix, lib);
+                            System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] Trying to LoadLibrary: {0}", libName));
+                            var result = LoadLibrary(libName);
+                            if (result == IntPtr.Zero)
+                            {
+                                // Later ones depend on earlier ones, so if one fails, this was not the right approach.
+                                success = false;
+                                break;
+                            }
+                        }
+                    }
+                    catch (DllNotFoundException e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] Caught exception trying to LoadLibrary: {0}", e));
+                        success = false;
+                        KeepTrying = false;
+                    }
+                    return success;
+                }
+
+                private String produceLibPath(string dir, string prefix, string suffix, string lib)
+                {
+                    return dir.Length > 0 ? Path.Combine(dir, prefix + lib + suffix) : prefix + lib;
+                }
+
+                /// <summary>
+                /// Native library names (without lib, .dll, or .so), in
+                /// order of increasing dependency - that is, each
+                /// library may only depend on libraries earlier in the list.
+                /// </summary>
+                private String[] NativeLibs = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit" };
                 private string AssemblyPath;
                 private string DllPath;
-                private bool FoundOne;
+                private bool KeepTrying = true;
             }
 
 #endif
