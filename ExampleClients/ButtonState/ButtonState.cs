@@ -25,6 +25,7 @@ namespace ButtonState
     {
         public static void Main(string[] args)
         {
+            ClientContext.PreloadNativeLibraries();
 			using (ClientContext context = new ClientContext("com.osvr.exampleclients.managed.TrackerCallback"))
             {
 #if NET20

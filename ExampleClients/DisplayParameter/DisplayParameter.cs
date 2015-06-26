@@ -25,6 +25,7 @@ namespace DisplayParameter
     {
         static void Main(string[] args)
         {
+            ClientContext.PreloadNativeLibraries();
 			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.DisplayParameter"))
             {
                 string displayDescription = context.getStringParameter("/display");
