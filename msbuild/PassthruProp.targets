@@ -4,12 +4,14 @@
 
   <!-- These are the properties that get passed through to all builds. -->
   <PropertyGroup>
-    <!--<PassthruProp Condition=" '$(PostImportFile)' != '' ">$(PassthruProp);PostImportFile=$(PostImportFile)</PassthruProp>-->
     <PassthruProp Condition=" '$(NativeRoot)' != '' ">$(PassthruProp);NativeRoot=$(NativeRoot)</PassthruProp>
     <PassthruProp Condition=" '$(NativeRoot32)' != '' ">$(PassthruProp);NativeRoot32=$(NativeRoot32)</PassthruProp>
     <PassthruProp Condition=" '$(NativeRoot64)' != '' ">$(PassthruProp);NativeRoot32=$(NativeRoot64)</PassthruProp>
     <PassthruProp Condition=" '$(NativeOutputSuffix32)' != '' ">$(PassthruProp);NativeOutputSuffix32=$(NativeOutputSuffix32)</PassthruProp>
     <PassthruProp Condition=" '$(NativeOutputSuffix64)' != '' ">$(PassthruProp);NativeOutputSuffix32=$(NativeOutputSuffix64)</PassthruProp>
-    <PassthruProp Condition=" '$(OutputPath)' != '' ">$(PassthruProp);OutputPath=$(OutputPath)</PassthruProp>
+    <PassthruProp Condition=" '$(OutputPath)' != '' ">$(PassthruProp);OutputPath="$(OutputPath)"</PassthruProp>
+    <PassthruProp Condition=" '$(BuildRoot)' != '' ">$(PassthruProp);BuildRoot="$(BuildRoot)"</PassthruProp>
+    <!-- strip a leading semicolon -->
+    <PassthruProp Condition=" $(PassthruProp.StartsWith(';')) ">$(PassthruProp.Remove(0, 1))</PassthruProp>
   </PropertyGroup>
 </Project>

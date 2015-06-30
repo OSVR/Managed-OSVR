@@ -30,12 +30,12 @@
   <Target Name="ClientKit">
     <Message Text="PassthruProp=$(PassthruProp)" />
     <MSBuild Projects="$(ClientKitProj)"
-             Properties="Configuration=%(BuildConfiguration.Identity)$(PassthruProp)"
+             Properties="Configuration=%(BuildConfiguration.Identity);$(PassthruProp)"
              Targets="Build" />
   </Target>
   <Target Name="Examples">
     <MSBuild Projects="@(Examples)"
-             Properties="Configuration=%(BuildConfiguration.Identity)$(PassthruProp)"
+             Properties="Configuration=%(BuildConfiguration.Identity);$(PassthruProp)"
              Targets="Build" />
   </Target>
 
@@ -43,7 +43,7 @@
 
   <Target Name="Clean">
     <MSBuild Projects="$(ClientKitProj);@(Examples)"
-             Properties="Configuration=%(BuildConfiguration.Identity)$(PassthruProp)"
+             Properties="Configuration=%(BuildConfiguration.Identity);$(PassthruProp)"
              Targets="Clean" />
   </Target>
 </Project>
