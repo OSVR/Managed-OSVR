@@ -1,53 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ClientKitProj>ClientKit\ClientKit.csproj</ClientKitProj>
-  </PropertyGroup>
-  <ItemGroup Condition=" '$(Configuration)' == '' ">
-    <BuildConfiguration Include="Release20;Release45">
-      <Flavor>Release</Flavor>
-    </BuildConfiguration>
-    <BuildConfiguration Include="Debug20;Debug45">
-      <Flavor>Debug</Flavor>
-    </BuildConfiguration>
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' != '' ">
-    <BuildConfiguration Include="$(Configuration)" />
-  </ItemGroup>
-
-  <!-- These are the properties that get passed through to all builds. -->
-  <PropertyGroup>
-    <!--<PassthruProp Condition=" '$(PostImportFile)' != '' ">$(PassthruProp);PostImportFile=$(PostImportFile)</PassthruProp>-->
-    <PassthruProp Condition=" '$(NativeRoot)' != '' ">$(PassthruProp);NativeRoot=$(NativeRoot)</PassthruProp>
-    <PassthruProp Condition=" '$(NativeRoot32)' != '' ">$(PassthruProp);NativeRoot32=$(NativeRoot32)</PassthruProp>
-    <PassthruProp Condition=" '$(NativeRoot64)' != '' ">$(PassthruProp);NativeRoot32=$(NativeRoot64)</PassthruProp>
-    <PassthruProp Condition=" '$(NativeOutputSuffix32)' != '' ">$(PassthruProp);NativeOutputSuffix32=$(NativeOutputSuffix32)</PassthruProp>
-    <PassthruProp Condition=" '$(NativeOutputSuffix64)' != '' ">$(PassthruProp);NativeOutputSuffix32=$(NativeOutputSuffix64)</PassthruProp>
-    <PassthruProp Condition=" '$(OutputPath)' != '' ">$(PassthruProp);OutputPath=$(OutputPath)</PassthruProp>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Examples Include="ExampleClients\**\*.csproj" />
-  </ItemGroup>
-
-  <Target Name="ClientKit">
-    <Message Text="PassthruProp=$(PassthruProp)" />
-    <MSBuild Projects="$(ClientKitProj)"
-             Properties="Configuration=%(BuildConfiguration.Identity)$(PassthruProp)"
-             Targets="Build" />
-  </Target>
-  <Target Name="Examples">
-    <MSBuild Projects="@(Examples)"
-             Properties="Configuration=%(BuildConfiguration.Identity)$(PassthruProp)"
-             Targets="Build" />
-  </Target>
-
-  <Target Name="Build" DependsOnTargets="ClientKit;Examples" />
-
-  <Target Name="Clean">
-    <MSBuild Projects="$(ClientKitProj);@(Examples)"
-             Properties="Configuration=%(BuildConfiguration.Identity)$(PassthruProp)"
-             Targets="Clean" />
-  </Target>
+  <!-- This file is basically a glorified shortcut/alias -->
+  <Import Project="$(MSBuildThisFileDirectory)msbuild\Solution.proj" />
 </Project>

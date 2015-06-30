@@ -2,9 +2,8 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{9AB9F53D-1F42-4045-8DFC-9D389D44BB35}</ProjectGuid>
-    <ManagedOSVRRoot>$(MSBuildProjectDirectory)\..</ManagedOSVRRoot>
   </PropertyGroup>
-  <Import Project="$(ManagedOSVRRoot)\MultiFramework.targets" />
+  <Import Project="$(MSBuildProjectDirectory)\..\msbuild\MultiFramework.targets" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>OSVR.ClientKit</RootNamespace>
@@ -43,7 +42,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release20' ">
   </PropertyGroup>
-  <Import Project="$(ManagedOSVRRoot)\CopyNativeLibraries.targets" />
+  <Import Project="$(MSBuildManagedOSVR)\CopyNativeLibraries.targets" />
   <Target Name="AfterBuild" DependsOnTargets="CopyNativeLibraries">
   </Target>
 </Project>

@@ -6,9 +6,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AnalogCallback</RootNamespace>
     <AssemblyName>AnalogCallback</AssemblyName>
-    <ManagedOSVRRoot>$(MSBuildProjectDirectory)\..\..</ManagedOSVRRoot>
   </PropertyGroup>
-  <Import Project="$(ManagedOSVRRoot)\MultiFramework.targets" />
+  <Import Project="$(MSBuildProjectDirectory)\..\..\msbuild\MultiFramework.targets" />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
@@ -33,7 +32,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release45' "></PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release20' "></PropertyGroup>
 
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

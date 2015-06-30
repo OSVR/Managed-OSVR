@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)Common.targets" Condition=" '$(ManagedOSVRCommon)' == '' "/>
   <!-- Set up default source locations for native libraries, can override at any level -->
   <PropertyGroup>
     <!-- Source locations -->
@@ -11,8 +12,11 @@
     <NativeBinDir64 Condition=" '$(NativeBinDir64)' == '' ">$(NativeRoot64)\$(NativeBinSubdir)</NativeBinDir64>
 
     <!-- Output information/locations -->
-    <NativeOutputSuffix32 Condition=" '$(NativeOutputSuffix32)' == '' "></NativeOutputSuffix32> <!-- Is this problematically recursive, or OK? -->
+    <NativeOutputSuffix32 Condition=" '$(NativeOutputSuffix32)' == '' "></NativeOutputSuffix32>
     <NativeOutputSuffix64 Condition=" '$(NativeOutputSuffix64)' == '' ">x64</NativeOutputSuffix64>
+  </PropertyGroup>
+  <!-- Computed output information - cannot override directly, override things above -->
+  <PropertyGroup>
     <OutputPath32>$(OutputPath)</OutputPath32>
     <OutputPath32 Condition=" '$(NativeOutputSuffix32)' != '' ">$(OutputPath)\$(NativeOutputSuffix32)</OutputPath32> <!-- Only insert a backslash if we actually have a suffix -->
     <OutputPath64>$(OutputPath)</OutputPath64>
