@@ -30,6 +30,7 @@ namespace AnalogCallback
 
         static void Main(string[] args)
         {
+            ClientContext.PreloadNativeLibraries();
 			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.AnalogCallback"))
             {
                 // This is just one of the paths: specifically, the Hydra's left

@@ -84,85 +84,223 @@ namespace OSVR
 
             #region Support for locating native libraries
 
-#if !MANAGED_OSVR_INTERNAL_PINVOKE
-
-            [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            private static extern bool SetDllDirectory(string lpPathName);
-
-#endif
-
             /// <summary>
-            /// Static constructor - Try finding the right path for the p/invoked DLL before p/invoke tries to.
+            /// Try finding the right path for the p/invoked DLLs before p/invoke tries to.
             /// </summary>
-            static ClientContext()
+            static public void PreloadNativeLibraries()
             {
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
-                var path = GetNativeLibraryDir();
-                System.Diagnostics.Debug.WriteLine("[OSVR] ClientKit DLL directory: " + path);
-                // @todo cross-platform this: can we change the name of the pinvoked native module or something? Right now we just catch and ignore the p/invoke exception here.
-                try
-                {
-                    SetDllDirectory(path);
-                }
-                catch (DllNotFoundException e)
-                {
-                    System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] Failed to set DLL directory: {0}", e));
-                }
-#endif
-            }
 
-#if !MANAGED_OSVR_INTERNAL_PINVOKE
-
-            static private string GetNativeLibraryDir()
-            {
                 // This line based on http://stackoverflow.com/a/864497/265522
                 var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
                 var assemblyPath = Path.GetDirectoryName(assembly);
                 System.Diagnostics.Debug.WriteLine("[OSVR] ClientKit assembly directory: " + assemblyPath);
+                LibraryPathAttempter attempt;
                 if (IntPtr.Size == 8)
                 {
-                    return new PathChecker(assemblyPath).Check("x86_64").Check("x64").Check("64").Result;
+                    attempt = new LibraryPathAttempter(assemblyPath).Attempt("x86_64").Attempt("x64").Attempt("64");
                 }
                 else
                 {
-                    return new PathChecker(assemblyPath).Check("x86").Check("32").Result;
+                    attempt = new LibraryPathAttempter(assemblyPath).Attempt("x86").Attempt("32");
                 }
+                if (attempt.Success)
+                {
+                    if (attempt.Dir.Length > 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[OSVR] Loaded ClientKit native libraries from directory: " + attempt.Dir);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("[OSVR] Loaded ClientKit native libraries from default search path.");
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[OSVR] Could not preload ClientKit native libraries");
+                }
+#endif
             }
 
-            private class PathChecker
+#if !MANAGED_OSVR_INTERNAL_PINVOKE
+
+            private class LibraryPathAttempter
             {
-                public PathChecker(string path)
+                [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+                private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
+
+                /// <summary>
+                /// Constructor - includes an "attempt" using the
+                /// default search path and the assembly path
+                /// </summary>
+                /// <param name="dir">Directory containing this assembly.</param>
+                public LibraryPathAttempter(string dir)
                 {
-                    AssemblyPath = path; DllPath = path;
+                    AssemblyDir = dir;
+                    AttemptDirectory("");
+                    AttemptDirectory(dir);
                 }
 
-                public PathChecker Check(string suffix)
+                /// <summary>
+                /// Chained method call to provide a subdirectory of the
+                /// assembly directory to try to load the native
+                /// libraries from
+                /// </summary>
+                /// <param name="pathSuffix">
+                /// Name of subdirectory of the assembly directory.
+                /// </param>
+                /// <returns>
+                /// This object for additional chained calls
+                /// </returns>
+                public LibraryPathAttempter Attempt(string pathSuffix)
                 {
-                    if (FoundOne)
+                    if (!KeepTrying)
                     {
                         return this;
                     }
-                    var pathSuffixed = Path.Combine(AssemblyPath, suffix);
-                    if (Directory.Exists(pathSuffixed))
-                    {
-                        DllPath = pathSuffixed;
-                        FoundOne = true;
-                    }
+                    AttemptDirectory(Path.Combine(AssemblyDir, pathSuffix));
                     return this;
                 }
 
-                public string Result
+                /// <summary>
+                /// The directory that we successfully loaded native
+                /// libraries from. An empty string may mean we failed
+                /// to load the libraries or we found them on the
+                /// default search path, see Success to disambiguate.
+                /// </summary>
+                public string Dir
                 {
                     get
                     {
-                        return DllPath;
+                        return DllDir;
                     }
                 }
 
-                private string AssemblyPath;
-                private string DllPath;
-                private bool FoundOne;
+                /// <summary>
+                /// Indicates whether or not we were able to pre-load the native libraries.
+                /// </summary>
+                public bool Success
+                {
+                    get
+                    {
+                        return LoadedSuccess;
+                    }
+                }
+
+                /// <summary>
+                /// Attempts to load native libraries from the given
+                /// directory. If successful, sets Result to dir.
+                /// </summary>
+                /// <param name="dir">
+                /// Base directory to try loading from - empty string
+                /// implies "default search path"
+                /// </param>
+                private void AttemptDirectory(string dir)
+                {
+                    if (!KeepTrying)
+                    {
+                        return;
+                    }
+                    if (AttemptDirectory(dir, "", ".dll") || AttemptDirectory(dir, "lib", ".so"))
+                    {
+                        DllDir = dir;
+                        LoadedSuccess = true;
+                        KeepTrying = false;
+                    }
+                }
+
+                /// <summary>
+                /// Attempts to load native libraries from the given
+                /// directory with the provided formula (prefix and
+                /// suffix), effectively dir + prefix + libname + suffix
+                /// </summary>
+                /// <param name="dir">
+                /// Base directory to try loading from - empty string
+                /// implies "default search path"
+                /// </param>
+                /// <param name="prefix">
+                /// The string to prepend to the library's canonical
+                /// name to get the filename
+                /// </param>
+                /// <param name="suffix">
+                /// The string to append to the end of the library's
+                /// canonical name to get the filename - essentially the extension.
+                /// </param>
+                /// <returns>
+                /// true if all libraries were successfully loaded.
+                /// </returns>
+                private bool AttemptDirectory(string dir, string prefix, string suffix)
+                {
+                    if (!KeepTrying)
+                    {
+                        return false;
+                    }
+                    bool success = true;
+                    // @todo cross-platform this: can we change the name
+                    // of the pinvoked native module or something? Right
+                    // now we just catch and ignore the p/invoke
+                    // exception here.
+                    try
+                    {
+                        foreach (var lib in NativeLibs)
+                        {
+                            var libName = ProduceLibPath(dir, prefix, suffix, lib);
+                            System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] Trying to LoadLibrary: {0}", libName));
+                            var result = LoadLibrary(libName);
+                            if (result == IntPtr.Zero)
+                            {
+                                // Later ones depend on earlier ones, so if one fails, this was not the right approach.
+                                success = false;
+                                break;
+                            }
+                        }
+                    }
+                    catch (DllNotFoundException e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] Caught exception trying to LoadLibrary: {0}", e));
+                        success = false;
+                        KeepTrying = false;
+                    }
+                    return success;
+                }
+
+                /// <summary>
+                /// Combine a base directory, prefix, suffix, and
+                /// library canonical name into a path to pass to
+                /// LoadLibrary, specially handling the case of empty
+                /// base directory for default search path (no path
+                /// delimiter or extension/suffix)
+                /// </summary>
+                /// <param name="dir">
+                /// Base directory to try loading from - empty string
+                /// implies "default search path"
+                /// </param>
+                /// <param name="prefix">
+                /// The string to prepend to the library's canonical
+                /// name to get the filename
+                /// </param>
+                /// <param name="suffix">
+                /// The string to append to the end of the library's
+                /// canonical name to get the filename - essentially the extension.
+                /// </param>
+                /// <param name="lib">The library's canonical name</param>
+                /// <returns>A library name or path to pass to LoadLibrary</returns>
+                private static String ProduceLibPath(string dir, string prefix, string suffix, string lib)
+                {
+                    return dir.Length > 0 ? Path.Combine(dir, prefix + lib + suffix) : prefix + lib;
+                }
+
+                /// <summary>
+                /// Native library names (without lib, .dll, or .so), in
+                /// order of increasing dependency - that is, each
+                /// library may only depend on libraries earlier in the list.
+                /// </summary>
+                private String[] NativeLibs = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit" };
+
+                private string AssemblyDir;
+                private string DllDir;
+                private bool LoadedSuccess = false;
+                private bool KeepTrying = true;
             }
 
 #endif

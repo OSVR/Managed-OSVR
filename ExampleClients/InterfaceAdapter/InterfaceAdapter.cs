@@ -73,6 +73,7 @@ namespace InterfaceAdapter
 
         public static void Main(string[] args)
         {
+            ClientContext.PreloadNativeLibraries();
 			using (ClientContext context = new ClientContext("com.osvr.exampleclients.managed.TrackerCallback"))
             {
                 // We're creating an adapter from the OSVR native PositionInterface to a custom interface where the
