@@ -2,39 +2,62 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Set up default source locations for native libraries, can override at any level -->
   <PropertyGroup>
-    <NativeRoot Condition=" '$(NativeRoot)' == ''">$(ManagedOSVRRoot)\osvr-core-snapshots</NativeRoot>
-    <NativeSubdir Condition=" '$(NativeSubdir)' == ''">bin</NativeSubdir>
-    <NativeRoot32 Condition=" '$(NativeRoot32)' == ''">$(NativeRoot)\32</NativeRoot32>
-    <NativeRoot64 Condition=" '$(NativeRoot64)' == ''">$(NativeRoot)\64</NativeRoot64>
-    <NativeDir32 Condition=" '$(NativeDir32)' == ''">$(NativeRoot32)\$(NativeSubdir)</NativeDir32>
-    <NativeDir64 Condition=" '$(NativeDir64)' == ''">$(NativeRoot64)\$(NativeSubdir)</NativeDir64>
-    <OutputPath32>$(OutputPath)</OutputPath32>
-    <OutputPath64>$(OutputPath)\x64</OutputPath64>
+    <!-- Source locations -->
+    <NativeRoot Condition=" '$(NativeRoot)' == '' ">$(ManagedOSVRRoot)\osvr-core-snapshots</NativeRoot>
+    <NativeBinSubdir Condition=" '$(NativeBinSubdir)' == '' ">bin</NativeBinSubdir>
+    <NativeRoot32 Condition=" '$(NativeRoot32)' == '' ">$(NativeRoot)\32</NativeRoot32>
+    <NativeRoot64 Condition=" '$(NativeRoot64)' == '' ">$(NativeRoot)\64</NativeRoot64>
+    <NativeBinDir32 Condition=" '$(NativeBinDir32)' == '' ">$(NativeRoot32)\$(NativeBinSubdir)</NativeBinDir32>
+    <NativeBinDir64 Condition=" '$(NativeBinDir64)' == '' ">$(NativeRoot64)\$(NativeBinSubdir)</NativeBinDir64>
+
+    <!-- Output information/locations -->
+    <NativeOutputSuffix32 Condition=" '$(NativeOutputSuffix32)' == '' "></NativeOutputSuffix32> <!-- Is this problematically recursive, or OK? -->
+    <NativeOutputSuffix64 Condition=" '$(NativeOutputSuffix64)' == ''">x64</NativeOutputSuffix64>
+    <OutputPath32 Condition=" '$(NativeOutputSuffix32)' == '' ">$(OutputPath)</OutputPath32>
+    <OutputPath32 Condition=" '$(NativeOutputSuffix32)' != '' ">$(OutputPath)\$(NativeOutputSuffix32)</OutputPath32> <!-- Only insert a backslash if we actually have a suffix -->
+    <OutputPath64 Condition=" '$(NativeOutputSuffix64)' == '' ">$(OutputPath)</OutputPath64>
+    <OutputPath64 Condition=" '$(NativeOutputSuffix64)' != '' ">$(OutputPath)\$(NativeOutputSuffix64)</OutputPath64> <!-- Only insert a backslash if we actually have a suffix -->
   </PropertyGroup>
   <ItemGroup>
-    <AvailableItemName Include="NativeLibrary32"/>
+    <AvailableItemName Include="NativeLibrary"/>
+    <AvailableItemName Include="NativeMisc"/>
     <AvailableItemName Include="NativeLibrary64"/>
-  </ItemGroup>
-  <!-- Native libraries to grab - a transform gets the equivalent for 64-bit -->
-  <ItemGroup>
-    <NativeLibrary32 Include="$(NativeDir32)\osvrClient.*;
-                     $(NativeDir32)\osvrClientKit.*;
-                     $(NativeDir32)\osvrCommon.*;
-                     $(NativeDir32)\osvrUtil.*;
-                     $(NativeDir32)\osvrClient.*;
-                     $(NativeDir32)\msvc*.*" />
+    <AvailableItemName Include="NativeLibraryMisc64"/>
   </ItemGroup>
   <ItemGroup>
-    <NativeLibrary64 Include="@(NativeLibrary32->'$(NativeDir64)\%(filename)%(extension)')" />
+    <!-- Native libraries to grab - a transform gets the equivalent for 64-bit -->
+    <NativeLibrary Include="$(NativeBinDir32)\osvrClient.*;
+                     $(NativeBinDir32)\osvrClientKit.*;
+                     $(NativeBinDir32)\osvrCommon.*;
+                     $(NativeBinDir32)\osvrUtil.*;
+                     $(NativeBinDir32)\osvrClient.*;
+                     $(NativeBinDir32)\msvc*.*">
+      <Bits>32</Bits>
+      <DestDir>$(OutputPath32)</DestDir>
+    </NativeLibrary>
+    <!-- Things like version, license, etc. -->
+    <NativeMisc Include="$(NativeRoot32)\*" >
+      <Bits>32</Bits>
+      <DestDir>$(OutputPath32)</DestDir>
+    </NativeMisc>
   </ItemGroup>
-  <Target Name="CopyNativeLibraries32" Inputs="@(NativeLibrary32)" Outputs="@(NativeLibrary32->'$(OutputPath32)\%(filename)%(extension)')">
-    <MakeDir Directories="$(OutputPath32)" />
-    <Copy SourceFiles="@(NativeLibrary32)"  DestinationFolder="$(OutputPath32)" SkipUnchangedFiles="true" />
+  <ItemGroup>
+    <NativeLibrary Include="@(NativeLibrary->'$(NativeBinDir64)\%(filename)%(extension)')">
+      <Bits>64</Bits>
+      <DestDir>$(OutputPath64)</DestDir>
+    </NativeLibrary>
+    <NativeMisc Include="@(NativeMisc->'$(NativeRoot64)\%(filename)%(extension)')">
+      <Bits>64</Bits>
+      <DestDir>$(OutputPath64)</DestDir>
+    </NativeMisc>
+  </ItemGroup>
+  <Target Name="CopyNativeLibraries" Inputs="@(NativeLibrary);@(NativeMisc)" Outputs="@(NativeLibrary->'%(DestDir)\%(filename)%(extension)');@(NativeMisc->'%(DestDir)\%(filename)%(extension)')">
+    <MakeDir Directories="$(OutputPath32);$(OutputPath64)" />
+
+    <Message Text="Libraries: @(NativeLibrary->'%(Bits): %(FullPath)')" Importance="high" />
+    <Copy SourceFiles="@(NativeLibrary)"  DestinationFolder="%(DestDir)" SkipUnchangedFiles="true" />
+
+    <Message Text="Misc files: @(NativeMisc->'%(Bits): %(FullPath)')" Importance="high" />
+    <Copy SourceFiles="@(NativeMisc)"  DestinationFolder="%(DestDir)" SkipUnchangedFiles="true" />
   </Target>
-  <Target Name="CopyNativeLibraries64" Inputs="@(NativeLibrary64)" Outputs="@(NativeLibrary64->'$(OutputPath64)\%(filename)%(extension)')">
-    <MakeDir Directories="$(OutputPath64)" />
-    <Message Text="64-bit libraries: @(NativeLibrary64)" Importance="high" />
-    <Copy SourceFiles="@(NativeLibrary64)" DestinationFolder="$(OutputPath64)" SkipUnchangedFiles="true" />
-  </Target>
-  <Target Name="CopyNativeLibraries" DependsOnTargets="CopyNativeLibraries32;CopyNativeLibraries64" />
 </Project>
