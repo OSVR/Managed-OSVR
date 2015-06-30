@@ -6,9 +6,9 @@
   <PropertyGroup>
     <PassthruProp Condition=" '$(NativeRoot)' != '' ">$(PassthruProp);NativeRoot=$(NativeRoot)</PassthruProp>
     <PassthruProp Condition=" '$(NativeRoot32)' != '' ">$(PassthruProp);NativeRoot32=$(NativeRoot32)</PassthruProp>
-    <PassthruProp Condition=" '$(NativeRoot64)' != '' ">$(PassthruProp);NativeRoot32=$(NativeRoot64)</PassthruProp>
+    <PassthruProp Condition=" '$(NativeRoot64)' != '' ">$(PassthruProp);NativeRoot64=$(NativeRoot64)</PassthruProp>
     <PassthruProp Condition=" '$(NativeOutputSuffix32)' != '' ">$(PassthruProp);NativeOutputSuffix32=$(NativeOutputSuffix32)</PassthruProp>
-    <PassthruProp Condition=" '$(NativeOutputSuffix64)' != '' ">$(PassthruProp);NativeOutputSuffix32=$(NativeOutputSuffix64)</PassthruProp>
+    <PassthruProp Condition=" '$(NativeOutputSuffix64)' != '' ">$(PassthruProp);NativeOutputSuffix64=$(NativeOutputSuffix64)</PassthruProp>
     <PassthruProp Condition=" '$(OutputPath)' != '' ">$(PassthruProp);OutputPath="$(OutputPath)"</PassthruProp>
     <PassthruProp Condition=" '$(BuildRoot)' != '' ">$(PassthruProp);BuildRoot="$(BuildRoot)"</PassthruProp>
     <!-- strip a leading semicolon -->
