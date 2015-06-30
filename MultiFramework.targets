@@ -58,10 +58,24 @@
     <!-- Default root directory -->
     <ManagedOSVRRoot Condition=" '$(ManagedOSVRRoot)' == '' ">$(MSBuildProjectDirectory)</ManagedOSVRRoot>
 
+  </PropertyGroup>
     <!-- Sets up build product locations. If the BuildRoot property is not specified (such as a VS IDE build) it is assumed to be a directory named build in the root of the repository. -->
-    <BuildRoot Condition=" '$(BuildRoot)' == '' ">$(ManagedOSVRRoot)\build</BuildRoot>
-    <OutputPath>$(BuildRoot)\bin\$(FrameworkString)\$(BaseConfiguration)</OutputPath>
-    <IntermediateOutputPath>$(BuildRoot)\obj\$(FrameworkString)\$(BaseConfiguration)</IntermediateOutputPath>
+  <Choose>
+    <When Condition=" '$(BuildRoot)' == '' ">
+      <PropertyGroup>
+        <BuildRoot>$(ManagedOSVRRoot)\build</BuildRoot>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(BuildRoot)' != '' ">
+      <PropertyGroup>
+      <BuildRoot>$(ManagedOSVRRoot)\$(BuildRoot)</BuildRoot>
+    </PropertyGroup>
+    </When>
+  </Choose>
+
+  <PropertyGroup>
+    <OutputPath Condition=" '$(OutputPath)' == '' ">$(BuildRoot)\bin\$(FrameworkString)\$(BaseConfiguration)</OutputPath>
+    <IntermediateOutputPath Condition=" '$(IntermediateOutputPath)' == '' ">$(BuildRoot)\obj\$(FrameworkString)\$(BaseConfiguration)</IntermediateOutputPath>
 
     <!-- Adds compile definitions that are the uppercased FrameworkString -->
     <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);NET$(TargetFrameworkBareVersion)</DefineConstants>

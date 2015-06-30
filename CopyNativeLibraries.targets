@@ -12,26 +12,25 @@
 
     <!-- Output information/locations -->
     <NativeOutputSuffix32 Condition=" '$(NativeOutputSuffix32)' == '' "></NativeOutputSuffix32> <!-- Is this problematically recursive, or OK? -->
-    <NativeOutputSuffix64 Condition=" '$(NativeOutputSuffix64)' == ''">x64</NativeOutputSuffix64>
-    <OutputPath32 Condition=" '$(NativeOutputSuffix32)' == '' ">$(OutputPath)</OutputPath32>
+    <NativeOutputSuffix64 Condition=" '$(NativeOutputSuffix64)' == '' ">x64</NativeOutputSuffix64>
+    <OutputPath32>$(OutputPath)</OutputPath32>
     <OutputPath32 Condition=" '$(NativeOutputSuffix32)' != '' ">$(OutputPath)\$(NativeOutputSuffix32)</OutputPath32> <!-- Only insert a backslash if we actually have a suffix -->
-    <OutputPath64 Condition=" '$(NativeOutputSuffix64)' == '' ">$(OutputPath)</OutputPath64>
+    <OutputPath64>$(OutputPath)</OutputPath64>
     <OutputPath64 Condition=" '$(NativeOutputSuffix64)' != '' ">$(OutputPath)\$(NativeOutputSuffix64)</OutputPath64> <!-- Only insert a backslash if we actually have a suffix -->
   </PropertyGroup>
   <ItemGroup>
     <AvailableItemName Include="NativeLibrary"/>
     <AvailableItemName Include="NativeMisc"/>
-    <AvailableItemName Include="NativeLibrary64"/>
-    <AvailableItemName Include="NativeLibraryMisc64"/>
   </ItemGroup>
   <ItemGroup>
     <!-- Native libraries to grab - a transform gets the equivalent for 64-bit -->
-    <NativeLibrary Include="$(NativeBinDir32)\osvrClient.*;
-                     $(NativeBinDir32)\osvrClientKit.*;
-                     $(NativeBinDir32)\osvrCommon.*;
-                     $(NativeBinDir32)\osvrUtil.*;
-                     $(NativeBinDir32)\osvrClient.*;
-                     $(NativeBinDir32)\msvc*.*">
+    <NativeLibrary Include="$(NativeBinDir32)\osvrClient.dll;
+                     $(NativeBinDir32)\osvrClientKit.dll;
+                     $(NativeBinDir32)\osvrCommon.dll;
+                     $(NativeBinDir32)\osvrUtil.dll;
+                     $(NativeBinDir32)\osvrClient.dll;
+                     $(NativeBinDir32)\msvcp120.dll;
+                     $(NativeBinDir32)\msvcr120.dll">
       <Bits>32</Bits>
       <DestDir>$(OutputPath32)</DestDir>
     </NativeLibrary>
@@ -51,13 +50,20 @@
       <DestDir>$(OutputPath64)</DestDir>
     </NativeMisc>
   </ItemGroup>
-  <Target Name="CopyNativeLibraries" Inputs="@(NativeLibrary);@(NativeMisc)" Outputs="@(NativeLibrary->'%(DestDir)\%(filename)%(extension)');@(NativeMisc->'%(DestDir)\%(filename)%(extension)')">
-    <MakeDir Directories="$(OutputPath32);$(OutputPath64)" />
 
-    <Message Text="Libraries: @(NativeLibrary->'%(Bits): %(FullPath)')" Importance="high" />
+  <Target Name="CopyNativeLibraries" Inputs="@(NativeLibrary);@(NativeMisc)" Outputs="$(OutputPath32);$(OutputPath64);@(NativeLibrary->'%(DestDir)\%(filename)%(extension)');@(NativeMisc->'%(DestDir)\%(filename)%(extension)')">
+    <Error Condition="!Exists('$(NativeRoot32)')" Text="Can't find the 32-bit native library root! NativeRoot32=$(NativeRoot32)" />
+    <Error Condition="!Exists('$(NativeBinDir32)')" Text="Can't find the 32-bit native library binary dir! NativeBinDir32=$(NativeBinDir32)" />
+    <Error Condition="!Exists('$(NativeRoot64)')" Text="Can't find the 64-bit native library root! NativeRoot64=$(NativeRoot64)" />
+    <Error Condition="!Exists('$(NativeBinDir64)')" Text="Can't find the 64-bit native library binary dir! NativeBinDir64=$(NativeBinDir64)" />
+
+    <MakeDir Directories="$(OutputPath32)" Condition="!Exists('$(OutputPath32)')" />
+    <MakeDir Directories="$(OutputPath64)" Condition="!Exists('$(OutputPath64)')" />
+
+    <Message Text="Libraries:%0A%0D@(NativeLibrary->'%(Bits): %(FullPath)', '%0A%0D')" Importance="high" />
     <Copy SourceFiles="@(NativeLibrary)"  DestinationFolder="%(DestDir)" SkipUnchangedFiles="true" />
 
-    <Message Text="Misc files: @(NativeMisc->'%(Bits): %(FullPath)')" Importance="high" />
+    <Message Text="Misc files:%0A%0D@(NativeMisc->'%(Bits): %(FullPath)', '%0A%0D')" Importance="high" />
     <Copy SourceFiles="@(NativeMisc)"  DestinationFolder="%(DestDir)" SkipUnchangedFiles="true" />
   </Target>
 </Project>

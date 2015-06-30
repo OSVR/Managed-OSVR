@@ -20,15 +20,16 @@ Instead of just "Debug" and "Release" configurations, there are "Debug45", "Rele
 Some MSBuild tweaking was involved in getting the multi-framework targeting and native library copying working. Though the build can produce a .NET 2.0 assembly, you'll need at least 4.0 and the corresponding MSBuild to execute these builds.
 
 If you prefer to exclusively use MSBuild, or want to build all variants at once, just run `msbuild Managed-OSVR.proj /target:<TARGET>` where `<TARGET>` is replaced by one of:
+
 - `ClientKit` - to just build the main assembly, in all four configurations.
 - `Examples` - to just build the examples, in all four configurations.
 - `Build` (or with the `/target` flag omitted - build everything in all configurations
 - `Clean` - clean all projects, all configurations.
 
-For command-line builds, the following properties (centralized in [`MultiFramework.targets`](MultiFramework.targets) and [`CopyNativeLibraries.targets`](CopyNativeLibraries.targets) may be interesting when building an individual project (likely don't work with the `Managed-OSVR.proj` superproject):
+For command-line builds, the following properties (centralized in [`MultiFramework.targets`](MultiFramework.targets) and [`CopyNativeLibraries.targets`](CopyNativeLibraries.targets) may be interesting (Note that the `Managed-OSVR.proj` superproject only supports the properties listed in `PassthruProp` within it, all of these included):
 
 - `Configuration` - A standard MSBuild property, but with the distinct meanings discussed above in Build Options, including automatically setting `TargetFrameworkVersion`
-- `BuildRoot` - The parent directory that will contain `bin` and `obj` - defaults to a directory named `build` in the repository root.
+- `BuildRoot` - The parent directory that will contain `bin` and `obj` - defaults to a directory named `build` in the repository root. Relative to the repository root.
 - `NativeRoot` - Defaults to the bundled `osvr-core-snapshots` directory, but you can point it to a similarly-laid-out alternate directory. If you look in the corresponding targets file, you'll see that you can override the locating of the native libraries additionally/instead at each level of granularity, to accommodate any sort of build environment.
 
 
