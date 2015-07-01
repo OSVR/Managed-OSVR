@@ -26,7 +26,7 @@ If you prefer to exclusively use MSBuild, or want to build all variants at once,
 - `Build` (or with the `/target` flag omitted - build everything in all configurations
 - `Clean` - clean all projects, all configurations.
 
-For command-line builds, the following properties (centralized in [`msbuild/MultiFramework.targets`](msbuild/MultiFramework.targets) and [`msbuild/CopyNativeLibraries.targets`](msbuild/CopyNativeLibraries.targets) may be interesting. Note that to pass things into the `Managed-OSVR.proj` superproject, you'll need to set those properties in an MSBuild file, passing the path as the property `PropFile`.
+For command-line builds, the following properties (centralized in [`msbuild/MultiFramework.targets`](msbuild/MultiFramework.targets) and [`msbuild/CopyNativeLibraries.targets`](msbuild/CopyNativeLibraries.targets) may be interesting. Note that to pass things into the `Managed-OSVR.proj` superproject, you'll need to set those properties in an MSBuild file, passing the path as the property `PropFile`. You can add the target `/t:CheckPropFile` to ensure that the build was able to find and use your `PropFile` - recommended.
 
 - `Configuration` - A standard MSBuild property, but with the distinct meanings discussed above in Build Options, including automatically setting `TargetFrameworkVersion`. This is the only property besides `PropFile` that can be passed to the superbuild and propagate successfully.
 - `BuildRoot` - The parent directory that will contain `bin` and `obj` - defaults to a directory named `build` in the repository root. Relative to the repository root.
