@@ -26,9 +26,9 @@ If you prefer to exclusively use MSBuild, or want to build all variants at once,
 - `Build` (or with the `/target` flag omitted - build everything in all configurations
 - `Clean` - clean all projects, all configurations.
 
-For command-line builds, the following properties (centralized in [`MultiFramework.targets`](MultiFramework.targets) and [`CopyNativeLibraries.targets`](CopyNativeLibraries.targets) may be interesting (Note that the `Managed-OSVR.proj` superproject only supports the properties listed in `PassthruProp` within it, all of these included):
+For command-line builds, the following properties (centralized in [`msbuild/MultiFramework.targets`](msbuild/MultiFramework.targets) and [`msbuild/CopyNativeLibraries.targets`](msbuild/CopyNativeLibraries.targets) may be interesting. Note that to pass things into the `Managed-OSVR.proj` superproject, you'll need to set those properties in an MSBuild file, passing the path as the property `PropFile`.
 
-- `Configuration` - A standard MSBuild property, but with the distinct meanings discussed above in Build Options, including automatically setting `TargetFrameworkVersion`
+- `Configuration` - A standard MSBuild property, but with the distinct meanings discussed above in Build Options, including automatically setting `TargetFrameworkVersion`. This is the only property besides `PropFile` that can be passed to the superbuild and propagate successfully.
 - `BuildRoot` - The parent directory that will contain `bin` and `obj` - defaults to a directory named `build` in the repository root. Relative to the repository root.
 - `NativeRoot` - Defaults to the bundled `osvr-core-snapshots` directory, but you can point it to a similarly-laid-out alternate directory. If you look in the corresponding targets file, you'll see that you can override the locating of the native libraries additionally/instead at each level of granularity, to accommodate any sort of build environment.
 

@@ -2,8 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Default root directory -->
-    <ManagedOSVRRoot Condition=" '$(ManagedOSVRRoot)' == '' ">$(MSBuildThisFileDirectory)..</ManagedOSVRRoot>
+    <ManagedOSVRRoot Condition=" '$(ManagedOSVRRoot)' == '' ">$(MSBuildThisFileDirectory)..\</ManagedOSVRRoot>
     <MSBuildManagedOSVR Condition=" '$(MSBuildManagedOSVR)' == '' ">$(MSBuildThisFileDirectory)</MSBuildManagedOSVR>
     <ManagedOSVRCommon>true</ManagedOSVRCommon>
   </PropertyGroup>
+
+  <Import Project="$(PropFile)" Condition=" '$(PropFile)' != '' and Exists('$(PropFile)') " />
+  <Import Project="$(ManagedOSVRRoot)$(PropFile)" Condition=" '$(PropFile)' != '' and Exists('$(ManagedOSVRRoot)$(PropFile)') " />
 </Project>
