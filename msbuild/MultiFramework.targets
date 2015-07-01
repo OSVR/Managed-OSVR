@@ -67,11 +67,11 @@
         <BuildRoot>$(ManagedOSVRRoot)build</BuildRoot>
       </PropertyGroup>
     </When>
-    <When Condition=" '$(BuildRoot)' != '' ">
+    <Otherwise>
       <PropertyGroup>
         <BuildRoot>$(ManagedOSVRRoot)$(BuildRoot)</BuildRoot>
-    </PropertyGroup>
-    </When>
+      </PropertyGroup>
+    </Otherwise>
   </Choose>
 
   <PropertyGroup>
