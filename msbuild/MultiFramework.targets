@@ -64,12 +64,12 @@
   <Choose>
     <When Condition=" '$(BuildRoot)' == '' ">
       <PropertyGroup>
-        <BuildRoot>$(ManagedOSVRRoot)\build</BuildRoot>
+        <BuildRoot>$(ManagedOSVRRoot)build</BuildRoot>
       </PropertyGroup>
     </When>
     <When Condition=" '$(BuildRoot)' != '' ">
       <PropertyGroup>
-      <BuildRoot>$(ManagedOSVRRoot)\$(BuildRoot)</BuildRoot>
+        <BuildRoot>$(ManagedOSVRRoot)$(BuildRoot)</BuildRoot>
     </PropertyGroup>
     </When>
   </Choose>

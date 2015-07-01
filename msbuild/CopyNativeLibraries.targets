@@ -4,7 +4,7 @@
   <!-- Set up default settings for native libraries, can override at any level -->
   <PropertyGroup>
     <!-- Source locations -->
-    <NativeRoot Condition=" '$(NativeRoot)' == '' ">$(ManagedOSVRRoot)\osvr-core-snapshots</NativeRoot>
+    <NativeRoot Condition=" '$(NativeRoot)' == '' ">$(ManagedOSVRRoot)osvr-core-snapshots</NativeRoot>
     <NativeBinSubdir Condition=" '$(NativeBinSubdir)' == '' ">bin</NativeBinSubdir>
     <NativeRoot32 Condition=" '$(NativeRoot32)' == '' ">$(NativeRoot)\32</NativeRoot32>
     <NativeRoot64 Condition=" '$(NativeRoot64)' == '' ">$(NativeRoot)\64</NativeRoot64>

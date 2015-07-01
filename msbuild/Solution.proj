@@ -23,8 +23,8 @@
   </Choose>
 
   <ItemGroup>
-    <ClientKit Include="$(ManagedOSVRRoot)\ClientKit\ClientKit.csproj" />
-    <Example Include="$(ManagedOSVRRoot)\ExampleClients\**\*.csproj" />
+    <ClientKit Include="$(ManagedOSVRRoot)ClientKit\ClientKit.csproj" />
+    <Example Include="$(ManagedOSVRRoot)ExampleClients\**\*.csproj" />
   </ItemGroup>
 
   <Target Name="ClientKit">
