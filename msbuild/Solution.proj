@@ -26,17 +26,8 @@
 
   <!-- These are the properties that get passed through to all builds. -->
   <Import Project="$(MSBuildManagedOSVR)\PassthruProp.targets" />
-
-  <PropertyGroup>
-    <ClientKitProj>$(ManagedOSVRRoot)\ClientKit\ClientKit.csproj</ClientKitProj>
-  </PropertyGroup>
-<!--
-  <ItemDefinitionGroup Condition=" '$(SingleConfiguration)' == 'false' ">
-    <AdditionalProperties>$(PassthruProp)</AdditionalProperties>
-  </ItemDefinitionGroup>
--->
   <ItemGroup>
-    <ClientKit Include="$(ClientKitProj)" />
+    <ClientKit Include="$(ManagedOSVRRoot)\ClientKit\ClientKit.csproj" />
     <Example Include="$(ManagedOSVRRoot)\ExampleClients\**\*.csproj" />
   </ItemGroup>
 
