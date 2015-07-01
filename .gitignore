@@ -193,3 +193,8 @@ FakesAssemblies/
 *.userprefs
 OSVR-Unity-Dist/
 *.unitypackage
+
+# CI-related stuff
+/osvr32/
+/osvr64/
+/Managed-OSVR-Unity/
