@@ -92,6 +92,6 @@
   <PropertyGroup Condition="'$(Platform)' == 'AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition=" '$(CodeAnalysisRuleSet)' == '' ">MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 </Project>
