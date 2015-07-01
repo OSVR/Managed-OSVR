@@ -22,10 +22,6 @@
     </Otherwise>
   </Choose>
 
-
-
-  <!-- These are the properties that get passed through to all builds. -->
-  <Import Project="$(MSBuildManagedOSVR)\PassthruProp.targets" />
   <ItemGroup>
     <ClientKit Include="$(ManagedOSVRRoot)\ClientKit\ClientKit.csproj" />
     <Example Include="$(ManagedOSVRRoot)\ExampleClients\**\*.csproj" />
