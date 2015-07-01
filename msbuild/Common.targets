@@ -5,8 +5,29 @@
     <ManagedOSVRRoot Condition=" '$(ManagedOSVRRoot)' == '' ">$(MSBuildThisFileDirectory)..\</ManagedOSVRRoot>
     <MSBuildManagedOSVR Condition=" '$(MSBuildManagedOSVR)' == '' ">$(MSBuildThisFileDirectory)</MSBuildManagedOSVR>
     <ManagedOSVRCommon>true</ManagedOSVRCommon>
+    <PropFileStatus>nonespecified</PropFileStatus>
   </PropertyGroup>
 
-  <Import Project="$(PropFile)" Condition=" '$(PropFile)' != '' and Exists('$(PropFile)') " />
-  <Import Project="$(ManagedOSVRRoot)$(PropFile)" Condition=" '$(PropFile)' != '' and Exists('$(ManagedOSVRRoot)$(PropFile)') " />
+  <PropertyGroup Condition=" '$(PropFile)' != '' ">
+    <PropFileStatus>invalid</PropFileStatus>
+    <ResolvedPropFile Condition=" Exists('$(PropFile)') ">$(PropFile)</ResolvedPropFile>
+    <ResolvedPropFile Condition=" Exists('$(ManagedOSVRRoot)$(PropFile)') ">$(ManagedOSVRRoot)$(PropFile)</ResolvedPropFile>
+    <PropFileStatus Condition=" '$(ResolvedPropFile)' != '' ">valid</PropFileStatus>
+  </PropertyGroup>
+
+  <!-- Standard case - we were able to find something to import -->
+  <Import Project="$(ResolvedPropFile)" Condition=" '$(PropFileStatus)' == 'valid' " />
+  <Target Name="CheckPropFile" Condition=" '$(PropFileStatus)' == 'valid' " BeforeTargets="Build">
+    <Message Text="Got valid PropFile='$(PropFile)' - imported $(ResolvedPropFile)" Importance="High" />
+  </Target>
+
+  <!-- PropFile passed but we couldn't find it, always error -->
+  <Target Name="CheckPropFile" Condition=" '$(PropFileStatus)' == 'invalid' " BeforeTargets="Build">
+    <Error Text="Specified PropFile='$(PropFile)' could not be resolved: pass an absolute path or one relative to the repo root!"/>
+  </Target>
+
+  <!-- User explicitly asked us to check the prop file but they didn't pass one! -->
+  <Target Name="CheckPropFile" Condition=" '$(PropFileStatus)' == 'nonespecified' ">
+    <Error Text="CheckPropFile target invoked, but no value for PropFile passed!"/>
+  </Target>
 </Project>
