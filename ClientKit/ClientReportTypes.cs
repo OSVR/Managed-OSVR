@@ -20,7 +20,7 @@
 using System.Runtime.InteropServices;
 using OSVR.ClientKit;
 
-using ChannelCount = System.Int32;
+using SensorCount = System.Int32;
 
 using EyeTracker2DState = OSVR.ClientKit.Vec2;
 using Location2DState = OSVR.ClientKit.Vec2;
@@ -36,49 +36,49 @@ namespace OSVR
         [StructLayout(LayoutKind.Sequential)]
         public struct PositionReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public PositionState xyz;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct OrientationReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public Quaternion rotation;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct PoseReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public Pose3 pose;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct ButtonReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public Byte state;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct AnalogReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public Double state;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct Location2DReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public Location2DState xy;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct DirectionReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public DirectionState direction;
         }
 
@@ -94,21 +94,21 @@ namespace OSVR
         [StructLayout(LayoutKind.Sequential)]
         public struct EyeTracker3DReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public EyeTracker3DState state;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct EyeTracker2DReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public EyeTracker2DState state;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct EyeTrackerBlinkReport
         {
-            public ChannelCount sensor;
+            public SensorCount sensor;
             public byte state;
         }
     }
