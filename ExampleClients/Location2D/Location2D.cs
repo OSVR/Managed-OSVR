@@ -34,7 +34,13 @@ namespace Location2D
             Console.WriteLine(FormatLocation2DReport(report));
         }
 
-        const string Path = "/com_osvr_Multi/Location2D/location2D";
+        // You will need to install the com_osvr_example_EyeTracker from osvr-core
+        // (https://github.com/OSVR/OSVR-Core/blob/master/examples/plugin/com_osvr_example_EyeTracker.cpp)
+        // into your osvr-server's osvr-plugins-0 folder, add add the following to your osvr_server_config.json:
+        // "plugins": [
+        //    "com_osvr_example_EyeTracker"
+        // ],
+        const string Path = "/com_osvr_example_EyeTracker/EyeTracker/location2D";
 
         static void Main(string[] args)
         {
