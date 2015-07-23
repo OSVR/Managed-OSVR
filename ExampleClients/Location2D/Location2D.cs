@@ -52,6 +52,8 @@ namespace Location2D
                     for (int i = 0; i < 1000000; ++i)
                     {
                         context.update();
+                        var location2DState = location2D.GetState();
+                        Console.WriteLine("Location2DState: {0}", FormatLocation2DReport(location2DState.Value));
                     }
 
                     Console.WriteLine("Library shut down; exiting.");

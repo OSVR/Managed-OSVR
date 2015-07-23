@@ -78,6 +78,13 @@ namespace EyeTracker
                     for (int i = 0; i < 1000000; ++i)
                     {
                         context.update();
+                        var eyeTracker2DState = eyeTracker2D.GetState();
+                        var eyeTracker3DState = eyeTracker3D.GetState();
+                        var eyeTrackerBlinkState = eyeTrackerBlink.GetState();
+                        Console.WriteLine("Getting state:");
+                        Console.WriteLine("EyeTracker2D: {0}", FormatEyeTracker2DReport(eyeTracker2DState.Value));
+                        Console.WriteLine("EyeTracker3D: {0}", FormatEyeTracker3DReport(eyeTracker3DState.Value));
+                        Console.WriteLine("EyeTrackerBlink: {0}", eyeTrackerBlinkState.Value);
                     }
 
                     Console.WriteLine("Library shut down; exiting.");

@@ -53,6 +53,8 @@ namespace Direction
                     for (int i = 0; i < 1000000; ++i)
                     {
                         context.update();
+                        var directionState = direction.GetState();
+                        Console.WriteLine("Direction State: {0}", FormatDirectionReport(directionState.Value));
                     }
 
                     Console.WriteLine("Library shut down; exiting.");
