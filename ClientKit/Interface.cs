@@ -52,6 +52,21 @@ namespace OSVR
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void AnalogCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref AnalogReport report);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void Location2DCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref Location2DReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void DirectionCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref DirectionReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void EyeTracker2DCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref EyeTracker2DReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void EyeTracker3DCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref EyeTracker3DReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void EyeTrackerBlinkCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref EyeTrackerBlinkReport report);
+
         /// @brief Interface handle object. Typically acquired from a ClientContext.
         /// @ingroup ClientKitCPP
         public class Interface : IDisposable
@@ -88,6 +103,21 @@ namespace OSVR
             public extern static Byte osvrRegisterAnalogCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] AnalogCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterLocation2DCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] Location2DCallback cb, IntPtr /*void**/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterDirectionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] DirectionCallback cb, IntPtr /*void**/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterEyeTracker2DCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] EyeTracker2DCallback cb, IntPtr /*void**/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterEyeTracker3DCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] EyeTracker3DCallback cb, IntPtr /*void**/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterEyeTrackerBlinkCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] EyeTrackerBlinkCallback cb, IntPtr /*void**/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
@@ -104,6 +134,21 @@ namespace OSVR
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrGetAnalogState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Double state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetLocation2DState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetDirectionState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec3 state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetEyeTracker2DState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetEyeTracker3DState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref EyeTracker3DState state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetEyeTrackerBlinkState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, [MarshalAs(UnmanagedType.I1)]ref bool state);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientFreeInterface(IntPtr iface);
@@ -146,6 +191,31 @@ namespace OSVR
             public void registerCallback(AnalogCallback cb, IntPtr /*void*/ userdata)
             {
                 osvrRegisterAnalogCallback(m_interface, cb, userdata);
+            }
+
+            public void registerCallback(Location2DCallback cb, IntPtr /*void*/ userdata)
+            {
+                osvrRegisterLocation2DCallback(m_interface, cb, userdata);
+            }
+
+            public void registerCallback(DirectionCallback cb, IntPtr /*void*/ userdata)
+            {
+                osvrRegisterDirectionCallback(m_interface, cb, userdata);
+            }
+
+            public void registerCallback(EyeTracker2DCallback cb, IntPtr /*void*/ userdata)
+            {
+                osvrRegisterEyeTracker2DCallback(m_interface, cb, userdata);
+            }
+
+            public void registerCallback(EyeTracker3DCallback cb, IntPtr /*void*/ userdata)
+            {
+                osvrRegisterEyeTracker3DCallback(m_interface, cb, userdata);
+            }
+
+            public void registerCallback(EyeTrackerBlinkCallback cb, IntPtr /*void*/ userdata)
+            {
+                osvrRegisterEyeTrackerBlinkCallback(m_interface, cb, userdata);
             }
 
             private SafeClientInterfaceHandle m_interface;

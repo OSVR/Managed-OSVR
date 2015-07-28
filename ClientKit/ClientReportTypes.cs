@@ -20,6 +20,15 @@
 using System.Runtime.InteropServices;
 using OSVR.ClientKit;
 
+using SensorCount = System.Int32;
+
+using EyeTracker2DState = OSVR.ClientKit.Vec2;
+using Location2DState = OSVR.ClientKit.Vec2;
+
+using DirectionState = OSVR.ClientKit.Vec3;
+using EyeTracker3DState = OSVR.ClientKit.Vec3;
+using PositionState = OSVR.ClientKit.Vec3;
+
 namespace OSVR
 {
     namespace ClientKit
@@ -27,36 +36,81 @@ namespace OSVR
         [StructLayout(LayoutKind.Sequential)]
         public struct PositionReport
         {
-            public Int32 sensor;
-            public Vec3 xyz;
+            public SensorCount sensor;
+            public PositionState xyz;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct OrientationReport
         {
-            public Int32 sensor;
+            public SensorCount sensor;
             public Quaternion rotation;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct PoseReport
         {
-            public Int32 sensor;
+            public SensorCount sensor;
             public Pose3 pose;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct ButtonReport
         {
-            public Int32 sensor;
+            public SensorCount sensor;
             public Byte state;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct AnalogReport
         {
-            public Int32 sensor;
+            public SensorCount sensor;
             public Double state;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Location2DReport
+        {
+            public SensorCount sensor;
+            public Location2DState xy;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct DirectionReport
+        {
+            public SensorCount sensor;
+            public DirectionState direction;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct EyeTracker3DState
+        {
+            public bool directionValid;
+            public DirectionState direction;
+            public bool basePointValid;
+            public PositionState basePoint;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct EyeTracker3DReport
+        {
+            public SensorCount sensor;
+            public EyeTracker3DState state;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct EyeTracker2DReport
+        {
+            public SensorCount sensor;
+            public EyeTracker2DState state;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct EyeTrackerBlinkReport
+        {
+            public SensorCount sensor;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool state;
         }
     }
 

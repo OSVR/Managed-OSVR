@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{9FBFA0A5-1ECB-408E-9983-5D97079FB9A6}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Direction</RootNamespace>
+    <AssemblyName>Direction</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(MSBuildProjectDirectory)\..\..\msbuild\MultiFramework.targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Direction.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ClientKit\ClientKit.csproj">
+      <Project>{9ab9f53d-1f42-4045-8dfc-9d389d44bb35}</Project>
+      <Name>ClientKit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- Explicitly list out configurations for the sake of Visual Studio, I hope. -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug45' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug20' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release45' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release20' ">
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
