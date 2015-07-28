@@ -33,7 +33,7 @@ namespace OSVR.ClientKit
     /// <summary>
     /// Interface representing a position sensor.
     /// </summary>
-    public class EyeTrackerBlinkInterface : InterfaceBase<Byte>
+    public class EyeTrackerBlinkInterface : InterfaceBase<bool>
     {
 #if NET45
         [Obsolete("Use the GetEyeTrackerBlinkInterface extension method on ClientContext instead.")]

@@ -46,7 +46,7 @@ namespace EyeTracker
             Console.WriteLine(FormatEyeTracker3DReport(report));
         }
 
-        static void eyeTrackerBlink_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Byte report)
+        static void eyeTrackerBlink_StateChanged(object sender, TimeValue timestamp, Int32 sensor, bool report)
         {
             Console.WriteLine("Got eye tracker blink Location Report, for sensor #{0}", sensor);
             Console.WriteLine("blink value: {0}", report);

@@ -109,7 +109,8 @@ namespace OSVR
         public struct EyeTrackerBlinkReport
         {
             public SensorCount sensor;
-            public byte state;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool state;
         }
     }
 

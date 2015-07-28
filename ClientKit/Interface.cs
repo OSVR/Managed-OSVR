@@ -148,7 +148,7 @@ namespace OSVR
             public extern static Byte osvrGetEyeTracker3DState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref EyeTracker3DState state);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrGetEyeTrackerBlinkState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Byte state);
+            public extern static Byte osvrGetEyeTrackerBlinkState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, [MarshalAs(UnmanagedType.I1)]ref bool state);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientFreeInterface(IntPtr iface);
