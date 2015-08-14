@@ -24,7 +24,7 @@ using System.Runtime.ConstrainedExecution;
 
 using ViewportDimension = System.Int32;
 using ViewerCount = System.Int32;
-using EyeCount = System.Int32;
+using EyeCount = System.Byte;
 using SurfaceCount = System.Int32;
 
 namespace OSVR.ClientKit
@@ -74,6 +74,14 @@ namespace OSVR.ClientKit
             ViewerCount viewer, EyeCount eye, out Pose3 pose);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetViewerEyeViewMatrixd(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, out Matrix44d mat, MatrixConventionsFlags flags);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetViewerEyeViewMatrixf(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, out Matrix44f mat, MatrixConventionsFlags flags);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumSurfacesForViewerEye(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, out SurfaceCount surfaces);
 
@@ -83,8 +91,14 @@ namespace OSVR.ClientKit
             out ViewportDimension left, out ViewportDimension bottom, out ViewportDimension width, out ViewportDimension height);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-        public extern static Byte osvrClientGetProjectionForViewerEyeSurface(SafeDisplayConfigHandle display,
-            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, out Matrix44 matrix);
+        public extern static Byte osvrClientGetProjectionMatrixdForViewerEyeSurface(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, out Matrix44d matrix,
+            MatrixConventionsFlags flags);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetProjectionMatrixfForViewerEyeSurface(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, out Matrix44f matrix,
+            MatrixConventionsFlags flags);
     }
 
     public struct Viewport
@@ -108,8 +122,17 @@ namespace OSVR.ClientKit
         /// Height of viewport in pixels.
         /// </summary>
         public ViewportDimension Height { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format("(left: {0}, bottom: {1}, width: {2}, height: {3})",
+                Left, Bottom, Width, Height);
+        }
     }
 
+    /// <summary>
+    /// OSVR display configuration object. Allows you to query viewer,eye,surface matrices.
+    /// </summary>
     public class DisplayConfig : IDisposable
     {
         private SafeDisplayConfigHandle mHandle;
@@ -185,7 +208,39 @@ namespace OSVR.ClientKit
             Pose3 ret;
             CheckSuccess(
                 DisplayConfigNative.osvrClientGetViewerEyePose(mHandle, viewer, eye, out ret),
-                "[OSVR] DisplayCoonfig.GetViewerEyePose(): native osvrClientGetViewerPose call failed.");
+                "[OSVR] DisplayConfig.GetViewerEyePose(): native osvrClientGetViewerPose call failed.");
+            return ret;
+        }
+
+        /// <summary>
+        /// Get the view matrix (inverse of pose) for the given eye of a
+        /// viewer in a display config - matrix of doubles.
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
+        public Matrix44d GetViewerEyeViewMatrixd(ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags)
+        {
+            Matrix44d ret;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetViewerEyeViewMatrixd(mHandle, viewer, eye, out ret, flags),
+                "[OSVR] DisplayConfig.GetViewerEyeViewMatrixd(): native osvrClientGetViewerEyeViewMatrixd call failed.");
+            return ret;
+        }
+
+        /// <summary>
+        /// Get the view matrix (inverse of pose) for the given eye of a
+        /// viewer in a display config - matrix of floats.
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
+        public Matrix44f GetViewerEyeViewMatrixf(ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags)
+        {
+            Matrix44f ret;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetViewerEyeViewMatrixf(mHandle, viewer, eye, out ret, flags),
+                "[OSVR] DisplayConfig.GetViewerEyeViewMatrixf(): native osvrClientGetViewerEyeViewMatrixf call failed.");
             return ret;
         }
 
@@ -234,23 +289,40 @@ namespace OSVR.ClientKit
 
         /// <summary>
         /// Get the projection matrix for a surface seen by an eye of a viewer
-        /// in a display config.  Currently returns a matrix that transforms column
-        /// vectors from a right-handed coordinate system to a volume with signed Z (that
-        /// is, near plane mapped to -1 and far to 1) - that is, the convention used by
-        /// the OpenGL fixed-function pipeline. A parameterization is forthcoming.
+        /// in a display config. (double version)
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
         /// <param name="surface">Surface ID</param>
         /// <param name="near">Distance to near clipping plane - must be nonzero, typically positive.</param>
-        /// <param name="far">far Distance to far clipping plane - must be nonzero, typically 
+        /// <param name="far">Distance to far clipping plane - must be nonzero, typically
         ///     positive and greater than near.</param>
-        /// <returns>Output projection matrix, row-major storage order.</returns>
-        public Matrix44 GetProjectionForViewerEyeSurface(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far)
+        /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
+        public Matrix44d GetProjectionMatrixdForViewerEyeSurface(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
         {
-            Matrix44 ret;
+            Matrix44d ret;
             CheckSuccess(
-                DisplayConfigNative.osvrClientGetProjectionForViewerEyeSurface(mHandle, viewer, eye, surface, near, far, out ret),
+                DisplayConfigNative.osvrClientGetProjectionMatrixdForViewerEyeSurface(mHandle, viewer, eye, surface, near, far, out ret, flags),
+                "[OSVR] DisplayConfig.GetProjectionForViewerEyeSurface(): native osvrClientGetProjectionForViewerEyeSurface call failed.");
+            return ret;
+        }
+
+        /// <summary>
+        /// Get the projection matrix for a surface seen by an eye of a viewer
+        /// in a display config. (float version)
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="surface">Surface ID</param>
+        /// <param name="near">Distance to near clipping plane - must be nonzero, typically positive.</param>
+        /// <param name="far">Distance to far clipping plane - must be nonzero, typically
+        ///     positive and greater than near.</param>
+        /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
+        public Matrix44f GetProjectionMatrixfForViewerEyeSurface(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
+        {
+            Matrix44f ret;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetProjectionMatrixfForViewerEyeSurface(mHandle, viewer, eye, surface, near, far, out ret, flags),
                 "[OSVR] DisplayConfig.GetProjectionForViewerEyeSurface(): native osvrClientGetProjectionForViewerEyeSurface call failed.");
             return ret;
         }
