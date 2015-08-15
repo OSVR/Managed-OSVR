@@ -75,11 +75,11 @@ namespace OSVR.ClientKit
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeViewMatrixd(SafeDisplayConfigHandle display,
-            ViewerCount viewer, EyeCount eye, out Matrix44d mat, MatrixConventionsFlags flags);
+            ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags, out Matrix44d mat);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeViewMatrixf(SafeDisplayConfigHandle display,
-            ViewerCount viewer, EyeCount eye, out Matrix44f mat, MatrixConventionsFlags flags);
+            ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags, out Matrix44f mat);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumSurfacesForViewerEye(SafeDisplayConfigHandle display,
@@ -91,14 +91,14 @@ namespace OSVR.ClientKit
             out ViewportDimension left, out ViewportDimension bottom, out ViewportDimension width, out ViewportDimension height);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-        public extern static Byte osvrClientGetProjectionMatrixdForViewerEyeSurface(SafeDisplayConfigHandle display,
-            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, out Matrix44d matrix,
-            MatrixConventionsFlags flags);
+        public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixd(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far,
+            MatrixConventionsFlags flags, out Matrix44d matrix);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
-        public extern static Byte osvrClientGetProjectionMatrixfForViewerEyeSurface(SafeDisplayConfigHandle display,
-            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, out Matrix44f matrix,
-            MatrixConventionsFlags flags);
+        public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixf(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far,
+            MatrixConventionsFlags flags, out Matrix44f matrix);
     }
 
     public struct Viewport
@@ -223,7 +223,7 @@ namespace OSVR.ClientKit
         {
             Matrix44d ret;
             CheckSuccess(
-                DisplayConfigNative.osvrClientGetViewerEyeViewMatrixd(mHandle, viewer, eye, out ret, flags),
+                DisplayConfigNative.osvrClientGetViewerEyeViewMatrixd(mHandle, viewer, eye, flags, out ret),
                 "[OSVR] DisplayConfig.GetViewerEyeViewMatrixd(): native osvrClientGetViewerEyeViewMatrixd call failed.");
             return ret;
         }
@@ -239,7 +239,7 @@ namespace OSVR.ClientKit
         {
             Matrix44f ret;
             CheckSuccess(
-                DisplayConfigNative.osvrClientGetViewerEyeViewMatrixf(mHandle, viewer, eye, out ret, flags),
+                DisplayConfigNative.osvrClientGetViewerEyeViewMatrixf(mHandle, viewer, eye, flags, out ret),
                 "[OSVR] DisplayConfig.GetViewerEyeViewMatrixf(): native osvrClientGetViewerEyeViewMatrixf call failed.");
             return ret;
         }
@@ -302,7 +302,7 @@ namespace OSVR.ClientKit
         {
             Matrix44d ret;
             CheckSuccess(
-                DisplayConfigNative.osvrClientGetProjectionMatrixdForViewerEyeSurface(mHandle, viewer, eye, surface, near, far, out ret, flags),
+                DisplayConfigNative.osvrClientGetViewerEyeSurfaceProjectionMatrixd(mHandle, viewer, eye, surface, near, far, flags, out ret),
                 "[OSVR] DisplayConfig.GetProjectionForViewerEyeSurface(): native osvrClientGetProjectionForViewerEyeSurface call failed.");
             return ret;
         }
@@ -322,7 +322,7 @@ namespace OSVR.ClientKit
         {
             Matrix44f ret;
             CheckSuccess(
-                DisplayConfigNative.osvrClientGetProjectionMatrixfForViewerEyeSurface(mHandle, viewer, eye, surface, near, far, out ret, flags),
+                DisplayConfigNative.osvrClientGetViewerEyeSurfaceProjectionMatrixf(mHandle, viewer, eye, surface, near, far, flags, out ret),
                 "[OSVR] DisplayConfig.GetProjectionForViewerEyeSurface(): native osvrClientGetProjectionForViewerEyeSurface call failed.");
             return ret;
         }
