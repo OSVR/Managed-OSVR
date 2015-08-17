@@ -359,7 +359,10 @@ namespace OSVR
             public DisplayConfig GetDisplayConfig()
             {
                 SafeDisplayConfigHandle handle;
-                DisplayConfigNative.osvrClientGetDisplay(this.m_context, out handle);
+                if(DisplayConfigNative.osvrClientGetDisplay(this.m_context, out handle) != OSVR_RETURN_SUCCESS)
+                {
+                    return null;
+                }
                 return new DisplayConfig(handle);
             }
 

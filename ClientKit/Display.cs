@@ -23,9 +23,9 @@ using Microsoft.Win32.SafeHandles;
 using System.Runtime.ConstrainedExecution;
 
 using ViewportDimension = System.Int32;
-using ViewerCount = System.Int32;
+using ViewerCount = System.UInt32;
 using EyeCount = System.Byte;
-using SurfaceCount = System.Int32;
+using SurfaceCount = System.UInt32;
 
 namespace OSVR.ClientKit
 {
@@ -36,8 +36,6 @@ namespace OSVR.ClientKit
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
-            System.Diagnostics.Debug.WriteLine("[OSVR] ClientContext shutdown");
-            //return ClientContext.osvrClientShutdown(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
             return DisplayConfigNative.osvrClientFreeDisplay(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
         }
     }
@@ -194,12 +192,8 @@ namespace OSVR.ClientKit
         }
 
         /// <summary>
-        /// Get the center of projection/"eye point" for a viewer in a display
-        /// config.
-        /// Note that there may not necessarily be any surfaces rendered from this pose
-        /// (it's the unused "center" eye in a stereo configuration) so only use this if
-        /// it makes integration into your engine or existing applications (not
-        /// originally designed for stereo) easier.
+        /// Get the center of projection/"eye point" for the given eye of a
+        /// viewer in a display config
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
@@ -298,7 +292,7 @@ namespace OSVR.ClientKit
         /// <param name="far">Distance to far clipping plane - must be nonzero, typically
         ///     positive and greater than near.</param>
         /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
-        public Matrix44d GetProjectionMatrixdForViewerEyeSurface(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
+        public Matrix44d GetProjectionMatrixForViewerEyeSurfaced(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
         {
             Matrix44d ret;
             CheckSuccess(
@@ -318,7 +312,7 @@ namespace OSVR.ClientKit
         /// <param name="far">Distance to far clipping plane - must be nonzero, typically
         ///     positive and greater than near.</param>
         /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
-        public Matrix44f GetProjectionMatrixfForViewerEyeSurface(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
+        public Matrix44f GetProjectionMatrixForViewerEyeSurfacef(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
         {
             Matrix44f ret;
             CheckSuccess(

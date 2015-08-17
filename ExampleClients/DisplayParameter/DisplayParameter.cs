@@ -46,67 +46,68 @@ namespace DisplayParameter
                 Console.WriteLine("Got value of /display:");
                 Console.WriteLine(displayDescription);
 
-                // alternatively, client kit has some functionality to parse and query
-                // a display config
-                using(var displayConfig = context.GetDisplayConfig())
+                for (uint i = 0; i < 1000; i++)
                 {
-                    // Have to call update at least once prior to calling these methods
-                    for (var i = 0; i < 1000; i++)
+                    context.update();
+                    
+                    using(var displayConfig = context.GetDisplayConfig())
                     {
-                        context.update();
-                    }
-
-                    var numViewers = displayConfig.GetNumViewers();
-                    Console.WriteLine("There are {0} viewers for this display.", numViewers);
-                    for(var viewer = 0; viewer < numViewers; viewer++)
-                    {
-                        var numEyes = displayConfig.GetNumEyesForViewer(viewer);
-                        Console.WriteLine("There are {0} eyes for viewer {1}.", numEyes, viewer);
-
-                        var viewerPose = displayConfig.GetViewerPose(viewer);
-                        Console.WriteLine("Viewer pose for viewer {0}: {1}",
-                            viewer, GetPoseDisplay(viewerPose));
-
-                        for(byte eye = 0; eye < numEyes; eye++)
+                        // GetDisplayConfig can sometimes fail, returning null
+                        if (displayConfig != null)
                         {
-                            var numSurfaces = displayConfig.GetNumSurfacesForViewerEye(viewer, eye);
-                            Console.WriteLine("There are {0} surfaces for eye {1} on viewer {2}.",
-                                numSurfaces, eye, viewer);
-
-                            var viewerEyePose = displayConfig.GetViewerEyePose(viewer, eye);
-                            Console.WriteLine("Viewer eye pose for eye {0} on viewer {1}: {2}.", 
-                                eye, viewer, GetPoseDisplay(viewerEyePose));
-
-                            var viewerEyeMatrixd = displayConfig.GetViewerEyeViewMatrixd(viewer, eye, MatrixConventionsFlags.Default);
-                            Console.WriteLine("Viewer eye view-matrix (double) for eye {0} on viewer {1}: {2}",
-                                eye, viewer, viewerEyeMatrixd.ToString());
-
-                            var viewerEyeMatrixf = displayConfig.GetViewerEyeViewMatrixf(viewer, eye, MatrixConventionsFlags.Default);
-                            Console.WriteLine("Viewer eye view-matrix (float) for eye {0} on viewer {1}: {2}",
-                                eye, viewer, viewerEyeMatrixf.ToString());
-
-                            for(byte surface = 0; surface < numEyes; surface++)
+                            var numViewers = displayConfig.GetNumViewers();
+                            Console.WriteLine("There are {0} viewers for this display.", numViewers);
+                            for (uint viewer = 0; viewer < numViewers; viewer++)
                             {
-                                Console.WriteLine("surface {0} for eye {1} for viewer {2}:",
-                                    surface, eye, viewer);
+                                var numEyes = displayConfig.GetNumEyesForViewer(viewer);
+                                Console.WriteLine("There are {0} eyes for viewer {1}.", numEyes, viewer);
 
-                                var viewport = displayConfig.GetRelativeViewportForViewerEyeSurface(
-                                    viewer, eye, surface);
-                                Console.WriteLine("Relative viewport: {0}", viewport.ToString());
+                                var viewerPose = displayConfig.GetViewerPose(viewer);
+                                Console.WriteLine("Viewer pose for viewer {0}: {1}",
+                                    viewer, GetPoseDisplay(viewerPose));
 
-                                var projectiond = displayConfig.GetProjectionMatrixdForViewerEyeSurface(
-                                    viewer, eye, surface, 1.0f, 1000.0f, MatrixConventionsFlags.Default);
-                                Console.WriteLine("Projection (double): {0}", projectiond.ToString());
+                                for (byte eye = 0; eye < numEyes; eye++)
+                                {
+                                    var numSurfaces = displayConfig.GetNumSurfacesForViewerEye(viewer, eye);
+                                    Console.WriteLine("There are {0} surfaces for eye {1} on viewer {2}.",
+                                        numSurfaces, eye, viewer);
 
-                                var projectionf = displayConfig.GetProjectionMatrixfForViewerEyeSurface(
-                                    viewer, eye, surface, 1.0f, 1000.0, MatrixConventionsFlags.Default);
-                                Console.WriteLine("Projection (float): {0}", projectionf.ToString());
+                                    var viewerEyePose = displayConfig.GetViewerEyePose(viewer, eye);
+                                    Console.WriteLine("Viewer eye pose for eye {0} on viewer {1}: {2}.",
+                                        eye, viewer, GetPoseDisplay(viewerEyePose));
+
+                                    var viewerEyeMatrixd = displayConfig.GetViewerEyeViewMatrixd(viewer, eye, MatrixConventionsFlags.Default);
+                                    Console.WriteLine("Viewer eye view-matrix (double) for eye {0} on viewer {1}: {2}",
+                                        eye, viewer, viewerEyeMatrixd.ToString());
+
+                                    var viewerEyeMatrixf = displayConfig.GetViewerEyeViewMatrixf(viewer, eye, MatrixConventionsFlags.Default);
+                                    Console.WriteLine("Viewer eye view-matrix (float) for eye {0} on viewer {1}: {2}",
+                                        eye, viewer, viewerEyeMatrixf.ToString());
+
+                                    for (uint surface = 0; surface < numEyes; surface++)
+                                    {
+                                        Console.WriteLine("surface {0} for eye {1} for viewer {2}:",
+                                            surface, eye, viewer);
+
+                                        var viewport = displayConfig.GetRelativeViewportForViewerEyeSurface(
+                                            viewer, eye, surface);
+                                        Console.WriteLine("Relative viewport: {0}", viewport.ToString());
+
+                                        var projectiond = displayConfig.GetProjectionMatrixForViewerEyeSurfaced(
+                                            viewer, eye, surface, 1.0f, 1000.0f, MatrixConventionsFlags.Default);
+                                        Console.WriteLine("Projection (double): {0}", projectiond.ToString());
+
+                                        var projectionf = displayConfig.GetProjectionMatrixForViewerEyeSurfacef(
+                                            viewer, eye, surface, 1.0f, 1000.0, MatrixConventionsFlags.Default);
+                                        Console.WriteLine("Projection (float): {0}", projectionf.ToString());
+                                    }
+                                }
                             }
+                            break;
                         }
                     }
                 }
 
-                // client kit can also parse the display for you and 
                 Console.WriteLine("Library shut down; exiting.");
             }
         }
