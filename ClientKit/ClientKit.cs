@@ -353,6 +353,14 @@ namespace OSVR
             }
 
             /// <summary>
+            /// The native OSVR client context handle.
+            /// </summary>
+            public SafeClientContextHandle ContextHandle
+            {
+                get { return m_context; }
+            }
+
+            /// <summary>
             /// Get a parsed display configuration. This lets you query eyes, surfaces, and
             /// viewers.
             /// </summary>
