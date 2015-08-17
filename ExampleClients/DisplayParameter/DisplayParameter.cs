@@ -50,13 +50,19 @@ namespace DisplayParameter
                 // a display config
                 using(var displayConfig = context.GetDisplayConfig())
                 {
+                    // Have to call update at least once prior to calling these methods
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        context.update();
+                    }
+
                     var numViewers = displayConfig.GetNumViewers();
                     Console.WriteLine("There are {0} viewers for this display.", numViewers);
                     for(var viewer = 0; viewer < numViewers; viewer++)
                     {
                         var numEyes = displayConfig.GetNumEyesForViewer(viewer);
                         Console.WriteLine("There are {0} eyes for viewer {1}.", numEyes, viewer);
-                        
+
                         var viewerPose = displayConfig.GetViewerPose(viewer);
                         Console.WriteLine("Viewer pose for viewer {0}: {1}",
                             viewer, GetPoseDisplay(viewerPose));

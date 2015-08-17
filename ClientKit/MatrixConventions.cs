@@ -158,10 +158,10 @@ namespace OSVR.ClientKit
 #endif
 
         [DllImport(OSVRUtilDll, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Byte osvrPose3ToMatrixd(out Matrix44d mat, ref Pose3 pose, MatrixConventionsFlags flags);
+        public static extern Byte osvrPose3ToMatrixd(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44d mat);
 
         [DllImport(OSVRUtilDll, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Byte osvrPose3ToMatrixf(out Matrix44f mat, ref Pose3 pose, MatrixConventionsFlags flags);
+        public static extern Byte osvrPose3ToMatrixf(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44f mat);
     }
 
     public static class MatrixConventions
@@ -176,7 +176,7 @@ namespace OSVR.ClientKit
 #endif
         {
             Matrix44d ret;
-            MatrixConventionsNative.osvrPose3ToMatrixd(out ret, ref pose, flags);
+            MatrixConventionsNative.osvrPose3ToMatrixd(ref pose, flags, out ret);
             return ret;
         }
 
@@ -189,7 +189,7 @@ namespace OSVR.ClientKit
         public static void ToMatrixd(Pose3 pose, MatrixConventionsFlags flags, out Matrix44d matrix)
 #endif
         {
-            MatrixConventionsNative.osvrPose3ToMatrixd(out matrix, ref pose, flags);
+            MatrixConventionsNative.osvrPose3ToMatrixd(ref pose, flags, out matrix);
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace OSVR.ClientKit
 #endif
         {
             Matrix44f ret;
-            MatrixConventionsNative.osvrPose3ToMatrixf(out ret, ref pose, flags);
+            MatrixConventionsNative.osvrPose3ToMatrixf(ref pose, flags, out ret);
             return ret;
         }
 
@@ -215,7 +215,7 @@ namespace OSVR.ClientKit
         public static void ToMatrixf(Pose3 pose, MatrixConventionsFlags flags, out Matrix44f matrix)
 #endif
         {
-            MatrixConventionsNative.osvrPose3ToMatrixf(out matrix, ref pose, flags);
+            MatrixConventionsNative.osvrPose3ToMatrixf(ref pose, flags, out matrix);
         }
     }
 }
