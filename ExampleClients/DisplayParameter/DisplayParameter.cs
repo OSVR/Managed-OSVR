@@ -46,10 +46,10 @@ namespace DisplayParameter
                 Console.WriteLine("Got value of /display:");
                 Console.WriteLine(displayDescription);
 
-                for (uint i = 0; i < 1000; i++)
+                for (var i = 0; i < 1000; i++)
                 {
                     context.update();
-                    
+
                     using(var displayConfig = context.GetDisplayConfig())
                     {
                         // GetDisplayConfig can sometimes fail, returning null
@@ -84,7 +84,7 @@ namespace DisplayParameter
                                     Console.WriteLine("Viewer eye view-matrix (float) for eye {0} on viewer {1}: {2}",
                                         eye, viewer, viewerEyeMatrixf.ToString());
 
-                                    for (uint surface = 0; surface < numEyes; surface++)
+                                    for (uint surface = 0; surface < numSurfaces; surface++)
                                     {
                                         Console.WriteLine("surface {0} for eye {1} for viewer {2}:",
                                             surface, eye, viewer);
