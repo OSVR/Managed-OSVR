@@ -94,11 +94,11 @@ namespace DisplayParameter
                                         Console.WriteLine("Relative viewport: {0}", viewport.ToString());
 
                                         var projectiond = displayConfig.GetProjectionMatrixForViewerEyeSurfaced(
-                                            viewer, eye, surface, 1.0f, 1000.0f, MatrixConventionsFlags.Default);
+                                            viewer, eye, surface, 1.0, 1000.0, MatrixConventionsFlags.Default);
                                         Console.WriteLine("Projection (double): {0}", projectiond.ToString());
 
                                         var projectionf = displayConfig.GetProjectionMatrixForViewerEyeSurfacef(
-                                            viewer, eye, surface, 1.0f, 1000.0, MatrixConventionsFlags.Default);
+                                            viewer, eye, surface, 1.0f, 1000.0f, MatrixConventionsFlags.Default);
                                         Console.WriteLine("Projection (float): {0}", projectionf.ToString());
                                     }
                                 }

@@ -95,7 +95,7 @@ namespace OSVR.ClientKit
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixf(SafeDisplayConfigHandle display,
-            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, float near, float far,
             MatrixConventionsFlags flags, out Matrix44f matrix);
     }
 
@@ -312,7 +312,7 @@ namespace OSVR.ClientKit
         /// <param name="far">Distance to far clipping plane - must be nonzero, typically
         ///     positive and greater than near.</param>
         /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
-        public Matrix44f GetProjectionMatrixForViewerEyeSurfacef(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
+        public Matrix44f GetProjectionMatrixForViewerEyeSurfacef(ViewerCount viewer, EyeCount eye, SurfaceCount surface, float near, float far, MatrixConventionsFlags flags)
         {
             Matrix44f ret;
             CheckSuccess(
