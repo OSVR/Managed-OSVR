@@ -88,25 +88,22 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct Matrix44d
     {
-        double M0;
-        double M1;
-        double M2;
-        double M3;
-
-        double M4;
-        double M5;
-        double M6;
-        double M7;
-
-        double M8;
-        double M9;
-        double M10;
-        double M11;
-
-        double M12;
-        double M13;
-        double M14;
-        double M15;
+        public double M0;
+        public double M1;
+        public double M2;
+        public double M3;
+        public double M4;
+        public double M5;
+        public double M6;
+        public double M7;
+        public double M8;
+        public double M9;
+        public double M10;
+        public double M11;
+        public double M12;
+        public double M13;
+        public double M14;
+        public double M15;
 
         public override string ToString()
         {
@@ -122,22 +119,22 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct Matrix44f
     {
-        float M0;
-        float M1;
-        float M2;
-        float M3;
-        float M4;
-        float M5;
-        float M6;
-        float M7;
-        float M8;
-        float M9;
-        float M10;
-        float M11;
-        float M12;
-        float M13;
-        float M14;
-        float M15;
+        public float M0;
+        public float M1;
+        public float M2;
+        public float M3;
+        public float M4;
+        public float M5;
+        public float M6;
+        public float M7;
+        public float M8;
+        public float M9;
+        public float M10;
+        public float M11;
+        public float M12;
+        public float M13;
+        public float M14;
+        public float M15;
 
         public override string ToString()
         {
