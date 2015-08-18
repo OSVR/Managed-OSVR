@@ -93,6 +93,17 @@ namespace DisplayParameter
                                             viewer, eye, surface);
                                         Console.WriteLine("Relative viewport: {0}", viewport.ToString());
 
+                                        var wantsDistortion = displayConfig.DoesViewerEyeSurfaceWantDistortion(
+                                            viewer, eye, surface);
+                                        Console.WriteLine("Surface wants distortion? {0}", wantsDistortion);
+
+                                        if(wantsDistortion)
+                                        {
+                                            var distortionParameters = displayConfig.GetViewerEyeSurfaceRadialDistortion(
+                                                viewer, eye, surface);
+                                            Console.WriteLine("Surface distortion parameters: {0}", distortionParameters.ToString());
+                                        }
+
                                         var projectiond = displayConfig.GetProjectionMatrixForViewerEyeSurfaced(
                                             viewer, eye, surface, 1.0, 1000.0, MatrixConventionsFlags.Default);
                                         Console.WriteLine("Projection (double): {0}", projectiond.ToString());

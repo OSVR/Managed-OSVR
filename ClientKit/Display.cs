@@ -40,6 +40,31 @@ namespace OSVR.ClientKit
         }
     }
 
+    /// <summary>
+    /// Parameters for a per-color-component radial distortion shader
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RadialDistortionParameters
+    {
+        /// <summary>
+        /// Vector of K1 coefficients for the R, G, B channels
+        /// </summary>
+        public Vec3 k1;
+
+        /// <summary>
+        /// Center of projection for the radial distortion, relative to the
+        /// bounds of this surface.
+        /// </summary>
+        public Vec2 centerOfProjection;
+
+        public override string ToString()
+        {
+            return String.Format(
+                "k1: (r: {0}, g: {1}, b: {2}), centerOfProjection: (x: {3}, y: {4})",
+                k1.x, k1.y, k1.z, centerOfProjection.x, centerOfProjection.y);
+        }
+    }
+
     internal static class DisplayConfigNative {
 #if MANAGED_OSVR_INTERNAL_PINVOKE
             // On iOS and Xbox 360, plugins are statically linked into
@@ -97,6 +122,14 @@ namespace OSVR.ClientKit
         public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixf(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, float near, float far,
             MatrixConventionsFlags flags, out Matrix44f matrix);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientDoesViewerEyeSurfaceWantDistortion(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, [MarshalAs(UnmanagedType.I1)]out bool distortionRequested);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetViewerEyeSurfaceRadialDistortion(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, out RadialDistortionParameters distortionParams);
     }
 
     public struct Viewport
@@ -318,6 +351,46 @@ namespace OSVR.ClientKit
             CheckSuccess(
                 DisplayConfigNative.osvrClientGetViewerEyeSurfaceProjectionMatrixf(mHandle, viewer, eye, surface, near, far, flags, out ret),
                 "[OSVR] DisplayConfig.GetProjectionForViewerEyeSurface(): native osvrClientGetProjectionForViewerEyeSurface call failed.");
+            return ret;
+        }
+
+        /// <summary>
+        /// Determines if a surface seen by an eye of a viewer in a display
+        /// config requests some distortion to be performed.
+        /// 
+        /// This simply reports true or false, and does not specify which kind of
+        /// distortion implementations have been parameterized for this display. For
+        /// each distortion implementation your application supports, you'll want to
+        /// call the function to retrieve the parameters to find out if it is available.
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="surface">Surface ID</param>
+        public bool DoesViewerEyeSurfaceWantDistortion(ViewerCount viewer, EyeCount eye, SurfaceCount surface)
+        {
+            bool ret;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientDoesViewerEyeSurfaceWantDistortion(mHandle, viewer, eye, surface, out ret),
+                "[OSVR] DisplayConfig.DoesViewerEyeSurfaceWantDistortion(): native osvrClientDoesViewerEyeSurfaceWantDistortion call failed.");
+            return ret;
+        }
+
+        /// <summary>
+        /// Returns the radial distortion parameters, if known/requested, for a
+        /// surface seen by an eye of a viewer in a display config.
+        /// 
+        /// NOTE: This method will throw an exception if the surface does not have
+        /// radial distortion parameters.
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="surface">Surface ID</param>
+        public RadialDistortionParameters GetViewerEyeSurfaceRadialDistortion(ViewerCount viewer, EyeCount eye, SurfaceCount surface)
+        {
+            RadialDistortionParameters ret;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetViewerEyeSurfaceRadialDistortion(mHandle, viewer, eye, surface, out ret),
+                "[OSVR] DisplayConfig.GetViewerEyeSurfaceRadialDistortion(): native osvrClientGetViewerEyeSurfaceRadialDistortion call failed.");
             return ret;
         }
 
