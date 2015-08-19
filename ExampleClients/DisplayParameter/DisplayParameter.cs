@@ -46,7 +46,7 @@ namespace DisplayParameter
                 Console.WriteLine("Got value of /display:");
                 Console.WriteLine(displayDescription);
 
-                for (var i = 0; i < 1000; i++)
+                for (var i = 0; i < 100000; i++)
                 {
                     context.update();
 
@@ -55,6 +55,13 @@ namespace DisplayParameter
                         // GetDisplayConfig can sometimes fail, returning null
                         if (displayConfig != null)
                         {
+                            // Currently we get errors until the first pose report from the /me/head
+                            // interface. This is a workaround to make sure we have a pose first.
+                            for(var j = 0; j < 20000; j++)
+                            {
+                                context.update();
+                            }
+                            
                             var numViewers = displayConfig.GetNumViewers();
                             Console.WriteLine("There are {0} viewers for this display.", numViewers);
                             for (uint viewer = 0; viewer < numViewers; viewer++)
