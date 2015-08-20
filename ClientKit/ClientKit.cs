@@ -352,6 +352,28 @@ namespace OSVR
                 }
             }
 
+            /// <summary>
+            /// The native OSVR client context handle.
+            /// </summary>
+            public SafeClientContextHandle ContextHandle
+            {
+                get { return m_context; }
+            }
+
+            /// <summary>
+            /// Get a parsed display configuration. This lets you query eyes, surfaces, and
+            /// viewers.
+            /// </summary>
+            public DisplayConfig GetDisplayConfig()
+            {
+                SafeDisplayConfigHandle handle;
+                if(DisplayConfigNative.osvrClientGetDisplay(this.m_context, out handle) != OSVR_RETURN_SUCCESS)
+                {
+                    return null;
+                }
+                return new DisplayConfig(handle);
+            }
+
             /// @brief Updates the state of the context - call regularly in your
             /// mainloop.
             public void update()
