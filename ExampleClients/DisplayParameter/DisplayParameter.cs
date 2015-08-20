@@ -55,12 +55,11 @@ namespace DisplayParameter
                         // GetDisplayConfig can sometimes fail, returning null
                         if (displayConfig != null)
                         {
-                            // Currently we get errors until the first pose report from the /me/head
-                            // interface. This is a workaround to make sure we have a pose first.
-                            for(var j = 0; j < 20000; j++)
+                            Console.WriteLine("Waiting for the display config to be initialized and receive its first pose...");
+                            do
                             {
                                 context.update();
-                            }
+                            } while (!displayConfig.CheckDisplayStartup());
                             
                             var numViewers = displayConfig.GetNumViewers();
                             Console.WriteLine("There are {0} viewers for this display.", numViewers);
@@ -106,9 +105,16 @@ namespace DisplayParameter
 
                                         if(wantsDistortion)
                                         {
-                                            var distortionParameters = displayConfig.GetViewerEyeSurfaceRadialDistortion(
+                                            var radialDistortionPriority = displayConfig.GetViewerEyeSurfaceRadialDistortionPriority(
                                                 viewer, eye, surface);
-                                            Console.WriteLine("Surface distortion parameters: {0}", distortionParameters.ToString());
+                                            Console.WriteLine("Radial Distortion priority: {0}", radialDistortionPriority);
+
+                                            if (radialDistortionPriority >= 0)
+                                            {
+                                                var distortionParameters = displayConfig.GetViewerEyeSurfaceRadialDistortion(
+                                                    viewer, eye, surface);
+                                                Console.WriteLine("Surface radial distortion parameters: {0}", distortionParameters.ToString());
+                                            }
                                         }
 
                                         var projectiond = displayConfig.GetProjectionMatrixForViewerEyeSurfaced(

@@ -26,6 +26,7 @@ using ViewportDimension = System.Int32;
 using ViewerCount = System.UInt32;
 using EyeCount = System.Byte;
 using SurfaceCount = System.UInt32;
+using DistortionPriority = System.Int32;
 
 namespace OSVR.ClientKit
 {
@@ -82,6 +83,9 @@ namespace OSVR.ClientKit
         public extern static Byte osvrClientFreeDisplay(IntPtr display);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientCheckDisplayStartup(SafeDisplayConfigHandle context);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumViewers(SafeDisplayConfigHandle display, out ViewerCount viewers);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
@@ -126,6 +130,10 @@ namespace OSVR.ClientKit
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientDoesViewerEyeSurfaceWantDistortion(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, [MarshalAs(UnmanagedType.I1)]out bool distortionRequested);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetViewerEyeSurfaceRadialDistortionPriority(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, out DistortionPriority priority);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceRadialDistortion(SafeDisplayConfigHandle display,
@@ -181,8 +189,29 @@ namespace OSVR.ClientKit
         }
 
         /// <summary>
-        /// A display config can have one (or theoretically more) viewers
+        /// Checks to see if a display is fully configured and ready, including
+        /// having received its first pose update.
+        /// 
+        /// Once this first succeeds, it will continue to succeed for the lifetime of
+        /// the display config object, so it is not necessary to keep calling once you
+        /// get a successful result.
         /// </summary>
+        /// <returns>true, if the display config is ready and received its first pose report,
+        /// false otherwise.</returns>
+        public bool CheckDisplayStartup()
+        {
+            return DisplayConfigNative.osvrClientCheckDisplayStartup(mHandle) == ClientContext.OSVR_RETURN_SUCCESS;
+        }
+
+        /// <summary>
+        /// A display config can have one (or theoretically more) viewers
+        /// retrieve the viewer count.
+        /// </summary>
+        /// <returns>
+        /// Number of viewers in the logical display topology,
+        /// constant throughout the active, valid lifetime of a display config
+        /// object.
+        /// </returns>
         public ViewerCount GetNumViewers()
         {
             ViewerCount ret;
@@ -193,11 +222,14 @@ namespace OSVR.ClientKit
         }
 
         /// <summary>
-        /// Get the center of projection/"eye point" for a viewer in a display config.
+        /// Get the pose of a viewer in a display config.
+        /// 
         /// Note that there may not necessarily be any surfaces rendered from this pose
-        /// (it's the unused "center" eye in a stereo configuration) so only use this if
-        /// it makes integration into your engine or existing applications (not
-        /// originally designed for stereo) easier.
+        /// (it's the unused "center" eye in a stereo configuration, for instance) so
+        /// only use this if it makes integration into your engine or existing
+        /// applications (not originally designed for stereo) easier.
+        /// 
+        /// Will only succeed if osvrClientCheckDisplayStartup() succeeds.
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         public Pose3 GetViewerPose(ViewerCount viewer)
@@ -212,9 +244,14 @@ namespace OSVR.ClientKit
 
         /// <summary>
         /// Each viewer in a display config can have one or more "eyes" which
-        /// have a substantially similar pose.
+        /// have a substantially similar pose: get the count.
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
+        /// <returns>
+        /// Number of eyes for this viewer in the logical display
+        /// topology, constant throughout the active, valid lifetime of a display
+        /// config object
+        /// </returns>
         public EyeCount GetNumEyesForViewer(ViewerCount viewer)
         {
             EyeCount ret;
@@ -225,11 +262,14 @@ namespace OSVR.ClientKit
         }
 
         /// <summary>
-        /// Get the center of projection/"eye point" for the given eye of a
-        /// viewer in a display config
+        /// Get the "viewpoint" for the given eye of a viewer in a display
+        /// config. Will only succeed if CheckDisplayStartup() succeeds.
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
+        /// <returns>
+        /// Room-space pose (not relative to pose of the viewer)
+        /// </returns>
         public Pose3 GetViewerEyePose(ViewerCount viewer, EyeCount eye)
         {
             Pose3 ret;
@@ -242,10 +282,14 @@ namespace OSVR.ClientKit
         /// <summary>
         /// Get the view matrix (inverse of pose) for the given eye of a
         /// viewer in a display config - matrix of doubles.
+        /// Will only succeed if CheckDisplayStartup() succeeds.
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
         /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
+        /// <returns>
+        /// the transformation matrix from room space to eye space (not relative to pose of the viewer)
+        /// </returns>
         public Matrix44d GetViewerEyeViewMatrixd(ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags)
         {
             Matrix44d ret;
@@ -257,11 +301,15 @@ namespace OSVR.ClientKit
 
         /// <summary>
         /// Get the view matrix (inverse of pose) for the given eye of a
-        /// viewer in a display config - matrix of floats.
+        /// viewer in a display config - matrix of floats. 
+        /// Will only succeed if CheckDisplayStartup() returns true.
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
         /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
+        /// <returns>
+        /// the transformation matrix from room space to eye space (not relative to pose of the viewer)
+        /// </returns>
         public Matrix44f GetViewerEyeViewMatrixf(ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags)
         {
             Matrix44f ret;
@@ -277,6 +325,11 @@ namespace OSVR.ClientKit
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
+        /// <returns>
+        /// Number of surfaces (numbered [0, surfaces - 1]) for the
+        /// given viewer and eye. Constant throughout the active, valid lifetime of
+        /// a display config object.
+        /// </returns>
         public SurfaceCount GetNumSurfacesForViewerEye(ViewerCount viewer, EyeCount eye)
         {
             SurfaceCount ret;
@@ -288,11 +341,12 @@ namespace OSVR.ClientKit
 
         /// <summary>
         /// Get the dimensions/location of the viewport **within the display
-        /// input** for a surface seen by an eye of a viewer
-        /// in a display config. (This does not include other video inputs that may be
-        /// on a single virtual desktop, etc. and does not necessarily indicate that a
-        /// viewport in the sense of glViewport must be created with these parameters,
-        /// though the output order matches for convenience.)
+        ///     input** for a surface seen by an eye of a viewer in a display config. (This
+        ///     does not include other video inputs that may be on a single virtual desktop,
+        ///     etc. or explicitly account for display configurations that use multiple
+        ///     video inputs. It does not necessarily indicate that a viewport in the sense
+        ///     of glViewport must be created with these parameters, though the parameter
+        ///     order matches for convenience.)
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
@@ -321,10 +375,10 @@ namespace OSVR.ClientKit
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
         /// <param name="surface">Surface ID</param>
-        /// <param name="near">Distance to near clipping plane - must be nonzero, typically positive.</param>
-        /// <param name="far">Distance to far clipping plane - must be nonzero, typically
-        ///     positive and greater than near.</param>
-        /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
+        /// <param name="near">Distance from viewpoint to near clipping plane - must be positive..</param>
+        /// <param name="far">Distance from viewpoint to far clipping plane - must be positive
+        /// and not equal to near, typically greater than near.</param>
+        /// <param name="flags">Bitwise OR of matrix convention flags (see MatrixConventionFlags)</param>
         public Matrix44d GetProjectionMatrixForViewerEyeSurfaced(ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far, MatrixConventionsFlags flags)
         {
             Matrix44d ret;
@@ -341,9 +395,9 @@ namespace OSVR.ClientKit
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
         /// <param name="surface">Surface ID</param>
-        /// <param name="near">Distance to near clipping plane - must be nonzero, typically positive.</param>
-        /// <param name="far">Distance to far clipping plane - must be nonzero, typically
-        ///     positive and greater than near.</param>
+        /// <param name="near">Distance from viewpoint to near clipping plane - must be positive..</param>
+        /// <param name="far">Distance from viewpoint to far clipping plane - must be positive
+        /// and not equal to near, typically greater than near.</param>
         /// <param name="flags">Bitwise OR of matrix convention flags (see OSVR_MatrixFlags)</param>
         public Matrix44f GetProjectionMatrixForViewerEyeSurfacef(ViewerCount viewer, EyeCount eye, SurfaceCount surface, float near, float far, MatrixConventionsFlags flags)
         {
@@ -361,11 +415,15 @@ namespace OSVR.ClientKit
         /// This simply reports true or false, and does not specify which kind of
         /// distortion implementations have been parameterized for this display. For
         /// each distortion implementation your application supports, you'll want to
-        /// call the function to retrieve the parameters to find out if it is available.
+        /// call the corresponding priority function to find out if it is available.
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
         /// <param name="surface">Surface ID</param>
+        /// <returns>
+        /// whether distortion is requested. Constant throughout the active, valid
+        /// lifetime of a display config object.
+        /// </returns>
         public bool DoesViewerEyeSurfaceWantDistortion(ViewerCount viewer, EyeCount eye, SurfaceCount surface)
         {
             bool ret;
@@ -376,15 +434,43 @@ namespace OSVR.ClientKit
         }
 
         /// <summary>
-        /// Returns the radial distortion parameters, if known/requested, for a
-        /// surface seen by an eye of a viewer in a display config.
+        /// Returns the priority/availability of radial distortion parameters for
+        /// a surface seen by an eye of a viewer in a display config.
         /// 
-        /// NOTE: This method will throw an exception if the surface does not have
-        /// radial distortion parameters.
+        /// If osvrClientDoesViewerEyeSurfaceWantDistortion() reports false, then the
+        /// display does not request distortion of any sort, and thus neither this nor
+        /// any other distortion strategy priority function will report an "available"
+        /// priority.
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
         /// <param name="surface">Surface ID</param>
+        /// <returns>
+        /// the priority level. Negative values indicate this technique
+        /// not available. Higher values indicate higher preference for the given
+        /// technique based on the device's description. Constant throughout the
+        /// active, valid lifetime of a display config object.
+        /// </returns>
+        public DistortionPriority GetViewerEyeSurfaceRadialDistortionPriority(ViewerCount viewer, EyeCount eye, SurfaceCount surface)
+        {
+            DistortionPriority ret;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetViewerEyeSurfaceRadialDistortionPriority(mHandle, viewer, eye, surface, out ret),
+                "[OSVR] DisplayConfig.GetViewerEyeSurfaceWantDistortion(): native osvrClientGetViewerEyeSurfaceRadialDistortionPriority call failed.");
+            return ret;
+        }
+
+        /// <summary>
+        /// Returns the radial distortion parameters, if known/requested, for a
+        /// surface seen by an eye of a viewer in a display config.
+        /// 
+        /// Will only succeed if GetViewerEyeSurfaceRadialDistortionPriority()
+        /// reports a non-negative priority.
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="surface">Surface ID</param>
+        /// <returns>the parameters for radial distortion</returns>
         public RadialDistortionParameters GetViewerEyeSurfaceRadialDistortion(ViewerCount viewer, EyeCount eye, SurfaceCount surface)
         {
             RadialDistortionParameters ret;
