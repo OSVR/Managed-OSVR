@@ -324,6 +324,11 @@ namespace OSVR
                 this.m_context = osvrClientInit(applicationIdentifier, 0);
             }
 
+            internal ClientContext(SafeClientContextHandle handle)
+            {
+                this.m_context = handle;
+            }
+
             ~ClientContext()
             {
                 Dispose(false);
