@@ -376,10 +376,7 @@ namespace OSVR
             {
                 if (null != childDisposable)
                 {
-                    lock (childDisposables)
-                    {
-                        this.childDisposables.Add(childDisposable);
-                    }
+                    this.childDisposables.Add(childDisposable);
                 }
             }
 
