@@ -344,6 +344,11 @@ namespace OSVR
                 System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] In ClientContext.Dispose({0})", disposing));
                 if (disposing)
                 {
+                    foreach (var childDisposable in childDisposables)
+                    {
+                        childDisposable.Dispose();
+                    }
+
                     if (this.m_context != null && !this.m_context.IsInvalid)
                     {
                         this.m_context.Dispose();
@@ -361,6 +366,24 @@ namespace OSVR
             }
 
             /// <summary>
+            /// In the native client kit, some objects are owned by the client context,
+            /// and are cleaned up when the context is cleaned up. We need to track these,
+            /// so that we don't accidently attempt to free an object that is already
+            /// freed when the context is destroyed. The child's Dispose implementation must
+            /// be idempotent, per convention.
+            /// </summary>
+            internal void AddChildDisposable(IDisposable childDisposable)
+            {
+                if (null != childDisposable)
+                {
+                    lock (childDisposables)
+                    {
+                        this.childDisposables.Add(childDisposable);
+                    }
+                }
+            }
+
+            /// <summary>
             /// Get a parsed display configuration. This lets you query eyes, surfaces, and
             /// viewers.
             /// </summary>
@@ -371,6 +394,7 @@ namespace OSVR
                 {
                     return null;
                 }
+                this.AddChildDisposable(handle);
                 return new DisplayConfig(handle);
             }
 
@@ -396,7 +420,7 @@ namespace OSVR
                 {
                     throw new ArgumentException("Couldn't create interface because the path was invalid.");
                 }
-
+                this.AddChildDisposable(iface);
                 return new Interface(iface);
             }
 
@@ -429,6 +453,9 @@ namespace OSVR
             }
 
             private SafeClientContextHandle m_context;
+            private readonly System.Collections.Generic.List<IDisposable> childDisposables
+                = new System.Collections.Generic.List<IDisposable>();
+
         }
     } // end namespace ClientKit
 } // end namespace OSVR
