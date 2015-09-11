@@ -26,8 +26,23 @@ namespace JointClientKit
         static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries(true);
-            using(var context = JointClientOptions.InitContext("com.osvr.Examples.JointClientKit"))
+            var jointClientOptions = new JointClientOptions();
+
+            //jointClientOptions.AddString("/display", "displays/OSVR_HDK_1_1.json");
+
+            // not presently working in the native code.
+            //jointClientOptions.LoadPlugin("com_osvr_example_EyeTracker");
+
+            // This is the default behavior when you doin't specify a JointClientOptions
+            jointClientOptions.AutoloadPlugins();
+            jointClientOptions.TriggerHardwareDetect();
+            using(var context = JointClientOptions.InitContext(ref jointClientOptions, "com.osvr.Examples.JointClientKit"))
             {
+                if (context == null)
+                {
+                    Console.WriteLine("Failed to create a joint client context.");
+                    return;
+                }
                 context.update();
             }
         }
