@@ -25,7 +25,7 @@ namespace JointClientKit
     {
         static void Main(string[] args)
         {
-            ClientContext.PreloadNativeLibraries();
+            ClientContext.PreloadNativeLibraries(true);
             using(var context = JointClientOptions.InitContext("com.osvr.Examples.JointClientKit"))
             {
                 context.update();

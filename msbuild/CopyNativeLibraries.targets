@@ -37,7 +37,14 @@
                      $(NativeBinDir32)\osvrUtil.dll;
                      $(NativeBinDir32)\osvrClient.dll;
                      $(NativeBinDir32)\msvcp120.dll;
-                     $(NativeBinDir32)\msvcr120.dll">
+                     $(NativeBinDir32)\msvcr120.dll;
+                     $(NativeBinDir32)\osvrConnection.dll;
+                     $(NativeBinDir32)\osvrJointClientKit.dll;
+                     $(NativeBinDir32)\osvrPluginHost.dll;
+                     $(NativeBinDir32)\osvrPluginKit.dll;
+                     $(NativeBinDir32)\osvrServer.dll;
+                     $(NativeBinDir32)\osvrUSBSerial.dll;
+                     $(NativeBinDir32)\osvrVRPNServer.dll">
       <Bits>32</Bits>
       <DestDir>$(OutputPath32)</DestDir>
     </NativeLibrary>
