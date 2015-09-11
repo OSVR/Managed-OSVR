@@ -29,12 +29,7 @@ namespace JointClientKit
             var jointClientOptions = new JointClientOptions();
 
             //jointClientOptions.AddString("/display", "displays/OSVR_HDK_1_1.json");
-
-            // not presently working in the native code.
-            //jointClientOptions.LoadPlugin("com_osvr_example_EyeTracker");
-
-            // This is the default behavior when you doin't specify a JointClientOptions
-            jointClientOptions.AutoloadPlugins();
+            jointClientOptions.LoadPlugin("com_osvr_example_EyeTracker");
             jointClientOptions.TriggerHardwareDetect();
             using(var context = JointClientOptions.InitContext(ref jointClientOptions, "com.osvr.Examples.JointClientKit"))
             {
@@ -43,8 +38,20 @@ namespace JointClientKit
                     Console.WriteLine("Failed to create a joint client context.");
                     return;
                 }
+
                 context.update();
+                var leftEye = EyeTracker2DInterface.GetInterface(context, "/me/eyes/left");
+                leftEye.StateChanged += leftEye_StateChanged;
+                for (var i = 0; i < 10000; i++)
+                {
+                    context.update();
+                }
             }
+        }
+
+        static void leftEye_StateChanged(object sender, TimeValue timestamp, int sensor, Vec2 report)
+        {
+            Console.WriteLine("Got a left eye state changed event! Something must be working...");
         }
     }
 }
