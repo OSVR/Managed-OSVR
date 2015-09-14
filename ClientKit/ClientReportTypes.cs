@@ -118,7 +118,7 @@ namespace OSVR
             public bool state;
         }
 
-        enum ImagingValueType
+        public enum ImagingValueType
         {
             UnsignedInt = 0,
             SignedInt = 1,
@@ -139,7 +139,7 @@ namespace OSVR
         public struct ImagingState
         {
             public ImagingMetadata metadata;
-            public ImageBufferElement[] data;
+            public IntPtr data;
         }
 
         [StructLayout(LayoutKind.Sequential)]

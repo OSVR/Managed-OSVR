@@ -62,6 +62,9 @@ namespace OSVR
         public delegate void EyeTracker2DCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref EyeTracker2DReport report);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void ImagingCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref ImagingReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void EyeTracker3DCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref EyeTracker3DReport report);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -116,6 +119,9 @@ namespace OSVR
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrRegisterEyeTrackerBlinkCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] EyeTrackerBlinkCallback cb, IntPtr /*void**/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterImagingCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] ImagingCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
