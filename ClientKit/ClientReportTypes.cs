@@ -29,6 +29,11 @@ using DirectionState = OSVR.ClientKit.Vec3;
 using EyeTracker3DState = OSVR.ClientKit.Vec3;
 using PositionState = OSVR.ClientKit.Vec3;
 
+using ImageDimension = System.UInt32;
+using ImageChannels = System.Byte;
+using ImageDepth = System.Byte;
+using ImageBufferElement = System.Byte;
+
 namespace OSVR
 {
     namespace ClientKit
@@ -111,6 +116,37 @@ namespace OSVR
             public SensorCount sensor;
             [MarshalAs(UnmanagedType.I1)]
             public bool state;
+        }
+
+        enum ImagingValueType
+        {
+            UnsignedInt = 0,
+            SignedInt = 1,
+            FloatingPoint = 2,
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ImagingMetadata
+        {
+            public ImageDimension height;
+            public ImageDimension width;
+            public ImageChannels channels;
+            public ImageDepth depth;
+            public ImagingValueType type;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ImagingState
+        {
+            public ImagingMetadata metadata;
+            public ImageBufferElement[] data;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ImagingReport
+        {
+            public SensorCount sensor;
+            public ImagingState state;
         }
     }
 
