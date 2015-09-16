@@ -48,10 +48,11 @@ namespace Imaging
             }
         }
 
+        static uint reportNum = 0;
         static void imaging_StateChanged(object sender, TimeValue timestamp, int sensor, ImagingState report)
         {
             var m = report.metadata;
-            Console.WriteLine("Got Imaging report:");
+            Console.WriteLine("Got Imaging report {0}:", reportNum++);
             Console.WriteLine("\twidth: {0}", m.width);
             Console.WriteLine("\theight: {0}", m.height);
             Console.WriteLine("\tdepth: {0}", m.depth);
