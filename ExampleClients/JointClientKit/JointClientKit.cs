@@ -18,6 +18,7 @@
 
 using System;
 using OSVR.ClientKit;
+using System.Threading;
 
 namespace JointClientKit
 {
@@ -42,9 +43,10 @@ namespace JointClientKit
                 context.update();
                 var leftEye = EyeTracker2DInterface.GetInterface(context, "/me/eyes/left");
                 leftEye.StateChanged += leftEye_StateChanged;
-                for (var i = 0; i < 10000; i++)
+                for (var i = 0; i < 15; i++)
                 {
                     context.update();
+                    Thread.Sleep(200);
                 }
             }
         }
