@@ -103,6 +103,10 @@ namespace OSVR.ClientKit
 
         public virtual InterfaceState<T> GetState()
         {
+            if (stateGetter == null)
+            {
+                throw new NotImplementedException("This interface does not have a state getter.");
+            }
             TimeValue timestamp = default(TimeValue);
             T state = default(T);
             stateGetter(this.iface.Handle, ref timestamp, ref state);

@@ -23,6 +23,7 @@
     <Compile Include="EyeTracker2DInterface.cs" />
     <Compile Include="EyeTracker3DInterface.cs" />
     <Compile Include="EyeTrackerBlinkInterface.cs" />
+    <Compile Include="ImagingInterface.cs" />
     <Compile Include="InterfaceAdapter.cs" />
     <Compile Include="InterfaceBase.cs" />
     <Compile Include="JointClientKit.cs" />
