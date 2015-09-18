@@ -26,6 +26,7 @@
     <Compile Include="ImagingInterface.cs" />
     <Compile Include="InterfaceAdapter.cs" />
     <Compile Include="InterfaceBase.cs" />
+    <Compile Include="JointClientKit.cs" />
     <Compile Include="Location2DInterface.cs" />
     <Compile Include="MatrixConventions.cs" />
     <Compile Include="OrientationInterface.cs" />

@@ -89,6 +89,15 @@ namespace OSVR
             /// </summary>
             static public void PreloadNativeLibraries()
             {
+                PreloadNativeLibraries(false);
+            }
+
+            /// <summary>
+            /// Try finding the right path for the p/invoked DLLs before p/invoke tries to.
+            /// <param name="loadJointClientKitDlls">True, if you wish to load joint client kit DLLs as well.</param>
+            /// </summary>
+            static public void PreloadNativeLibraries(bool loadJointClientKitDlls)
+            {
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
 
                 // This line based on http://stackoverflow.com/a/864497/265522
@@ -98,11 +107,11 @@ namespace OSVR
                 LibraryPathAttempter attempt;
                 if (IntPtr.Size == 8)
                 {
-                    attempt = new LibraryPathAttempter(assemblyPath).Attempt("x86_64").Attempt("x64").Attempt("64");
+                    attempt = new LibraryPathAttempter(assemblyPath, loadJointClientKitDlls).Attempt("x86_64").Attempt("x64").Attempt("64");
                 }
                 else
                 {
-                    attempt = new LibraryPathAttempter(assemblyPath).Attempt("x86").Attempt("32");
+                    attempt = new LibraryPathAttempter(assemblyPath, loadJointClientKitDlls).Attempt("x86").Attempt("32");
                 }
                 if (attempt.Success)
                 {
@@ -134,11 +143,14 @@ namespace OSVR
                 /// default search path and the assembly path
                 /// </summary>
                 /// <param name="dir">Directory containing this assembly.</param>
-                public LibraryPathAttempter(string dir)
+                /// <param name="loadJointClientKitDlls">True if you want to load the joint client kit dlls,
+                /// false if you just want the client kit dlls.</param>
+                public LibraryPathAttempter(string dir, bool loadJointClientKitDlls)
                 {
                     AssemblyDir = dir;
                     AttemptDirectory("");
                     AttemptDirectory(dir);
+                    mLoadJointClientKitDlls = loadJointClientKitDlls;
                 }
 
                 /// <summary>
@@ -294,9 +306,31 @@ namespace OSVR
                 /// Native library names (without lib, .dll, or .so), in
                 /// order of increasing dependency - that is, each
                 /// library may only depend on libraries earlier in the list.
+                /// This list contains only the client kit dlls and not the joint client kit dlls.
                 /// </summary>
-                private String[] NativeLibs = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit" };
+                private String[] NativeLibsClientOnly = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit" };
 
+                /// <summary>
+                /// Native library names (without lib, .dll, or .so), in
+                /// order of increasing dependency - that is, each
+                /// library may only depend on libraries earlier in the list.
+                /// This list contains all the dlls required for running a joint client/server application.
+                /// </summary>
+                private String[] NativeLibsJointClientKit = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit", "osvrConnection.dll", "osvrPluginHost.dll", "osvrPluginKit.dll", "osvrUSBSerial.dll", "osvrVRPNServer.dll", "osvrJointClientKit.dll" };
+
+                /// <summary>
+                /// The correct native libs set - either the client only or joint client list, depending on
+                /// the passed in configuration.
+                /// </summary>
+                private String[] NativeLibs
+                {
+                    get
+                    {
+                        return mLoadJointClientKitDlls ? NativeLibsJointClientKit : NativeLibsClientOnly;
+                    }
+                }
+
+                private bool mLoadJointClientKitDlls;
                 private string AssemblyDir;
                 private string DllDir;
                 private bool LoadedSuccess = false;
@@ -324,6 +358,11 @@ namespace OSVR
                 this.m_context = osvrClientInit(applicationIdentifier, 0);
             }
 
+            internal ClientContext(SafeClientContextHandle handle)
+            {
+                this.m_context = handle;
+            }
+
             ~ClientContext()
             {
                 Dispose(false);
@@ -344,6 +383,11 @@ namespace OSVR
                 System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] In ClientContext.Dispose({0})", disposing));
                 if (disposing)
                 {
+                    foreach (var childDisposable in childDisposables)
+                    {
+                        childDisposable.Dispose();
+                    }
+
                     if (this.m_context != null && !this.m_context.IsInvalid)
                     {
                         this.m_context.Dispose();
@@ -361,6 +405,21 @@ namespace OSVR
             }
 
             /// <summary>
+            /// In the native client kit, some objects are owned by the client context,
+            /// and are cleaned up when the context is cleaned up. We need to track these,
+            /// so that we don't accidently attempt to free an object that is already
+            /// freed when the context is destroyed. The child's Dispose implementation must
+            /// be idempotent, per convention.
+            /// </summary>
+            internal void AddChildDisposable(IDisposable childDisposable)
+            {
+                if (null != childDisposable)
+                {
+                    this.childDisposables.Add(childDisposable);
+                }
+            }
+
+            /// <summary>
             /// Get a parsed display configuration. This lets you query eyes, surfaces, and
             /// viewers.
             /// </summary>
@@ -371,6 +430,7 @@ namespace OSVR
                 {
                     return null;
                 }
+                this.AddChildDisposable(handle);
                 return new DisplayConfig(handle);
             }
 
@@ -396,7 +456,7 @@ namespace OSVR
                 {
                     throw new ArgumentException("Couldn't create interface because the path was invalid.");
                 }
-
+                this.AddChildDisposable(iface);
                 return new Interface(iface);
             }
 
@@ -429,6 +489,9 @@ namespace OSVR
             }
 
             private SafeClientContextHandle m_context;
+            private readonly System.Collections.Generic.List<IDisposable> childDisposables
+                = new System.Collections.Generic.List<IDisposable>();
+
         }
     } // end namespace ClientKit
 } // end namespace OSVR
