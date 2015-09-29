@@ -19,17 +19,17 @@
 using System;
 using OSVR.ClientKit;
 
-namespace Locamotion
+namespace Locomotion
 {
-    class Locamotion
+    class Locomotion
     {
-        static void locamotionPosition_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Vec2 report)
+        static void locomotionPosition_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Vec2 report)
         {
             Console.WriteLine("Got report: sensor is {0}. Position is ( x: {1}, y: {2} )",
                 sensor, report.x, report.y);
         }
 
-        static void locamotionVelocity_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Vec2 report)
+        static void locomotionVelocity_StateChanged(object sender, TimeValue timestamp, Int32 sensor, Vec2 report)
         {
             Console.WriteLine("Got report: sensor is {0}. Velocity is ( x: {1}, y: {2} )",
                 sensor, report.x, report.y);
@@ -39,7 +39,7 @@ namespace Locamotion
         static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries();
-			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.Locamotion"))
+			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.Locomotion"))
             {
 #if NET20
                 using (var naviPosition = NaviPositionInterface.GetInterface(context, "/me/feet/both"))
@@ -49,8 +49,8 @@ namespace Locamotion
                 using (var naviVelocity = context.GetNaviVelocityInterface("/me/feet/both"))
 #endif
                 {
-                    naviPosition.StateChanged += locamotionPosition_StateChanged;
-                    naviVelocity.StateChanged += locamotionVelocity_StateChanged;
+                    naviPosition.StateChanged += locomotionPosition_StateChanged;
+                    naviVelocity.StateChanged += locomotionVelocity_StateChanged;
 
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)

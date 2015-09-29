@@ -4,15 +4,15 @@
     <ProjectGuid>{17DAE210-0412-4E1D-B087-6886DF5D6A28}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Locamotion</RootNamespace>
-    <AssemblyName>Locamotion</AssemblyName>
+    <RootNamespace>Locomotion</RootNamespace>
+    <AssemblyName>Locomotion</AssemblyName>
   </PropertyGroup>
   <Import Project="$(MSBuildProjectDirectory)\..\..\msbuild\MultiFramework.targets" />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Locamotion.cs" />
+    <Compile Include="Locomotion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
