@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imaging", "ExampleClients\I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JointClientKit", "ExampleClients\JointClientKit\JointClientKit.csproj", "{8CD3CFDA-A288-4F7D-B164-8DD4EFB998C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locamotion", "ExampleClients\Locamotion\Locamotion.csproj", "{17DAE210-0412-4E1D-B087-6886DF5D6A28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locomotion", "ExampleClients\Locamotion\Locomotion.csproj", "{17DAE210-0412-4E1D-B087-6886DF5D6A28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
