@@ -70,6 +70,12 @@ namespace OSVR
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void EyeTrackerBlinkCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref EyeTrackerBlinkReport report);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void NaviVelocityCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref NaviVelocityReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void NaviPositionCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref NaviPositionReport report);
+
         /// @brief Interface handle object. Typically acquired from a ClientContext.
         /// @ingroup ClientKitCPP
         public class Interface : IDisposable
@@ -124,6 +130,12 @@ namespace OSVR
             public extern static Byte osvrRegisterImagingCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] ImagingCallback cb, IntPtr /*void**/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterNaviVelocityCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] NaviVelocityCallback cb, IntPtr /*void*/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterNaviPositionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] NaviPositionCallback cb, IntPtr /*void*/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
@@ -155,6 +167,12 @@ namespace OSVR
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrGetEyeTrackerBlinkState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, [MarshalAs(UnmanagedType.I1)]ref bool state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetNaviVelocityState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetNaviPositionState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientFreeInterface(IntPtr iface);
@@ -222,6 +240,16 @@ namespace OSVR
             public void registerCallback(EyeTrackerBlinkCallback cb, IntPtr /*void*/ userdata)
             {
                 osvrRegisterEyeTrackerBlinkCallback(m_interface, cb, userdata);
+            }
+
+            public void registerCallback(NaviVelocityCallback cb, IntPtr /*void*/ userdata)
+            {
+                osvrRegisterNaviVelocityCallback(m_interface, cb, userdata);
+            }
+
+            public void registerCallback(NaviPositionCallback cb, IntPtr /*void*/ userdata)
+            {
+                osvrRegisterNaviPositionCallback(m_interface, cb, userdata);
             }
 
             private SafeClientInterfaceHandle m_interface;

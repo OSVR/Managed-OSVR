@@ -148,6 +148,35 @@ namespace OSVR
             public SensorCount sensor;
             public ImagingState state;
         }
+
+        /// <summary>
+        /// Report type for an navigation velocity callback on a tracker
+        /// interface
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct NaviVelocityReport
+        {
+            public SensorCount sensor;
+            /// <summary>
+            /// The 2D vector in world coordinate system, in meters/second
+            /// </summary>
+            public Vec2 state;
+        }
+
+        /// <summary>
+        /// Report type for an navigation position callback on a tracker
+        /// interface
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct NaviPositionReport
+        {
+            public SensorCount sensor;
+            /// <summary>
+            /// The 2D vector in world coordinate system, in meters, relative to
+            /// starting position 
+            /// </summary>
+            public Vec2 state;
+        }
     }
 
 }

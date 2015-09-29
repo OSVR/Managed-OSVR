@@ -80,6 +80,9 @@ namespace OSVR
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameter(SafeClientContextHandle ctx, string path, StringBuilder buf, UIntPtr len);
 
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            internal extern static Byte osvrClientCheckStatus(SafeClientContextHandle ctx);
+
             #endregion ClientKit C functions
 
             #region Support for locating native libraries
@@ -394,6 +397,22 @@ namespace OSVR
                         this.m_context = null;
                     }
                 }
+            }
+
+            /// <summary>
+            /// Checks to see if the client context is fully started up and connected
+            /// properly to a server.
+            ///
+            /// If this reports that the client context is not OK, there may not be a server
+            /// running, or you may just have to call osvrClientUpdate() a few times to
+            /// permit startup to finish. The return value of this call will not change from
+            /// failure to success without calling osvrClientUpdate().
+            /// </summary>
+            /// <returns>false if not yet fully connected/initialized, or if
+            /// some other error (null context) occurs.</returns>
+            public bool CheckStatus()
+            {
+                return osvrClientCheckStatus(this.m_context) == OSVR_RETURN_SUCCESS;
             }
 
             /// <summary>
