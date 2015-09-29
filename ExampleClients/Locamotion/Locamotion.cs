@@ -41,9 +41,6 @@ namespace Locamotion
             ClientContext.PreloadNativeLibraries();
 			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.Locamotion"))
             {
-                // This is just one of the paths: specifically, the Hydra's left
-                // controller's analog trigger. More are in the docs and/or listed on
-                // startup
 #if NET20
                 using (var naviPosition = NaviPositionInterface.GetInterface(context, "/me/feet/both"))
                 using (var naviVelocity = NaviVelocityInterface.GetInterface(context, "/me/feet/both"))
