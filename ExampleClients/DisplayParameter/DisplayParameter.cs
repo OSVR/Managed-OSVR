@@ -68,7 +68,7 @@ namespace DisplayParameter
                             {
                                 var displayDimensions = displayConfig.GetDisplayDimensions(displayInputIndex);
                                 Console.WriteLine("Display input {0} is width {1} and height {2}",
-                                    displayDimensions.Width, displayDimensions.Height);
+                                    displayInputIndex, displayDimensions.Width, displayDimensions.Height);
                             }
 
                             var numViewers = displayConfig.GetNumViewers();
