@@ -29,6 +29,8 @@
     <Compile Include="JointClientKit.cs" />
     <Compile Include="Location2DInterface.cs" />
     <Compile Include="MatrixConventions.cs" />
+    <Compile Include="NaviPositionInterface.cs" />
+    <Compile Include="NaviVelocityInterface.cs" />
     <Compile Include="OrientationInterface.cs" />
     <Compile Include="PoseInterface.cs" />
     <Compile Include="PositionInterface.cs" />
