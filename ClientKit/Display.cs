@@ -78,7 +78,7 @@ namespace OSVR.ClientKit
     }
 
     /// <summary>
-    /// Projection clipping planes for a give viewer-eye-surface locus.
+    /// Projection clipping planes for a given viewer-eye-surface locus.
     /// </summary>
     public struct ProjectionClippingPlanes
     {
@@ -446,7 +446,7 @@ namespace OSVR.ClientKit
         /// This is the OSVR-assigned display input: it may not (and in practice,
         /// usually will not) match any platform-specific display indices. This function
         /// exists to associate surfaces with video inputs as enumerated by
-        /// osvrClientGetNumDisplayInputs().
+        /// GetNumDisplayInputs().
         /// </summary>
         /// <param name="viewer">Viewer ID</param>
         /// <param name="eye">Eye ID</param>
