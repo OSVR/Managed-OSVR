@@ -60,9 +60,19 @@ namespace DisplayParameter
                             {
                                 context.update();
                             } while (!displayConfig.CheckDisplayStartup());
-                            
+
+                            var numDisplayInputs = displayConfig.GetNumDisplayInputs();
+                            Console.WriteLine("There are {0} display inputs.", numDisplayInputs);
+
+                            for(byte displayInputIndex = 0; displayInputIndex < numDisplayInputs; displayInputIndex++)
+                            {
+                                var displayDimensions = displayConfig.GetDisplayDimensions(displayInputIndex);
+                                Console.WriteLine("Display input {0} is width {1} and height {2}",
+                                    displayInputIndex, displayDimensions.Width, displayDimensions.Height);
+                            }
+
                             var numViewers = displayConfig.GetNumViewers();
-                            Console.WriteLine("There are {0} viewers for this display.", numViewers);
+                            Console.WriteLine("There are {0} viewers for this display configuration.", numViewers);
                             for (uint viewer = 0; viewer < numViewers; viewer++)
                             {
                                 var numEyes = displayConfig.GetNumEyesForViewer(viewer);
@@ -124,6 +134,16 @@ namespace DisplayParameter
                                         var projectionf = displayConfig.GetProjectionMatrixForViewerEyeSurfacef(
                                             viewer, eye, surface, 1.0f, 1000.0f, MatrixConventionsFlags.Default);
                                         Console.WriteLine("Projection (float): {0}", projectionf.ToString());
+
+                                        var projectionClippingPlanes = displayConfig.GetViewerEyeSurfaceProjectionClippingPlanes(viewer, eye, surface);
+                                        Console.WriteLine("Projection clipping planes: left: {0} right: {1} top: {2} bottom: {3}",
+                                            projectionClippingPlanes.Left,
+                                            projectionClippingPlanes.Right,
+                                            projectionClippingPlanes.Top,
+                                            projectionClippingPlanes.Bottom);
+
+                                        var displayInputIndex = displayConfig.GetViewerEyeSurfaceDisplayInputIndex(viewer, eye, surface);
+                                        Console.WriteLine("Display input index: {0}", displayInputIndex);
                                     }
                                 }
                             }

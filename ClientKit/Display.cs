@@ -27,6 +27,8 @@ using ViewerCount = System.UInt32;
 using EyeCount = System.Byte;
 using SurfaceCount = System.UInt32;
 using DistortionPriority = System.Int32;
+using DisplayInputCount = System.Byte;
+using DisplayDimension = System.Int32;
 
 namespace OSVR.ClientKit
 {
@@ -66,6 +68,26 @@ namespace OSVR.ClientKit
         }
     }
 
+    /// <summary>
+    /// Dimensions for a display input.
+    /// </summary>
+    public struct DisplayDimensions
+    {
+        public DisplayDimension Width { get; set; }
+        public DisplayDimension Height { get; set; }
+    }
+
+    /// <summary>
+    /// Projection clipping planes for a given viewer-eye-surface locus.
+    /// </summary>
+    public struct ProjectionClippingPlanes
+    {
+        public double Left { get; set; }
+        public double Right { get; set; }
+        public double Bottom { get; set; }
+        public double Top { get; set; }
+    }
+
     internal static class DisplayConfigNative {
 #if MANAGED_OSVR_INTERNAL_PINVOKE
             // On iOS and Xbox 360, plugins are statically linked into
@@ -84,6 +106,13 @@ namespace OSVR.ClientKit
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientCheckDisplayStartup(SafeDisplayConfigHandle context);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetNumDisplayInputs(SafeDisplayConfigHandle display, out DisplayInputCount numDisplayInputs);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetDisplayDimensions(SafeDisplayConfigHandle display,
+            DisplayInputCount displayInputIndex, out DisplayDimension width, out DisplayDimension height);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumViewers(SafeDisplayConfigHandle display, out ViewerCount viewers);
@@ -118,6 +147,10 @@ namespace OSVR.ClientKit
             out ViewportDimension left, out ViewportDimension bottom, out ViewportDimension width, out ViewportDimension height);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetViewerEyeSurfaceDisplayInputIndex(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, out DisplayInputCount displayInput);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixd(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far,
             MatrixConventionsFlags flags, out Matrix44d matrix);
@@ -126,6 +159,11 @@ namespace OSVR.ClientKit
         public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixf(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, float near, float far,
             MatrixConventionsFlags flags, out Matrix44f matrix);
+
+        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        public extern static Byte osvrClientGetViewerEyeSurfaceProjectionClippingPlanes(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface,
+            out double left, out double right, out double bottom, out double top);
 
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientDoesViewerEyeSurfaceWantDistortion(SafeDisplayConfigHandle display,
@@ -201,6 +239,39 @@ namespace OSVR.ClientKit
         public bool CheckDisplayStartup()
         {
             return DisplayConfigNative.osvrClientCheckDisplayStartup(mHandle) == ClientContext.OSVR_RETURN_SUCCESS;
+        }
+
+        /// <summary>
+        /// A display config can have one or more display inputs to pass pixels
+        /// over (HDMI/DVI connections, etc): retrieve the number of display inputs in
+        /// the current configuration.
+        /// </summary>
+        /// <returns>Number of display inputs in the logical display
+        /// topology, **constant** throughout the active, valid lifetime of a display
+        /// config object.</returns>
+        public DisplayInputCount GetNumDisplayInputs()
+        {
+            DisplayInputCount ret;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetNumDisplayInputs(mHandle, out ret),
+                "[OSVR] DisplayCOnfig.GetNumDisplayInputs(): native osvrClientGetNumDisplayInputs call failed.");
+            return ret;
+        }
+
+        /// <summary>
+        /// Retrieve the pixel dimensions of a given display input for a display config
+        /// </summary>
+        /// <param name="displayInputIndex">The zero-based index of the display input.</param>
+        /// <returns>The height and width of the display input specified. These dimensions are
+        /// **constant** throughout the active, valid lifetime of a display config object.</returns>
+        public DisplayDimensions GetDisplayDimensions(DisplayInputCount displayInputIndex)
+        {
+            DisplayDimension width, height;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetDisplayDimensions(mHandle, displayInputIndex,
+                    out width, out height),
+                    "[OSVR] DisplayConfig.GetDisplayDimensions(): native osvrClientGetDisplayDimensions call failed.");
+            return new DisplayDimensions { Width = width, Height = height };
         }
 
         /// <summary>
@@ -369,6 +440,31 @@ namespace OSVR.ClientKit
         }
 
         /// <summary>
+        /// Get the index of the display input for a surface seen by an eye of a
+        /// viewer in a display config.
+        /// 
+        /// This is the OSVR-assigned display input: it may not (and in practice,
+        /// usually will not) match any platform-specific display indices. This function
+        /// exists to associate surfaces with video inputs as enumerated by
+        /// GetNumDisplayInputs().
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="surface">Surface ID</param>
+        /// <returns>Zero-based index of the display input pixels for
+        ///  this surface are tranmitted over.
+        ///  This association is **constant** throughout the active, valid lifetime of a
+        ///  display config object.</returns>
+        public DisplayInputCount GetViewerEyeSurfaceDisplayInputIndex(ViewerCount viewer, EyeCount eye, SurfaceCount surface)
+        {
+            DisplayInputCount ret;
+            CheckSuccess(DisplayConfigNative.osvrClientGetViewerEyeSurfaceDisplayInputIndex(mHandle,
+                viewer, eye, surface, out ret),
+                "[OSVR] DisplayConfig.GetViewerEyeSurfaceDisplayInputIndex(): native osvrClientGetViewerEyeSurfaceDisplayInputIndex call failed");
+            return ret;
+        }
+
+        /// <summary>
         /// Get the projection matrix for a surface seen by an eye of a viewer
         /// in a display config. (double version)
         /// </summary>
@@ -406,6 +502,39 @@ namespace OSVR.ClientKit
                 DisplayConfigNative.osvrClientGetViewerEyeSurfaceProjectionMatrixf(mHandle, viewer, eye, surface, near, far, flags, out ret),
                 "[OSVR] DisplayConfig.GetProjectionForViewerEyeSurface(): native osvrClientGetProjectionForViewerEyeSurface call failed.");
             return ret;
+        }
+
+        /// <summary>
+        /// Get the clipping planes (positions at unit distance) for a surface
+        /// seen by an eye of a viewer
+        /// in a display config.
+        ///
+        /// This is only for use in integrations that cannot accept a fully-formulated
+        /// projection matrix as returned by
+        /// osvrClientGetViewerEyeSurfaceProjectionMatrixf() or
+        /// osvrClientGetViewerEyeSurfaceProjectionMatrixd(), and may not necessarily
+        /// provide the same optimizations.
+        /// 
+        /// As all the planes are given at unit (1) distance, before passing these
+        /// planes to a consuming function in your application/engine, you will typically
+        /// divide them by your near clipping plane distance.
+        /// </summary>
+        /// <param name="viewer">Viewer ID</param>
+        /// <param name="eye">Eye ID</param>
+        /// <param name="surface">Surface ID</param>
+        public ProjectionClippingPlanes GetViewerEyeSurfaceProjectionClippingPlanes(ViewerCount viewer, EyeCount eye, SurfaceCount surface)
+        {
+            double left, right, top, bottom;
+            CheckSuccess(
+                DisplayConfigNative.osvrClientGetViewerEyeSurfaceProjectionClippingPlanes(mHandle, viewer, eye, surface, out left, out right, out bottom, out top),
+                "[OSVR] DisplayConfig.GetViewerEyeSurfaceProjectionClippingPlanes(): native osvrClientGetViewerEyeSurfaceProjectionClippingPlanes call failed.");
+            return new ProjectionClippingPlanes
+            {
+                Left = left,
+                Right = right,
+                Bottom = bottom,
+                Top = top
+            };
         }
 
         /// <summary>
