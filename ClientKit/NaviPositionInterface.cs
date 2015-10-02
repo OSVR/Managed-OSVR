@@ -25,7 +25,7 @@ namespace OSVR.ClientKit
         public static NaviPositionInterface GetNaviPositionInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
-            return new NaviPosition(iface);
+            return new NaviPositionInterface(iface);
         }
     }
 #endif

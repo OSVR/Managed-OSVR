@@ -25,7 +25,7 @@ namespace OSVR.ClientKit
         public static NaviVelocityInterface GetNaviVelocityInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
-            return new NaviVelocity(iface);
+            return new NaviVelocityInterface(iface);
         }
     }
 #endif
