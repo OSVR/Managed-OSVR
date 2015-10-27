@@ -39,6 +39,7 @@
     <Compile Include="Interface.cs" />
     <Compile Include="ClientReportTypes.cs" />
     <Compile Include="Pose3.cs" />
+    <Compile Include="SkeletonInterface.cs" />
     <Compile Include="Vec2.cs" />
     <Compile Include="Vec3.cs" />
     <Compile Include="Quaternion.cs" />
