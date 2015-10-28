@@ -37,7 +37,6 @@ namespace OSVR.ClientKit
         ClavicleLeft,
         ArmUpperLeft,
         ArmLowerLeft,
-        HandLowerLeft,
 
         // left hand
         HandLeft,
@@ -65,7 +64,6 @@ namespace OSVR.ClientKit
         ClavicleRight,
         ArmUpperRight,
         ArmLowerRight,
-        HandLowerRight,
 
         // right hand
         HandRight,
@@ -99,24 +97,6 @@ namespace OSVR.ClientKit
         FootRight,
         ToesRight,
     }
-
-    ///// <summary>
-    ///// There are various types of skeleton reports that allow to get
-    ///// different skeleton joints/bones. Note, Each report can include information
-    ///// from one skeleton sensor due to connectedness of skeleton. Refer to the
-    ///// definition of each report below for a complete description of which bones are
-    ///// included
-    ///// </summary>
-    //public enum SkeletonReportSizes
-    //{
-    //    Head = 2,
-    //    Arm = 19,
-    //    Leg = 4,
-    //    Foot = 4,
-    //    Hand = 16,
-    //    LOA1 = 21,
-    //    LOA2 = 55,
-    //}
 
     /// <summary>
     /// A state of a single skeleton joint (joint/bone)
@@ -154,7 +134,26 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct SkeletonTrimmedState
     {
-        public SkeletonJointReport[] joints;
+        public SkeletonJointReport pelvis;
+        public SkeletonJointReport spine0;
+        public SkeletonJointReport spine1;
+        public SkeletonJointReport spine2;
+        public SkeletonJointReport spine3;
+        public SkeletonJointReport neck;
+        public SkeletonJointReport head;
+        public SkeletonJointReport clavicleLeft;
+        public SkeletonJointReport armUpperLeft;
+        public SkeletonJointReport armLowerLeft;
+        public SkeletonJointReport handLeft;
+        public SkeletonJointReport handRight;
+        public SkeletonJointReport legUpperLeft;
+        public SkeletonJointReport legLowerLeft;
+        public SkeletonJointReport footLeft;
+        public SkeletonJointReport toesLeft;
+        public SkeletonJointReport legUpperRight;
+        public SkeletonJointReport legLowerRight;
+        public SkeletonJointReport footRight;
+        public SkeletonJointReport toesRight;
     }
 
     /// <summary>
@@ -178,7 +177,17 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct SkeletonWholeState
     {
-        public SkeletonJointReport[] joints;
+        public SkeletonJointReport pelvis;
+        public SkeletonJointReport spine0;
+        public SkeletonJointReport spine1;
+        public SkeletonJointReport spine2;
+        public SkeletonJointReport spine3;
+        public SkeletonJointReport neck;
+        public SkeletonJointReport head;
+        public SkeletonArmState leftArm;
+        public SkeletonArmState rightArm;
+        public SkeletonLegState leftLeg;
+        public SkeletonLegState rightLeg;
     }
 
     /// <summary>
@@ -206,7 +215,22 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct SkeletonHandState
     {
-        public SkeletonJointReport[] joints;
+        public SkeletonJointReport hand;
+        public SkeletonJointReport thumbProximal;
+        public SkeletonJointReport thumbMedial;
+        public SkeletonJointReport thumbDistal;
+        public SkeletonJointReport indexProximal;
+        public SkeletonJointReport indexMedial;
+        public SkeletonJointReport indexDistal;
+        public SkeletonJointReport middleProximal;
+        public SkeletonJointReport middleMedial;
+        public SkeletonJointReport middleDistal;
+        public SkeletonJointReport ringProximal;
+        public SkeletonJointReport ringMedial;
+        public SkeletonJointReport ringDistal;
+        public SkeletonJointReport pinkyProximal;
+        public SkeletonJointReport pinkyMedial;
+        public SkeletonJointReport pinkyDistal;
     }
 
     /// <summary>
@@ -227,7 +251,10 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct SkeletonArmState
     {
-        public SkeletonJointReport[] joints;
+        public SkeletonJointReport clavicle; //OSVR_SKELETON_CLAVICLE_LEFT,
+        public SkeletonJointReport armUpper; //OSVR_SKELETON_ARM_UPPER_LEFT,
+        public SkeletonJointReport armLower; //OSVR_SKELETON_ARM_LOWER_LEFT,
+        public SkeletonHandState hand;
     }
 
     /// <summary>
@@ -256,7 +283,8 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct SkeletonFootState
     {
-        public SkeletonJointReport[] joints;
+        public SkeletonJointReport foot;
+        public SkeletonJointReport toes;
     }
 
     /// <summary>
@@ -284,7 +312,9 @@ namespace OSVR.ClientKit
     [StructLayout(LayoutKind.Sequential)]
     public struct SkeletonLegState
     {
-        public SkeletonJointReport[] joints;
+        public SkeletonJointReport legUpper;
+        public SkeletonJointReport legLower;
+        public SkeletonFootState foot;
     }
 
     /// <summary>
