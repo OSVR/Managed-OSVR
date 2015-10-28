@@ -345,37 +345,37 @@ namespace OSVR.ClientKit
             return new SkeletonJointInterface(iface);
         }
 
-        public static SkeletonTrimmedInterface GetSkeletonJointInterface(this ClientContext context, string path)
+        public static SkeletonTrimmedInterface GetSkeletonTrimmedInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
             return new SkeletonTrimmedInterface(iface);
         }
 
-        public static SkeletonWholeInterface GetSkeletonJointInterface(this ClientContext context, string path)
+        public static SkeletonWholeInterface GetSkeletonWholeInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
             return new SkeletonWholeInterface(iface);
         }
 
-        public static SkeletonHandInterface GetSkeletonJointInterface(this ClientContext context, string path)
+        public static SkeletonHandInterface GetSkeletonHandInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
             return new SkeletonHandInterface(iface);
         }
 
-        public static SkeletonArmInterface GetSkeletonJointInterface(this ClientContext context, string path)
+        public static SkeletonArmInterface GetSkeletonArmInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
             return new SkeletonArmInterface(iface);
         }
 
-        public static SkeletonFootInterface GetSkeletonJointInterface(this ClientContext context, string path)
+        public static SkeletonFootInterface GetSkeletonFootInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
             return new SkeletonFootInterface(iface);
         }
 
-        public static SkeletonLegInterface GetSkeletonJointInterface(this ClientContext context, string path)
+        public static SkeletonLegInterface GetSkeletonLegInterface(this ClientContext context, string path)
         {
             var iface = context.getInterface(path);
             return new SkeletonLegInterface(iface);
