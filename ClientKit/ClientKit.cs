@@ -83,6 +83,12 @@ namespace OSVR
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             internal extern static Byte osvrClientCheckStatus(SafeClientContextHandle ctx);
 
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            internal extern static Byte osvrClientSetRoomRotationUsingHead(SafeClientContextHandle ctx);
+
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            internal extern static Byte osvrClientClearRoomToWorldTransform(SafeClientContextHandle ctx);
+
             #endregion ClientKit C functions
 
             #region Support for locating native libraries
@@ -505,6 +511,40 @@ namespace OSVR
                 }
 
                 return buf.ToString();
+            }
+
+            
+            /// <summary>
+            /// Updates the internal "room to world" transformation (applied to all
+            /// tracker data for this client context instance) based on the user's head
+            /// orientation, so that the direction the user is facing becomes -Z to your
+            /// application. Only rotates about the Y axis (yaw).
+            /// 
+            /// Note that this method internally calls osvrClientUpdate() to get a head pose
+            /// so your callbacks may be called during its execution!
+            /// </summary>
+            public void SetRoomRotationUsingHead()
+            {
+                Byte success = osvrClientSetRoomRotationUsingHead(m_context);
+                if(OSVR_RETURN_SUCCESS != success)
+                {
+                    throw new ApplicationException("OSVR::SetRoomRotationUsingHead() - native osvrClientSetRoomRotationUsingHead call failed.");
+                }
+            }
+
+
+            /// <summary>
+            /// Clears/resets the internal "room to world" transformation back to an
+            /// identity transformation - that is, clears the effect of any other
+            /// manipulation of the room to world transform.
+            /// </summary>
+            public void ClearRoomToWorldTransform()
+            {
+                Byte success = osvrClientClearRoomToWorldTransform(m_context);
+                if(OSVR_RETURN_SUCCESS != success)
+                {
+                    throw new ApplicationException("OSVR::ClearRoomToWorldTransform() - native osvrClientClearRoomToWorldTransform call failed.");
+                }
             }
 
             private SafeClientContextHandle m_context;
