@@ -85,9 +85,24 @@ namespace TrackerCallback
                     var positionInterface = new PositionInterface(lefthand);
                     positionInterface.StateChanged += TrackerCallbacks.myPositionCallback;
 
+                    bool resetYawMode = false;
                     // Pretend that this is your application's main loop
                     for (int i = 0; i < 1000000; ++i)
                     {
+                        // toggle between reset yaw mode and normal mode
+                        // every 5000 iterations.
+                        if (i % 5000 == 0)
+                        {
+                            resetYawMode = !resetYawMode;
+                            if(resetYawMode)
+                            {
+                                context.SetRoomRotationUsingHead();
+                            }
+                            else
+                            {
+                                context.ClearRoomToWorldTransform();
+                            }
+                        }
                         context.update();
                     }
 
