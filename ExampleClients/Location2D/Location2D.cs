@@ -45,6 +45,7 @@ namespace Location2D
         static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries();
+            using (ServerAutoStarter serverAutoStarter = new ServerAutoStarter())
             using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.Location2D"))
             {
 #if NET20

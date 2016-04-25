@@ -45,6 +45,7 @@ namespace Direction
         static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries();
+            using (ServerAutoStarter serverAutoStarter = new ServerAutoStarter())
             using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.Direction"))
             {
 #if NET20

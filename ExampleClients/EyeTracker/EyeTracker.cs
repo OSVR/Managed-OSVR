@@ -64,6 +64,7 @@ namespace EyeTracker
         static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries();
+            using (ServerAutoStarter serverAutoStarter = new ServerAutoStarter())
             using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.EyeTracker"))
             {
                 // there are three types of interfaces for eye tracking, 2D, 3D, and blinking
