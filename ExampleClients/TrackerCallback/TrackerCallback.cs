@@ -64,7 +64,8 @@ namespace TrackerCallback
         public static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries();
-			using (ClientContext context = new ClientContext("com.osvr.exampleclients.managed.TrackerCallback"))
+            using (ServerAutoStarter serverAutoStarter = new ServerAutoStarter())
+            using (ClientContext context = new ClientContext("com.osvr.exampleclients.managed.TrackerCallback"))
             {
                 // This is just one of the paths. You can also use:
                 // /me/hands/right

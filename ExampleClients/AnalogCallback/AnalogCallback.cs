@@ -31,7 +31,8 @@ namespace AnalogCallback
         static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries();
-			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.AnalogCallback"))
+            using (ServerAutoStarter serverAutoStarter = new ServerAutoStarter())
+            using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.AnalogCallback"))
             {
                 // This is just one of the paths: specifically, the Hydra's left
                 // controller's analog trigger. More are in the docs and/or listed on

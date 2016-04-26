@@ -44,6 +44,59 @@ namespace OSVR
             }
         }
 
+        /// <summary>
+        /// Instantiate this class in order to attempt to auto-start the server. Call Dispose() to free up
+        /// resources related to auto-starting the server (this may stop the server), if any for the current platform. The implementation
+        /// for this is platform specific. It is recommended that you instantiate at most one of these
+        /// per application, and its lifetime should be longer than any client context.
+        /// </summary>
+        public class ServerAutoStarter : IDisposable
+        {
+#if MANAGED_OSVR_INTERNAL_PINVOKE
+            // On iOS and Xbox 360, plugins are statically linked into
+            // the executable, so we have to use __Internal as the
+            // library name.
+            private const string OSVRCoreDll = "__Internal";
+#else
+            private const string OSVRCoreDll = "osvrClientKit";
+#endif
+
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            internal extern static void osvrClientAttemptServerAutoStart();
+
+            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            internal extern static void osvrClientReleaseAutoStartedServer();
+
+            public ServerAutoStarter()
+            {
+                osvrClientAttemptServerAutoStart();
+            }
+
+            ~ServerAutoStarter()
+            {
+                Dispose(false);
+            }
+
+            public void Dispose()
+            {
+                System.Diagnostics.Debug.WriteLine("[OSVR] In ServerAutoStarter.Dispose()");
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// We don't strictly need this overload here, but it helps to keep the same
+            /// IDisposable pattern when reviewing the code later to make sure we're implementing
+            /// it correctly.
+            /// </summary>
+            /// <param name="disposing"></param>
+            protected virtual void Dispose(bool disposing)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("[OSVR] In ServerAutoStarter.Dispose({0})", disposing));
+                osvrClientReleaseAutoStartedServer(); // don't check disposing here, because this is an unmanaged resource
+            }
+        }
+
         /// @brief Client context object: Create and keep one in your application.
         /// Handles lifetime management and provides access to ClientKit
         /// functionality.

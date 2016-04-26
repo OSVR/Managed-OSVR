@@ -39,7 +39,8 @@ namespace Locomotion
         static void Main(string[] args)
         {
             ClientContext.PreloadNativeLibraries();
-			using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.Locomotion"))
+            using (ServerAutoStarter serverAutoStarter = new ServerAutoStarter())
+            using (OSVR.ClientKit.ClientContext context = new OSVR.ClientKit.ClientContext("com.osvr.exampleclients.managed.Locomotion"))
             {
 #if NET20
                 using (var naviPosition = NaviPositionInterface.GetInterface(context, "/me/feet/both"))
