@@ -76,6 +76,27 @@ namespace OSVR
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void NaviPositionCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref NaviPositionReport report);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void SkeletonJointCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref SkeletonJointReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void SkeletonTrimmedCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref SkeletonTrimmedReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void SkeletonWholeCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref SkeletonWholeReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void SkeletonHandCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref SkeletonHandReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void SkeletonArmCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref SkeletonArmReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void SkeletonFootCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref SkeletonFootReport report);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void SkeletonLegCallback(IntPtr /*void*/ userdata, ref TimeValue timestamp, ref SkeletonLegReport report);
+
         /// @brief Interface handle object. Typically acquired from a ClientContext.
         /// @ingroup ClientKitCPP
         public class Interface : IDisposable
@@ -95,7 +116,7 @@ namespace OSVR
             //typedef struct OSVR_ClientInterfaceObject *OSVR_ClientInterface;
             //typedef char OSVR_ReturnCode; (0 == OSVR_RETURN_SUCCESS; 1 == OSVR_RETURN_FAILURE)
 
-
+            // Callbacks
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrRegisterPositionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] PositionCallback cb, IntPtr /*void**/ userdata);
 
@@ -136,8 +157,27 @@ namespace OSVR
             public extern static Byte osvrRegisterNaviPositionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] NaviPositionCallback cb, IntPtr /*void*/ userdata);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
-            public extern static Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
+            public extern static Byte osvrRegisterSkeletonJointCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] SkeletonJointCallback cb, IntPtr /*void*/ userdata);
 
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterSkeletonTrimmedCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] SkeletonTrimmedCallback cb, IntPtr /*void*/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterSkeletonWholeCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] SkeletonWholeCallback cb, IntPtr /*void*/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterSkeletonHandCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] SkeletonHandCallback cb, IntPtr /*void*/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterSkeletonArmCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] SkeletonArmCallback cb, IntPtr /*void*/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterSkeletonFootCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] SkeletonFootCallback cb, IntPtr /*void*/ userdata);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrRegisterSkeletonLegCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] SkeletonLegCallback cb, IntPtr /*void*/ userdata);
+
+            // state functions
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrGetPoseState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Pose3 state);
 
@@ -173,6 +213,31 @@ namespace OSVR
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrGetNaviPositionState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetSkeletonJointState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref SkeletonJointState state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetSkeletonTrimmedState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref SkeletonTrimmedState state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetSkeletonWholeState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref SkeletonWholeState state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetSkeletonHandState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref SkeletonHandState state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetSkeletonArmState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref SkeletonArmState state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetSkeletonFootState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref SkeletonFootState state);
+
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrGetSkeletonLegState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref SkeletonLegState state);
+
+            // other functions
+            [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+            public extern static Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface);
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientFreeInterface(IntPtr iface);
