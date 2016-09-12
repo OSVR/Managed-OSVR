@@ -86,5 +86,11 @@ namespace OSVR.RenderManager
         public extern static Byte osvrRenderManagerGetNumRenderInfoInCollection(
             OSVR_RenderInfoCollection renderInfoCollection,
             out OSVR_RenderInfoCount countOut);
+
+        #region OpenGL
+
+
+        #endregion
+
     }
 }
