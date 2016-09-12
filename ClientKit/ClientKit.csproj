@@ -27,6 +27,7 @@
     <Compile Include="InterfaceAdapter.cs" />
     <Compile Include="InterfaceBase.cs" />
     <Compile Include="JointClientKit.cs" />
+    <Compile Include="OSVRLibNames.cs" />
     <Compile Include="Location2DInterface.cs" />
     <Compile Include="MatrixConventions.cs" />
     <Compile Include="NaviPositionInterface.cs" />

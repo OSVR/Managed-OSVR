@@ -39,45 +39,36 @@ namespace OSVR.ClientKit
 
     internal static class JointClientKitNative
     {
-#if MANAGED_OSVR_INTERNAL_PINVOKE
-            // On iOS and Xbox 360, plugins are statically linked into
-            // the executable, so we have to use __Internal as the
-            // library name.
-            private const string OSVRCoreDll = "__Internal";
-#else
-        private const string JointClientKitDll = "osvrJointClientKit";
-#endif
-
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static IntPtr /*SafeJointClientOptionsHandle*/ osvrJointClientCreateOptions();
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrJointClientOptionsAutoloadPlugins(IntPtr /*SafeJointClientOptionsHandle*/ options);
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrJointClientOptionsLoadPlugin(IntPtr /*SafeJointClientOptionsHandle*/ options,
             string pluginName);
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrJointClientOptionsInstantiateDriver(IntPtr /*SafeJointClientOptionsHandle*/ options,
             string pluginName, string driverName, string parameters);
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrJointClientOptionsAddAlias(IntPtr /*SafeJointClientOptionsHandle*/ options,
             string path, string source);
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrJointClientOptionsAddAliases(IntPtr /*SafeJointClientOptionsHandle*/ options,
             string aliases);
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrJointClientOptionsAddString(IntPtr /*SafeJointClientOptionsHandle*/ options,
             string path, string s);
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrJointClientOptionsTriggerHardwareDetect(IntPtr /*SafeJointClientOptionsHandle*/ options);
 
-        [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static SafeClientContextHandle osvrJointClientInit(
             string applicationIdentifier, IntPtr /*SafeJointClientOptionsHandle*/ options);
     }

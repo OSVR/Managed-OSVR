@@ -89,91 +89,82 @@ namespace OSVR.ClientKit
     }
 
     internal static class DisplayConfigNative {
-#if MANAGED_OSVR_INTERNAL_PINVOKE
-            // On iOS and Xbox 360, plugins are statically linked into
-            // the executable, so we have to use __Internal as the
-            // library name.
-            private const string OSVRCoreDll = "__Internal";
-#else
-            private const string OSVRCoreDll = "osvrClientKit";
-#endif
-
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetDisplay(SafeClientContextHandle context, out SafeDisplayConfigHandle display);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientFreeDisplay(IntPtr display);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientCheckDisplayStartup(SafeDisplayConfigHandle context);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumDisplayInputs(SafeDisplayConfigHandle display, out DisplayInputCount numDisplayInputs);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetDisplayDimensions(SafeDisplayConfigHandle display,
             DisplayInputCount displayInputIndex, out DisplayDimension width, out DisplayDimension height);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumViewers(SafeDisplayConfigHandle display, out ViewerCount viewers);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerPose(SafeDisplayConfigHandle display,
             ViewerCount viewer, out Pose3 pose);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumEyesForViewer(SafeDisplayConfigHandle display,
             ViewerCount viewer, out EyeCount eyes);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyePose(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, out Pose3 pose);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeViewMatrixd(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags, out Matrix44d mat);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeViewMatrixf(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags, out Matrix44f mat);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetNumSurfacesForViewerEye(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, out SurfaceCount surfaces);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetRelativeViewportForViewerEyeSurface(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface,
             out ViewportDimension left, out ViewportDimension bottom, out ViewportDimension width, out ViewportDimension height);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceDisplayInputIndex(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, out DisplayInputCount displayInput);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixd(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far,
             MatrixConventionsFlags flags, out Matrix44d matrix);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixf(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, float near, float far,
             MatrixConventionsFlags flags, out Matrix44f matrix);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceProjectionClippingPlanes(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface,
             out double left, out double right, out double bottom, out double top);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientDoesViewerEyeSurfaceWantDistortion(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, [MarshalAs(UnmanagedType.I1)]out bool distortionRequested);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceRadialDistortionPriority(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, out DistortionPriority priority);
 
-        [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceRadialDistortion(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, out RadialDistortionParameters distortionParams);
     }

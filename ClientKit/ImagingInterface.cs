@@ -33,16 +33,7 @@ namespace OSVR.ClientKit
 
     internal static class ImagingInterfaceNative
     {
-#if UNITY_IPHONE || UNITY_XBOX360
-			// On iOS and Xbox 360, plugins are statically linked into
-			// the executable, so we have to use __Internal as the
-			// library name.
-			const string OSVR_CORE_DLL = "__Internal";
-#else
-        const string OSVR_CORE_DLL = "osvrClientKit";
-#endif
-
-        [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
         public static extern Byte osvrClientFreeImage(SafeClientContextHandle ctx, IntPtr imageData);
     }
 
