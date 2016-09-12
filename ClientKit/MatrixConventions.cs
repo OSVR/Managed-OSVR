@@ -145,19 +145,10 @@ namespace OSVR.ClientKit
 
     internal static class MatrixConventionsNative
     {
-        #if MANAGED_OSVR_INTERNAL_PINVOKE
-        // On iOS and Xbox 360, plugins are statically linked into
-        // the executable, so we have to use __Internal as the
-        // library name.
-        private const string OSVRUtilDll = "__Internal";
-#else
-        private const string OSVRUtilDll = "osvrUtil";
-#endif
-
-        [DllImport(OSVRUtilDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.Util, CallingConvention = CallingConvention.Cdecl)]
         public static extern Byte osvrPose3ToMatrixd(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44d mat);
 
-        [DllImport(OSVRUtilDll, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(OSVRLibNames.Util, CallingConvention = CallingConvention.Cdecl)]
         public static extern Byte osvrPose3ToMatrixf(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44f mat);
     }
 

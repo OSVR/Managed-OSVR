@@ -52,19 +52,10 @@ namespace OSVR
         /// </summary>
         public class ServerAutoStarter : IDisposable
         {
-#if MANAGED_OSVR_INTERNAL_PINVOKE
-            // On iOS and Xbox 360, plugins are statically linked into
-            // the executable, so we have to use __Internal as the
-            // library name.
-            private const string OSVRCoreDll = "__Internal";
-#else
-            private const string OSVRCoreDll = "osvrClientKit";
-#endif
-
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             internal extern static void osvrClientAttemptServerAutoStart();
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             internal extern static void osvrClientReleaseAutoStartedServer();
 
             public ServerAutoStarter()
@@ -105,41 +96,31 @@ namespace OSVR
         {
             #region ClientKit C functions
 
-            // Should be defined if used with Unity and UNITY_IOS or UNITY_XBOX360 are defined
-#if MANAGED_OSVR_INTERNAL_PINVOKE
-            // On iOS and Xbox 360, plugins are statically linked into
-            // the executable, so we have to use __Internal as the
-            // library name.
-            private const string OSVRCoreDll = "__Internal";
-#else
-            private const string OSVRCoreDll = "osvrClientKit";
-#endif
-
             public static Byte OSVR_RETURN_SUCCESS = 0x0;
             public static Byte OSVR_RETURN_FAILURE = 0x1;
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             public extern static SafeClientContextHandle osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags);
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientUpdate(SafeClientContextHandle ctx);
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientShutdown(IntPtr /*OSVR_ClientContext*/ ctx);
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameterLength(SafeClientContextHandle ctx, string path, out UIntPtr len);
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientGetStringParameter(SafeClientContextHandle ctx, string path, StringBuilder buf, UIntPtr len);
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             internal extern static Byte osvrClientCheckStatus(SafeClientContextHandle ctx);
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             internal extern static Byte osvrClientSetRoomRotationUsingHead(SafeClientContextHandle ctx);
 
-            [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(OSVRLibNames.ClientKit, CallingConvention = CallingConvention.Cdecl)]
             internal extern static Byte osvrClientClearRoomToWorldTransform(SafeClientContextHandle ctx);
 
             #endregion ClientKit C functions
