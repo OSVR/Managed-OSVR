@@ -55,7 +55,7 @@ namespace OSVR.RenderManager
         public extern static Byte osvrRenderManagerFinishPresentRenderBuffers(
             OSVR_RenderManager renderManager,
             OSVR_RenderManagerPresentState presentState, RenderParams renderParams,
-            OSVR_CBool shouldFlipY); // @TODO: we need to marshall this bool correctly
+            [MarshalAs(UnmanagedType.I1)]OSVR_CBool shouldFlipY); // @TODO: we need to marshall this bool correctly
 
         [DllImport(OSVRLibNames.RenderManager, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrRenderManagerStartRegisterRenderBuffers(
@@ -65,7 +65,7 @@ namespace OSVR.RenderManager
         public extern static Byte osvrRenderManagerFinishRegisterRenderBuffers(
             OSVR_RenderManager renderManager,
             OSVR_RenderManagerRegisterBufferState registerBufferState,
-            OSVR_CBool appWillNotOverwriteBeforeNewPresent);
+            [MarshalAs(UnmanagedType.I1)]OSVR_CBool appWillNotOverwriteBeforeNewPresent);
 
         [DllImport(OSVRLibNames.RenderManager, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrRenderManagerPresentSolidColorf(

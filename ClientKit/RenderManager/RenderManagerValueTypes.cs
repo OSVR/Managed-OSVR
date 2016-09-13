@@ -80,6 +80,7 @@ namespace OSVR.RenderManager
     public struct OpenGLContextParams
     {
         public string WindowTitle;
+        [MarshalAs(UnmanagedType.I1)]
         public OSVR_CBool FullScreen;
         public int Width;
         public int Height;
@@ -87,6 +88,7 @@ namespace OSVR.RenderManager
         public int YPos;
         public int BitsPerPixel;
         public uint NumBuffers;
+        [MarshalAs(UnmanagedType.I1)]
         public OSVR_CBool visible;
     }
 
@@ -99,27 +101,35 @@ namespace OSVR.RenderManager
         public delegate void Destroy(IntPtr data);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool AddOpenGLContext(IntPtr data, ref OpenGLContextParams p);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool RemoveOpenGLContext(IntPtr data);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool MakeCurrent(IntPtr data, UIntPtr display);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool SwapBuffers(IntPtr data, UIntPtr display);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool SetVerticalSync(IntPtr data, OSVR_CBool verticalSync);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool HandleEvents(IntPtr data);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool GetDisplayFrameBuffer(IntPtr data, UIntPtr display, out UIntPtr frameBufferOut);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public delegate OSVR_CBool GetDisplaySizeOverride(IntPtr data, UIntPtr display, out int width, out int height);
     }
 
@@ -145,7 +155,7 @@ namespace OSVR.RenderManager
     [StructLayout(LayoutKind.Sequential)]
     internal struct OSVR_GraphicsLibraryOpenGL
     {
-        public OSVR_OpenGLToolkitFunctions? Toolkit;
+        public IntPtr /* OSVR_OpenGLToolkitFunctions* */ Toolkit;
     }
 
     public static class OpenGLToolkitFunctionsDelegates
