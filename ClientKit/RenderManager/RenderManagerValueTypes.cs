@@ -126,7 +126,7 @@ namespace OSVR.RenderManager
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public delegate OSVR_CBool GetDisplayFrameBuffer(IntPtr data, UIntPtr display, out UIntPtr frameBufferOut);
+        public delegate OSVR_CBool GetDisplayFrameBuffer(IntPtr data, UIntPtr display, out uint frameBufferOut);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
@@ -157,7 +157,7 @@ namespace OSVR.RenderManager
     {
         public IntPtr /* OSVR_OpenGLToolkitFunctions* */ Toolkit;
     }
-
+    
     public static class OpenGLToolkitFunctionsDelegates
     {
         public delegate void Create();
@@ -168,7 +168,7 @@ namespace OSVR.RenderManager
         public delegate OSVR_CBool SwapBuffers(UIntPtr display);
         public delegate OSVR_CBool SetVerticalSync(OSVR_CBool verticalSync);
         public delegate OSVR_CBool HandleEvents();
-        public delegate OSVR_CBool GetDisplayFrameBuffer(UIntPtr display, out UIntPtr frameBufferOut);
+        public delegate OSVR_CBool GetDisplayFrameBuffer(UIntPtr display, out uint frameBufferOut);
         public delegate OSVR_CBool GetDisplaySizeOverride(UIntPtr display, out int width, out int height);
     }
 
