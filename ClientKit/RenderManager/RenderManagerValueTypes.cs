@@ -194,6 +194,43 @@ namespace OSVR.RenderManager
         public OpenGLToolkitFunctions? Toolkit;
     }
 
+    public struct RenderBufferOpenGL
+    {
+        public uint/*GLuint*/ ColorBufferName;
+        public uint/*GLuint*/ DepthStencilBufferName;
+    }
+
+    internal struct OSVR_RenderInfoOpenGL
+    {
+        public OSVR_GraphicsLibraryOpenGL Library;
+        public ViewportDescription Viewport;
+        public Pose3 Pose;
+        public ProjectionMatrix Projection;
+    }
+
+    public struct RenderInfoOpenGL
+    {
+        public GraphicsLibraryOpenGL Library;
+        public ViewportDescription Viewport;
+        public Pose3 Pose;
+        public ProjectionMatrix Projection;
+        // @todo add conversion method from OSVR_RenderInfoOpenGL
+    }
+
+    internal struct OSVR_OpenResultsOpenGL
+    {
+        public OpenStatus Status;
+        public OSVR_GraphicsLibraryOpenGL Library;
+        public RenderBufferOpenGL Buffers; // @todo: why is this plural?
+    }
+
+    public struct OpenResultsOpenGL
+    {
+        public OpenStatus Status;
+        public GraphicsLibraryOpenGL Library;
+        public RenderBufferOpenGL Buffers; // @todo: why is this plural?
+    }
+
 
     #endregion
 
