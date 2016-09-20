@@ -354,6 +354,20 @@ namespace OSVR.RenderManager
             ret.Viewport = renderInfoNative.Viewport;
             return ret;
         }
+
+        internal OSVR_RenderInfoOpenGL ToNative()
+        {
+            OSVR_RenderInfoOpenGL ret = new OSVR_RenderInfoOpenGL();
+
+            // @todo do we need to retain this from the native OSVR_RenderInfoOpenGL?
+            ret.Library = new OSVR_GraphicsLibraryOpenGL();
+            ret.Library.Toolkit = IntPtr.Zero;
+
+            ret.Pose = Pose;
+            ret.Projection = Projection;
+            ret.Viewport = Viewport;
+            return ret;
+        }
     }
 
     internal struct OSVR_OpenResultsOpenGL
