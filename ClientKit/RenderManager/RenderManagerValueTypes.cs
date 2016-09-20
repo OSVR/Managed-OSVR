@@ -140,6 +140,7 @@ namespace OSVR.RenderManager
         public UIntPtr Size;
         public IntPtr Data;
 
+        // @todo: do we need the UnmanagedFunctionPointer here or in the delegate declarations above?
         public OpenGLToolkitFunctionsDelegatesNative.Create Create;
         public OpenGLToolkitFunctionsDelegatesNative.Destroy Destroy;
         public OpenGLToolkitFunctionsDelegatesNative.AddOpenGLContext AddOpenGLContext;
@@ -155,43 +156,174 @@ namespace OSVR.RenderManager
     [StructLayout(LayoutKind.Sequential)]
     internal struct OSVR_GraphicsLibraryOpenGL
     {
-        public IntPtr /* OSVR_OpenGLToolkitFunctions* */ Toolkit;
-    }
-    
-    public static class OpenGLToolkitFunctionsDelegates
-    {
-        public delegate void Create();
-        public delegate void Destroy();
-        public delegate OSVR_CBool AddOpenGLContext(ref OpenGLContextParams p);
-        public delegate OSVR_CBool RemoveOpenGLContext();
-        public delegate OSVR_CBool MakeCurrent(UIntPtr display);
-        public delegate OSVR_CBool SwapBuffers(UIntPtr display);
-        public delegate OSVR_CBool SetVerticalSync(OSVR_CBool verticalSync);
-        public delegate OSVR_CBool HandleEvents();
-        public delegate OSVR_CBool GetDisplayFrameBuffer(UIntPtr display, out uint frameBufferOut);
-        public delegate OSVR_CBool GetDisplaySizeOverride(UIntPtr display, out int width, out int height);
+        /// <summary>
+        /// Represents a native OSVR_OpenGLToolkitFunctions*
+        /// </summary>
+        public IntPtr Toolkit;
     }
 
-    public struct OpenGLToolkitFunctions
+    public class OpenGLToolkitFunctions
     {
-        public UIntPtr Size;
-        public IntPtr Data;
+        /// <summary>
+        /// Represents a native OSVR_OpenGLToolkitFunctions*
+        /// </summary>
+        private IntPtr mNativePtr;
 
-        public OpenGLToolkitFunctionsDelegates.Create Create;
-        public OpenGLToolkitFunctionsDelegates.Destroy Destroy;
-        public OpenGLToolkitFunctionsDelegates.AddOpenGLContext AddOpenGLContext;
-        public OpenGLToolkitFunctionsDelegates.RemoveOpenGLContext RemoveOpenGLContext;
-        public OpenGLToolkitFunctionsDelegates.MakeCurrent MakeCurrent;
-        public OpenGLToolkitFunctionsDelegates.SwapBuffers SwapBuffers;
-        public OpenGLToolkitFunctionsDelegates.SetVerticalSync SetVerticalSync;
-        public OpenGLToolkitFunctionsDelegates.HandleEvents HandleEvents;
-        public OpenGLToolkitFunctionsDelegates.GetDisplayFrameBuffer GetDisplayFrameBuffer;
-        public OpenGLToolkitFunctionsDelegates.GetDisplaySizeOverride GetDisplaySizeOverride;
+        /// <summary>
+        /// Allocates and returns a native OSVR_OpenGLToolkitFunctions* that can be passed to native code.
+        /// </summary>
+        internal IntPtr ToNative()
+        {
+            OSVR_OpenGLToolkitFunctions ret = new OSVR_OpenGLToolkitFunctions();
+            ret.Size = (UIntPtr)Marshal.SizeOf(ret); // @todo make sure this lines up with the native code size
+            ret.Data = IntPtr.Zero;
+
+            // Fill in the native callbacks
+            ret.Create = CreateNative;
+            ret.Destroy = DestroyNative;
+            ret.AddOpenGLContext = AddOpenGLContextNative;
+            ret.RemoveOpenGLContext = RemoveOpenGLContextNative;
+            ret.MakeCurrent = MakeCurrentNative;
+            ret.SwapBuffers = SwapBuffersNative;
+            ret.HandleEvents = HandleEventsNative;
+            ret.GetDisplayFrameBuffer = GetDisplayFrameBufferNative;
+            ret.GetDisplaySizeOverride = GetDisplaySizeOverrideNative;
+
+            // Allocate a native struct on the heap and pin it.
+            // @todo does RenderManager take ownership of the lifetime of this object?
+            // If so, will that work with Marshall.AllocHGlobal allocated memory?
+            mNativePtr = Marshal.AllocHGlobal(Marshal.SizeOf(ret));
+
+            // the third argument should be false the first time this is called,
+            // and true for each subsequent time it's called. Otherwise this will
+            // leak
+            Marshal.StructureToPtr(ret, mNativePtr, mNativePtr != IntPtr.Zero);
+
+            return mNativePtr;
+        }
+
+        #region Managed Callbacks
+
+        protected virtual void Create()
+        {
+
+        }
+
+        protected virtual void Destroy()
+        {
+
+        }
+
+        protected virtual OSVR_CBool AddOpenGLContext(ref OpenGLContextParams p)
+        {
+            return false;
+        }
+
+        protected virtual OSVR_CBool RemoveOpenGLContext()
+        {
+            return false;
+        }
+
+        protected virtual OSVR_CBool MakeCurrent(UIntPtr display)
+        {
+            return false;
+        }
+
+        protected virtual OSVR_CBool SwapBuffers(UIntPtr display)
+        {
+            return false;
+        }
+
+        protected virtual OSVR_CBool SetVerticalSync(OSVR_CBool verticalSync)
+        {
+            return false;
+        }
+
+        protected virtual OSVR_CBool HandleEvents()
+        {
+            return false;
+        }
+
+        protected virtual OSVR_CBool GetDisplayFrameBuffer(UIntPtr display, out uint frameBufferOut)
+        {
+            frameBufferOut = 0;
+            return false;
+        }
+
+        protected virtual OSVR_CBool GetDisplaySizeOverride(UIntPtr display, out int width, out int height)
+        {
+            width = height = 0;
+            return false;
+        }
+
+        #endregion
+
+        #region Native Callbacks
+
+        private void CreateNative(IntPtr data)
+        {
+            Create();
+        }
+
+        private void DestroyNative(IntPtr data)
+        {
+            Destroy();
+        }
+
+        private OSVR_CBool AddOpenGLContextNative(IntPtr data, ref OpenGLContextParams p)
+        {
+            return AddOpenGLContext(ref p);
+        }
+
+        private OSVR_CBool RemoveOpenGLContextNative(IntPtr data)
+        {
+            return RemoveOpenGLContext();
+        }
+
+        private OSVR_CBool MakeCurrentNative(IntPtr data, UIntPtr display)
+        {
+            return MakeCurrent(display);
+        }
+
+        private OSVR_CBool SwapBuffersNative(IntPtr data, UIntPtr display)
+        {
+            return SwapBuffers(display);
+        }
+
+        private OSVR_CBool SetVerticalSyncNative(IntPtr data, OSVR_CBool verticalSync)
+        {
+            return SetVerticalSync(verticalSync);
+        }
+
+        private OSVR_CBool HandleEventsNative(IntPtr data)
+        {
+            return HandleEvents();
+        }
+
+        private OSVR_CBool GetDisplayFrameBufferNative(IntPtr data, UIntPtr display, out uint frameBufferOut)
+        {
+            return GetDisplayFrameBuffer(display, out frameBufferOut);
+        }
+
+        private OSVR_CBool GetDisplaySizeOverrideNative(IntPtr data, UIntPtr display, out int width, out int height)
+        {
+            return GetDisplaySizeOverride(display, out width, out height);
+        }
+
+        #endregion
+
     }
 
     public struct GraphicsLibraryOpenGL
     {
-        public OpenGLToolkitFunctions? Toolkit;
+        public OpenGLToolkitFunctions Toolkit;
+
+        internal OSVR_GraphicsLibraryOpenGL ToNative()
+        {
+            OSVR_GraphicsLibraryOpenGL ret = new OSVR_GraphicsLibraryOpenGL();
+            ret.Toolkit = Toolkit != null ? Toolkit.ToNative() : IntPtr.Zero;
+            return ret;
+        }
     }
 
     public struct RenderBufferOpenGL
@@ -210,11 +342,18 @@ namespace OSVR.RenderManager
 
     public struct RenderInfoOpenGL
     {
-        public GraphicsLibraryOpenGL Library;
         public ViewportDescription Viewport;
         public Pose3 Pose;
         public ProjectionMatrix Projection;
-        // @todo add conversion method from OSVR_RenderInfoOpenGL
+
+        internal static RenderInfoOpenGL FromNative(OSVR_RenderInfoOpenGL renderInfoNative)
+        {
+            RenderInfoOpenGL ret = new RenderInfoOpenGL();
+            ret.Pose = renderInfoNative.Pose;
+            ret.Projection = renderInfoNative.Projection;
+            ret.Viewport = renderInfoNative.Viewport;
+            return ret;
+        }
     }
 
     internal struct OSVR_OpenResultsOpenGL
@@ -227,8 +366,15 @@ namespace OSVR.RenderManager
     public struct OpenResultsOpenGL
     {
         public OpenStatus Status;
-        public GraphicsLibraryOpenGL Library;
         public RenderBufferOpenGL Buffers; // @todo: why is this plural?
+
+        internal static OpenResultsOpenGL FromNative(OSVR_OpenResultsOpenGL resultsNative)
+        {
+            OpenResultsOpenGL ret = new OpenResultsOpenGL();
+            ret.Status = resultsNative.Status;
+            ret.Buffers = resultsNative.Buffers;
+            return ret;
+        }
     }
 
 

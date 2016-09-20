@@ -26,6 +26,8 @@ using OSVR_RenderInfoCount = System.Int32;
 using OSVR_RenderManagerPresentState = System.IntPtr;
 using OSVR_RenderManagerRegisterBufferState = System.IntPtr;
 using OSVR_RenderManagerOpenGL = System.IntPtr;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace OSVR.RenderManager
 {
@@ -343,7 +345,23 @@ namespace OSVR.RenderManager
             get { return mRenderManager; }
         }
 
+        public bool DoingOkay
+        {
+            get
+            {
+                byte rc = RenderManagerNative.osvrRenderManagerGetDoingOkay(mRenderManager);
+                return rc == ClientContext.OSVR_RETURN_SUCCESS;
+            }
+        }
 
+        public void PresentSolidColor(RGBFloat rgb)
+        {
+            byte rc = RenderManagerNative.osvrRenderManagerPresentSolidColorf(mRenderManager, rgb);
+            if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+            {
+                throw new InvalidOperationException("native osvrRenderManagerPresentSolidColorf call failed.");
+            }
+        }
     }
 
     public class RenderManagerOpenGL : RenderManager
@@ -354,12 +372,64 @@ namespace OSVR.RenderManager
             string graphicsLibraryName,
             GraphicsLibraryOpenGL graphicsLibrary) : base()
         {
-            // @todo convert from managed to native
-            OSVR_GraphicsLibraryOpenGL graphicsLibraryNative = default(OSVR_GraphicsLibraryOpenGL); 
-
             RenderManagerNative.osvrCreateRenderManagerOpenGL(
                 clientContext.ContextHandle, graphicsLibraryName,
-                graphicsLibraryNative, out mRenderManager, out mRenderManagerOpenGL);
+                graphicsLibrary.ToNative(), out mRenderManager, out mRenderManagerOpenGL);
+        }
+
+        public OpenResultsOpenGL OpenDisplay()
+        {
+            OSVR_OpenResultsOpenGL resultsNative;
+            Byte rc = RenderManagerNative.osvrRenderManagerOpenDisplayOpenGL(mRenderManagerOpenGL, out resultsNative);
+            if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+            {
+                throw new InvalidOperationException("osvrRenderManagerOpenDisplayOpenGL call failed.");
+            }
+            var ret = OpenResultsOpenGL.FromNative(resultsNative);
+            return ret;
+        }
+
+        public IList<RenderInfoOpenGL> GetRenderInfo(RenderParams renderParams)
+        {
+            byte rc = 0;
+            var ret = new List<RenderInfoOpenGL>();
+            OSVR_RenderInfoCollection renderInfoCollection;
+            rc = RenderManagerNative.osvrRenderManagerGetRenderInfoCollection(mRenderManager, renderParams, out renderInfoCollection);
+            if(rc == ClientContext.OSVR_RETURN_FAILURE)
+            {
+                throw new InvalidOperationException("osvrRenderManagerGetRenderInfoCollection call failed.");
+            }
+
+            int size;
+            rc = RenderManagerNative.osvrRenderManagerGetNumRenderInfoInCollection(renderInfoCollection, out size);
+            if(rc == ClientContext.OSVR_RETURN_FAILURE)
+            {
+                throw new InvalidOperationException("osvrRenderManagerGetNumRenderInfoInCollection call failed.");
+            }
+
+            try
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    OSVR_RenderInfoOpenGL renderInfo;
+                    rc = RenderManagerNative.osvrRenderManagerGetRenderInfoFromCollectionOpenGL(renderInfoCollection, i, out renderInfo);
+                    if (rc == ClientContext.OSVR_RETURN_FAILURE)
+                    {
+                        throw new InvalidOperationException("osvrRenderManagerGetRenderInfoInCollectionOpenGL call failed.");
+                    }
+                    ret.Add(RenderInfoOpenGL.FromNative(renderInfo));
+                }
+
+            }
+            finally
+            {
+                rc = RenderManagerNative.osvrRenderManagerReleaseRenderInfoCollection(renderInfoCollection);
+                if(rc == ClientContext.OSVR_RETURN_FAILURE)
+                {
+                    throw new InvalidOperationException("osvrRenderManagerReleaseRenderInfoCollection call failed.");
+                }
+            }
+            return ret;
         }
     }
 }
