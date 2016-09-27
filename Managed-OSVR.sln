@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrackerCallback", "ExampleClients\TrackerCallback\TrackerCallback.csproj", "{45AB7E24-AFDA-4188-B05F-6EF0E12D1622}"
 EndProject
@@ -32,6 +32,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JointClientKit", "ExampleClients\JointClientKit\JointClientKit.csproj", "{8CD3CFDA-A288-4F7D-B164-8DD4EFB998C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locomotion", "ExampleClients\Locomotion\Locomotion.csproj", "{17DAE210-0412-4E1D-B087-6886DF5D6A28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderManagerOpenGL", "ExampleClients\RenderManagerOpenGL\RenderManagerOpenGL.csproj", "{546BB3C6-0CC6-499C-9743-2319C8C9172A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,6 +155,14 @@ Global
 		{17DAE210-0412-4E1D-B087-6886DF5D6A28}.Release20|Any CPU.Build.0 = Release20|Any CPU
 		{17DAE210-0412-4E1D-B087-6886DF5D6A28}.Release45|Any CPU.ActiveCfg = Release45|Any CPU
 		{17DAE210-0412-4E1D-B087-6886DF5D6A28}.Release45|Any CPU.Build.0 = Release45|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Debug20|Any CPU.ActiveCfg = Debug20|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Debug20|Any CPU.Build.0 = Debug20|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Debug45|Any CPU.ActiveCfg = Debug45|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Debug45|Any CPU.Build.0 = Debug45|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Release20|Any CPU.ActiveCfg = Release20|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Release20|Any CPU.Build.0 = Release20|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Release45|Any CPU.ActiveCfg = Release45|Any CPU
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A}.Release45|Any CPU.Build.0 = Release45|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,5 +181,6 @@ Global
 		{A2B67A96-1103-4085-AE55-1AE65331858F} = {1DD13E86-1023-4530-9F16-1BDD7CC43467}
 		{8CD3CFDA-A288-4F7D-B164-8DD4EFB998C2} = {1DD13E86-1023-4530-9F16-1BDD7CC43467}
 		{17DAE210-0412-4E1D-B087-6886DF5D6A28} = {1DD13E86-1023-4530-9F16-1BDD7CC43467}
+		{546BB3C6-0CC6-499C-9743-2319C8C9172A} = {1DD13E86-1023-4530-9F16-1BDD7CC43467}
 	EndGlobalSection
 EndGlobal

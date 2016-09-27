@@ -389,10 +389,9 @@ namespace OSVR.RenderManager
             return ret;
         }
 
-        public IList<RenderInfoOpenGL> GetRenderInfo(RenderParams renderParams)
+        public void GetRenderInfo(RenderParams renderParams, ref RenderInfoOpenGL[] renderInfoOut)
         {
             byte rc = 0;
-            var ret = new List<RenderInfoOpenGL>();
             OSVR_RenderInfoCollection renderInfoCollection;
             rc = RenderManagerNative.osvrRenderManagerGetRenderInfoCollection(mRenderManager, renderParams, out renderInfoCollection);
             if(rc == ClientContext.OSVR_RETURN_FAILURE)
@@ -407,6 +406,11 @@ namespace OSVR.RenderManager
                 throw new InvalidOperationException("osvrRenderManagerGetNumRenderInfoInCollection call failed.");
             }
 
+            if (renderInfoOut == null || renderInfoOut.Length != size)
+            {
+                renderInfoOut = new RenderInfoOpenGL[size];
+            }
+
             try
             {
                 for (int i = 0; i < size; i++)
@@ -417,9 +421,8 @@ namespace OSVR.RenderManager
                     {
                         throw new InvalidOperationException("osvrRenderManagerGetRenderInfoInCollectionOpenGL call failed.");
                     }
-                    ret.Add(RenderInfoOpenGL.FromNative(renderInfo));
+                    renderInfoOut[i] = RenderInfoOpenGL.FromNative(renderInfo);
                 }
-
             }
             finally
             {
@@ -429,15 +432,14 @@ namespace OSVR.RenderManager
                     throw new InvalidOperationException("osvrRenderManagerReleaseRenderInfoCollection call failed.");
                 }
             }
-            return ret;
         }
 
         // @todo implement default arguments for renderParams and shouldFlipY
-        public void Present(IList<RenderBufferOpenGL> buffers, IList<RenderInfoOpenGL> renderInfoUsed, IList<ViewportDescription> normalizedCroppingViewports,
-            RenderParams renderParams, OSVR_CBool shouldFlipY)
+        public void Present(RenderBufferOpenGL[] buffers, RenderInfoOpenGL[] renderInfoUsed, ViewportDescription[] normalizedCroppingViewports,
+            RenderParams renderParams, bool shouldFlipY)
         {
             if(buffers == null || renderInfoUsed == null || normalizedCroppingViewports == null ||
-                buffers.Count != renderInfoUsed.Count || renderInfoUsed.Count != normalizedCroppingViewports.Count)
+                buffers.Length != renderInfoUsed.Length || renderInfoUsed.Length != normalizedCroppingViewports.Length)
             {
                 throw new ArgumentException("buffers, renderInfoUsed, and normalizedCroppingViewports must be non-null lists of the same length.");
             }
@@ -450,7 +452,7 @@ namespace OSVR.RenderManager
                 throw new InvalidOperationException("osvrRenderManagerStartPresentRenderBuffers call failed.");
             }
 
-            for (int i = 0; i < renderInfoUsed.Count; i++)
+            for (int i = 0; i < renderInfoUsed.Length; i++)
             {
                 rc = RenderManagerNative.osvrRenderManagerPresentRenderBufferOpenGL(presentState,
                     buffers[i], renderInfoUsed[i].ToNative(), normalizedCroppingViewports[i]);
@@ -460,7 +462,8 @@ namespace OSVR.RenderManager
                 }
             }
 
-            rc = RenderManagerNative.osvrRenderManagerFinishPresentRenderBuffers(mRenderManager, presentState, renderParams, shouldFlipY);
+            rc = RenderManagerNative.osvrRenderManagerFinishPresentRenderBuffers(
+                mRenderManager, presentState, renderParams, shouldFlipY ? (byte)1 : (byte)0);
         }
     }
 }
