@@ -351,7 +351,7 @@ namespace OSVR
                 /// library may only depend on libraries earlier in the list.
                 /// This list contains only the client kit dlls and not the joint client kit dlls.
                 /// </summary>
-                private String[] NativeLibsClientOnly = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit" };
+                private String[] NativeLibsClientOnly = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit", "osvrRenderManager" };
 
                 /// <summary>
                 /// Native library names (without lib, .dll, or .so), in
