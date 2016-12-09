@@ -20,12 +20,13 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
+
+#if !NETCORE_1_1
 using System.Runtime.ConstrainedExecution;
+#endif
 
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
-
 using System.IO;
-
 #endif
 
 namespace OSVR
@@ -36,7 +37,9 @@ namespace OSVR
         {
             public SafeClientContextHandle() : base(true) { }
 
+#if !NETCORE_1_1
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+#endif
             protected override bool ReleaseHandle()
             {
                 System.Diagnostics.Debug.WriteLine("[OSVR] ClientContext shutdown");
@@ -163,8 +166,9 @@ namespace OSVR
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
 
                 // This line based on http://stackoverflow.com/a/864497/265522
-                var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
-                var assemblyPath = Path.GetDirectoryName(assembly);
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var assemblyName = System.Uri.UnescapeDataString((new System.Uri(assembly.CodeBase)).AbsolutePath);
+                var assemblyPath = Path.GetDirectoryName(assemblyName);
                 System.Diagnostics.Debug.WriteLine("[OSVR] ClientKit assembly directory: " + assemblyPath);
                 LibraryPathAttempter attempt;
                 if (IntPtr.Size == 8)
@@ -519,7 +523,7 @@ namespace OSVR
                 Byte ret = osvrClientUpdate(this.m_context);
                 if (OSVR_RETURN_SUCCESS != ret)
                 {
-                    throw new ApplicationException("Error updating context.");
+                    throw new Exception("Error updating context.");
                 }
             }
 
@@ -560,7 +564,7 @@ namespace OSVR
                 ret = osvrClientGetStringParameter(m_context, path, buf, length);
                 if (OSVR_RETURN_SUCCESS != ret)
                 {
-                    throw new ApplicationException("Invalid context, null reference to buffer, or buffer is too small.");
+                    throw new Exception("Invalid context, null reference to buffer, or buffer is too small.");
                 }
 
                 return buf.ToString();
@@ -581,7 +585,7 @@ namespace OSVR
                 Byte success = osvrClientSetRoomRotationUsingHead(m_context);
                 if(OSVR_RETURN_SUCCESS != success)
                 {
-                    throw new ApplicationException("OSVR::SetRoomRotationUsingHead() - native osvrClientSetRoomRotationUsingHead call failed.");
+                    throw new Exception("OSVR::SetRoomRotationUsingHead() - native osvrClientSetRoomRotationUsingHead call failed.");
                 }
             }
 
@@ -596,7 +600,7 @@ namespace OSVR
                 Byte success = osvrClientClearRoomToWorldTransform(m_context);
                 if(OSVR_RETURN_SUCCESS != success)
                 {
-                    throw new ApplicationException("OSVR::ClearRoomToWorldTransform() - native osvrClientClearRoomToWorldTransform call failed.");
+                    throw new Exception("OSVR::ClearRoomToWorldTransform() - native osvrClientClearRoomToWorldTransform call failed.");
                 }
             }
 

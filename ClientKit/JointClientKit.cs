@@ -18,9 +18,11 @@
 /// </copyright>
 using System;
 using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Text;
+#if !NETCORE_1_1
+using System.Runtime.ConstrainedExecution;
+#endif
 
 namespace OSVR.ClientKit
 {

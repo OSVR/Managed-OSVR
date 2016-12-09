@@ -17,8 +17,10 @@
 /// </copyright>
 using Microsoft.Win32.SafeHandles;
 using System;
-using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
+#if !NETCORE_1_1
+using System.Runtime.ConstrainedExecution;
+#endif
 
 namespace OSVR
 {
@@ -29,7 +31,9 @@ namespace OSVR
         {
             public SafeClientInterfaceHandle() : base(true) { }
 
+#if !NETCORE_1_1
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+#endif
             override protected bool ReleaseHandle()
             {
                 System.Diagnostics.Debug.WriteLine("[OSVR] Interface shutdown");

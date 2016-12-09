@@ -28,6 +28,8 @@ namespace OSVR.ClientKit
         public const string FrameworkDescription = ".NET 2.0";
 #elif NET45
         public const string FrameworkDescription = ".NET 4.5";
+#elif NETCORE_1_1
+        public const string FrameworkDescription = ".NET Core 1.1";
 #else
 #error "Building for some unrecognized .NET version!"
 #endif
