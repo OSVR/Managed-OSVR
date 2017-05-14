@@ -17,7 +17,9 @@
 /// </copyright>
 using Microsoft.Win32.SafeHandles;
 using System;
+#if !WINDOWS_UWP
 using System.Runtime.ConstrainedExecution;
+#endif
 using System.Runtime.InteropServices;
 
 namespace OSVR
@@ -29,11 +31,17 @@ namespace OSVR
         {
             public SafeClientInterfaceHandle() : base(true) { }
 
+#if !WINDOWS_UWP
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+#endif
             override protected bool ReleaseHandle()
             {
+#if !WINDOWS_UWP
                 System.Diagnostics.Debug.WriteLine("[OSVR] Interface shutdown");
                 return Interface.osvrClientFreeInterface(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
+#else
+                return true;
+#endif
             }
         }
 

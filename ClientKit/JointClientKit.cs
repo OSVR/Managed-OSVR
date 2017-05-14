@@ -18,7 +18,9 @@
 /// </copyright>
 using System;
 using System.Collections.Generic;
+#if !WINDOWS_UWP
 using System.Runtime.ConstrainedExecution;
+#endif
 using System.Runtime.InteropServices;
 using System.Text;
 

@@ -20,7 +20,9 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
+#if !WINDOWS_UWP
 using System.Runtime.ConstrainedExecution;
+#endif
 
 using ViewportDimension = System.Int32;
 using ViewerCount = System.UInt32;
@@ -36,10 +38,16 @@ namespace OSVR.ClientKit
     {
         public SafeDisplayConfigHandle() : base(true) { }
 
+#if !WINDOWS_UWP
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+#endif
         protected override bool ReleaseHandle()
         {
+#if !WINDOWS_UWP
             return DisplayConfigNative.osvrClientFreeDisplay(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
+#else
+            return true;
+#endif
         }
     }
 
