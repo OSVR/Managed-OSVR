@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OSVR</RootNamespace>
     <AssemblyName>OSVR.ClientKit</AssemblyName>
-    <DefaultLanguage>en-EN</DefaultLanguage>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.15063.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
@@ -135,7 +135,9 @@
     <Compile Include="Vec2.cs" />
     <Compile Include="Vec3.cs" />
     <Compile Include="Win10Wrapper.cs" />
-    <EmbeddedResource Include="Properties\OSVR.rd.xml" />
+    <EmbeddedResource Include="Properties\OSVR.rd.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
