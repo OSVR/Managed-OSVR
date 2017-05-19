@@ -154,11 +154,26 @@ namespace OSVR.ClientKit
         private const string OSVRUtilDll = "osvrUtil";
 #endif
 
+
+#if WINDOWS_UWP
+        public static Byte osvrPose3ToMatrixd(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44d mat)
+        {
+            mat = new Matrix44d();
+            return 0;
+        }
+
+        public static Byte osvrPose3ToMatrixf(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44f mat)
+        {
+            mat = new Matrix44f();
+            return 0;
+        }
+#else
         [DllImport(OSVRUtilDll, CallingConvention = CallingConvention.Cdecl)]
         public static extern Byte osvrPose3ToMatrixd(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44d mat);
 
         [DllImport(OSVRUtilDll, CallingConvention = CallingConvention.Cdecl)]
         public static extern Byte osvrPose3ToMatrixf(ref Pose3 pose, MatrixConventionsFlags flags, out Matrix44f mat);
+#endif
     }
 
     public static class MatrixConventions

@@ -69,11 +69,16 @@ namespace OSVR
             private const string OSVRCoreDll = "osvrClientKit";
 #endif
 
+#if WINDOWS_UWP
+            internal static void osvrClientAttemptServerAutoStart() { }
+            internal static void osvrClientReleaseAutoStartedServer() { }
+#else
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             internal extern static void osvrClientAttemptServerAutoStart();
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             internal extern static void osvrClientReleaseAutoStartedServer();
+#endif
 
             public ServerAutoStarter()
             {
@@ -111,7 +116,7 @@ namespace OSVR
         /// @ingroup ClientKitCPP
         public class ClientContext : IDisposable
         {
-            #region ClientKit C functions
+#region ClientKit C functions
 
             // Should be defined if used with Unity and UNITY_IOS or UNITY_XBOX360 are defined
 #if MANAGED_OSVR_INTERNAL_PINVOKE
@@ -126,6 +131,26 @@ namespace OSVR
             public static Byte OSVR_RETURN_SUCCESS = 0x0;
             public static Byte OSVR_RETURN_FAILURE = 0x1;
 
+#if WINDOWS_UWP
+            public static SafeClientContextHandle osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags)
+            {
+                return null;
+            }
+
+            public static Byte osvrClientUpdate(SafeClientContextHandle ctx) { return 0; }
+            public static Byte osvrClientShutdown(IntPtr /*OSVR_ClientContext*/ ctx) { return 0; }
+
+            public static Byte osvrClientGetStringParameterLength(SafeClientContextHandle ctx, string path, out UIntPtr len)
+            {
+                len = UIntPtr.Zero;
+                return 0;
+            }
+            
+            public static Byte osvrClientGetStringParameter(SafeClientContextHandle ctx, string path, StringBuilder buf, UIntPtr len) { return 0; }
+            internal static Byte osvrClientCheckStatus(SafeClientContextHandle ctx) { return 0; }
+            internal static Byte osvrClientSetRoomRotationUsingHead(SafeClientContextHandle ctx) { return 0; }
+            internal static Byte osvrClientClearRoomToWorldTransform(SafeClientContextHandle ctx) { return 0; }
+#else
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static SafeClientContextHandle osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags);
 
@@ -149,6 +174,7 @@ namespace OSVR
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             internal extern static Byte osvrClientClearRoomToWorldTransform(SafeClientContextHandle ctx);
+#endif
 
             #endregion ClientKit C functions
 
@@ -409,7 +435,7 @@ namespace OSVR
 
 #endif
 
-            #endregion Support for locating native libraries
+#endregion Support for locating native libraries
 
             /// @brief Initialize the library.
             /// @param applicationIdentifier A string identifying your application.
