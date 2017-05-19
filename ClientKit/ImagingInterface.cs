@@ -42,8 +42,12 @@ namespace OSVR.ClientKit
         const string OSVR_CORE_DLL = "osvrClientKit";
 #endif
 
+#if WINDOWS_UWP
+        public static Byte osvrClientFreeImage(SafeClientContextHandle ctx, IntPtr imageData) { return 0; }
+#else
         [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern Byte osvrClientFreeImage(SafeClientContextHandle ctx, IntPtr imageData);
+#endif
     }
 
     /// <summary>

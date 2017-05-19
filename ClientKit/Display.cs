@@ -106,6 +106,146 @@ namespace OSVR.ClientKit
             private const string OSVRCoreDll = "osvrClientKit";
 #endif
 
+#if WINDOWS_UWP
+
+        public static Byte osvrClientGetDisplay(SafeClientContextHandle context, out SafeDisplayConfigHandle display)
+        {
+            display = null;
+            return 0;
+        }
+
+        public static Byte osvrClientFreeDisplay(IntPtr display) { return 0; }
+        public static Byte osvrClientCheckDisplayStartup(SafeDisplayConfigHandle context) { return 0; }
+
+        public static Byte osvrClientGetNumDisplayInputs(SafeDisplayConfigHandle display, out DisplayInputCount numDisplayInputs)
+        {
+            numDisplayInputs = new EyeCount();
+            return 0;
+        }
+
+
+        public static Byte osvrClientGetDisplayDimensions(SafeDisplayConfigHandle display, DisplayInputCount displayInputIndex, out DisplayDimension width, out DisplayDimension height)
+        {
+            width = new ViewportDimension();
+            height = new ViewportDimension();
+            return 0;
+        }
+        
+        public static Byte osvrClientGetNumViewers(SafeDisplayConfigHandle display, out ViewerCount viewers)
+        {
+            viewers = new ViewerCount();
+            return 0;
+        }
+        
+        public static Byte osvrClientGetViewerPose(SafeDisplayConfigHandle display,
+            ViewerCount viewer, out Pose3 pose)
+        {
+            pose = new Pose3();
+            return 0;
+        }
+
+        public static Byte osvrClientGetNumEyesForViewer(SafeDisplayConfigHandle display,
+            ViewerCount viewer, out EyeCount eyes)
+        {
+            eyes = new EyeCount();
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyePose(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, out Pose3 pose)
+        {
+            pose = new Pose3();
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyeViewMatrixd(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags, out Matrix44d mat)
+        {
+            mat = new Matrix44d();
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyeViewMatrixf(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, MatrixConventionsFlags flags, out Matrix44f mat)
+        {
+            mat = new Matrix44f();
+            return 0;
+        }
+
+
+        public static Byte osvrClientGetNumSurfacesForViewerEye(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, out SurfaceCount surfaces)
+        {
+            surfaces = new ViewerCount();
+            return 0;
+        }
+
+        public static Byte osvrClientGetRelativeViewportForViewerEyeSurface(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface,
+            out ViewportDimension left, out ViewportDimension bottom, out ViewportDimension width, out ViewportDimension height)
+        {
+            left = new ViewportDimension();
+            bottom = new ViewportDimension();
+            width = new ViewportDimension();
+            height = new ViewportDimension();
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyeSurfaceDisplayInputIndex(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, out DisplayInputCount displayInput)
+        {
+            displayInput = new EyeCount();
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixd(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, double near, double far,
+            MatrixConventionsFlags flags, out Matrix44d matrix)
+        {
+            matrix = new Matrix44d();
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyeSurfaceProjectionMatrixf(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, float near, float far,
+            MatrixConventionsFlags flags, out Matrix44f matrix)
+        {
+            matrix = new Matrix44f();
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyeSurfaceProjectionClippingPlanes(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface,
+            out double left, out double right, out double bottom, out double top)
+        {
+            left = 0;
+            right = 0;
+            bottom = 0;
+            top = 0;
+            return 0;
+        }
+
+        public static Byte osvrClientDoesViewerEyeSurfaceWantDistortion(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, [MarshalAs(UnmanagedType.I1)]out bool distortionRequested)
+        {
+            distortionRequested = false;
+            return 0;
+        }
+        
+        public static Byte osvrClientGetViewerEyeSurfaceRadialDistortionPriority(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, out DistortionPriority priority)
+        {
+            priority = 0;
+            return 0;
+        }
+
+        public static Byte osvrClientGetViewerEyeSurfaceRadialDistortion(SafeDisplayConfigHandle display,
+            ViewerCount viewer, EyeCount eye, SurfaceCount surface, out RadialDistortionParameters distortionParams)
+        {
+            distortionParams = new RadialDistortionParameters();
+            return 0;
+        }
+#else
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetDisplay(SafeClientContextHandle context, out SafeDisplayConfigHandle display);
 
@@ -184,6 +324,7 @@ namespace OSVR.ClientKit
         [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static Byte osvrClientGetViewerEyeSurfaceRadialDistortion(SafeDisplayConfigHandle display,
             ViewerCount viewer, EyeCount eye, SurfaceCount surface, out RadialDistortionParameters distortionParams);
+#endif
     }
 
     public struct Viewport

@@ -50,6 +50,17 @@ namespace OSVR.ClientKit
         private const string JointClientKitDll = "osvrJointClientKit";
 #endif
 
+#if WINDOWS_UWP
+        public static IntPtr osvrJointClientCreateOptions() { return IntPtr.Zero; }
+        public static Byte osvrJointClientOptionsAutoloadPlugins(IntPtr options) { return 0; }
+        public static Byte osvrJointClientOptionsLoadPlugin(IntPtr options, string pluginName) { return 0; }
+        public static Byte osvrJointClientOptionsInstantiateDriver(IntPtr options, string pluginName, string driverName, string parameters) { return 0; }
+        public static Byte osvrJointClientOptionsAddAlias(IntPtr options, string path, string source) { return 0; }
+        public static Byte osvrJointClientOptionsAddAliases(IntPtr options, string aliases) { return 0; }
+        public static Byte osvrJointClientOptionsAddString(IntPtr options, string path, string s) { return 0; }
+        public static Byte osvrJointClientOptionsTriggerHardwareDetect(IntPtr options) { return 0; }
+        public static SafeClientContextHandle osvrJointClientInit(string applicationIdentifier, IntPtr options) { return null; }
+#else
         [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static IntPtr /*SafeJointClientOptionsHandle*/ osvrJointClientCreateOptions();
 
@@ -82,6 +93,7 @@ namespace OSVR.ClientKit
         [DllImport(JointClientKitDll, CallingConvention = CallingConvention.Cdecl)]
         public extern static SafeClientContextHandle osvrJointClientInit(
             string applicationIdentifier, IntPtr /*SafeJointClientOptionsHandle*/ options);
+#endif
     }
 
     /// <summary>
