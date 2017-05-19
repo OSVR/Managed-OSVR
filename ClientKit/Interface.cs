@@ -17,7 +17,9 @@
 /// </copyright>
 using Microsoft.Win32.SafeHandles;
 using System;
+#if !WINDOWS_UWP
 using System.Runtime.ConstrainedExecution;
+#endif
 using System.Runtime.InteropServices;
 
 namespace OSVR
@@ -29,11 +31,17 @@ namespace OSVR
         {
             public SafeClientInterfaceHandle() : base(true) { }
 
+#if !WINDOWS_UWP
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+#endif
             override protected bool ReleaseHandle()
             {
+#if !WINDOWS_UWP
                 System.Diagnostics.Debug.WriteLine("[OSVR] Interface shutdown");
                 return Interface.osvrClientFreeInterface(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
+#else
+                return true;
+#endif
             }
         }
 
@@ -95,7 +103,35 @@ namespace OSVR
             //typedef struct OSVR_ClientInterfaceObject *OSVR_ClientInterface;
             //typedef char OSVR_ReturnCode; (0 == OSVR_RETURN_SUCCESS; 1 == OSVR_RETURN_FAILURE)
 
-
+#if WINDOWS_UWP
+            public static Byte osvrRegisterPositionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] PositionCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterPoseCallback(SafeClientInterfaceHandle iface, PoseCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterOrientationCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] OrientationCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterButtonCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] ButtonCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterAnalogCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] AnalogCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterLocation2DCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] Location2DCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterDirectionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] DirectionCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterEyeTracker2DCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] EyeTracker2DCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterEyeTracker3DCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] EyeTracker3DCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterEyeTrackerBlinkCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] EyeTrackerBlinkCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterImagingCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] ImagingCallback cb, IntPtr /*void**/ userdata) { return 0; }
+            public static Byte osvrRegisterNaviVelocityCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] NaviVelocityCallback cb, IntPtr /*void*/ userdata) { return 0; }
+            public static Byte osvrRegisterNaviPositionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] NaviPositionCallback cb, IntPtr /*void*/ userdata) { return 0; }
+            public static Byte osvrClientGetInterface(SafeClientContextHandle ctx, string path, ref SafeClientInterfaceHandle iface) { return 0; }
+            public static Byte osvrGetPoseState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Pose3 state) { return 0; }
+            public static Byte osvrGetPositionState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec3 state) { return 0; }
+            public static Byte osvrGetOrientationState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Quaternion state) { return 0; }
+            public static Byte osvrGetButtonState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Byte state) { return 0; }
+            public static Byte osvrGetAnalogState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Double state) { return 0; }
+            public static Byte osvrGetLocation2DState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state) { return 0; }
+            public static Byte osvrGetDirectionState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec3 state) { return 0; }
+            public static Byte osvrGetEyeTracker2DState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state) { return 0; }
+            public static Byte osvrGetEyeTracker3DState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref EyeTracker3DState state) { return 0; }
+            public static Byte osvrGetEyeTrackerBlinkState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, [MarshalAs(UnmanagedType.I1)]ref bool state) { return 0; }
+            public static Byte osvrGetNaviVelocityState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state) { return 0; }
+            public static Byte osvrGetNaviPositionState(SafeClientInterfaceHandle iface, ref TimeValue timestamp, ref Vec2 state) { return 0; }
+            public static Byte osvrClientFreeInterface(IntPtr iface) { return 0; }
+#else
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrRegisterPositionCallback(SafeClientInterfaceHandle iface, [MarshalAs(UnmanagedType.FunctionPtr)] PositionCallback cb, IntPtr /*void**/ userdata);
 
@@ -176,6 +212,7 @@ namespace OSVR
 
             [DllImport(OSVR_CORE_DLL, CallingConvention = CallingConvention.Cdecl)]
             public extern static Byte osvrClientFreeInterface(IntPtr iface);
+#endif
 
             #endregion
 

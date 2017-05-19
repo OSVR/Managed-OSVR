@@ -16,11 +16,13 @@
 /// limitations under the License.
 /// </copyright>
 
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
+#if !WINDOWS_UWP
 using System.Runtime.ConstrainedExecution;
+#endif
 
 #if !MANAGED_OSVR_INTERNAL_PINVOKE
 
@@ -36,11 +38,17 @@ namespace OSVR
         {
             public SafeClientContextHandle() : base(true) { }
 
+#if !WINDOWS_UWP
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+#endif
             protected override bool ReleaseHandle()
             {
+#if !WINDOWS_UWP
                 System.Diagnostics.Debug.WriteLine("[OSVR] ClientContext shutdown");
                 return ClientContext.osvrClientShutdown(handle) == OSVR.ClientKit.ClientContext.OSVR_RETURN_SUCCESS;
+#else
+                return true;
+#endif
             }
         }
 
@@ -61,11 +69,16 @@ namespace OSVR
             private const string OSVRCoreDll = "osvrClientKit";
 #endif
 
+#if WINDOWS_UWP
+            internal static void osvrClientAttemptServerAutoStart() { }
+            internal static void osvrClientReleaseAutoStartedServer() { }
+#else
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             internal extern static void osvrClientAttemptServerAutoStart();
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             internal extern static void osvrClientReleaseAutoStartedServer();
+#endif
 
             public ServerAutoStarter()
             {
@@ -103,7 +116,7 @@ namespace OSVR
         /// @ingroup ClientKitCPP
         public class ClientContext : IDisposable
         {
-            #region ClientKit C functions
+#region ClientKit C functions
 
             // Should be defined if used with Unity and UNITY_IOS or UNITY_XBOX360 are defined
 #if MANAGED_OSVR_INTERNAL_PINVOKE
@@ -118,6 +131,26 @@ namespace OSVR
             public static Byte OSVR_RETURN_SUCCESS = 0x0;
             public static Byte OSVR_RETURN_FAILURE = 0x1;
 
+#if WINDOWS_UWP
+            public static SafeClientContextHandle osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags)
+            {
+                return null;
+            }
+
+            public static Byte osvrClientUpdate(SafeClientContextHandle ctx) { return 0; }
+            public static Byte osvrClientShutdown(IntPtr /*OSVR_ClientContext*/ ctx) { return 0; }
+
+            public static Byte osvrClientGetStringParameterLength(SafeClientContextHandle ctx, string path, out UIntPtr len)
+            {
+                len = UIntPtr.Zero;
+                return 0;
+            }
+            
+            public static Byte osvrClientGetStringParameter(SafeClientContextHandle ctx, string path, StringBuilder buf, UIntPtr len) { return 0; }
+            internal static Byte osvrClientCheckStatus(SafeClientContextHandle ctx) { return 0; }
+            internal static Byte osvrClientSetRoomRotationUsingHead(SafeClientContextHandle ctx) { return 0; }
+            internal static Byte osvrClientClearRoomToWorldTransform(SafeClientContextHandle ctx) { return 0; }
+#else
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             public extern static SafeClientContextHandle osvrClientInit([MarshalAs(UnmanagedType.LPStr)] string applicationIdentifier, [MarshalAs(UnmanagedType.U4)] uint flags);
 
@@ -141,6 +174,7 @@ namespace OSVR
 
             [DllImport(OSVRCoreDll, CallingConvention = CallingConvention.Cdecl)]
             internal extern static Byte osvrClientClearRoomToWorldTransform(SafeClientContextHandle ctx);
+#endif
 
             #endregion ClientKit C functions
 
@@ -160,7 +194,7 @@ namespace OSVR
             /// </summary>
             static public void PreloadNativeLibraries(bool loadJointClientKitDlls)
             {
-#if !MANAGED_OSVR_INTERNAL_PINVOKE
+#if !MANAGED_OSVR_INTERNAL_PINVOKE && !WINDOWS_UWP
 
                 // This line based on http://stackoverflow.com/a/864497/265522
                 var assembly = System.Uri.UnescapeDataString((new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath);
@@ -193,7 +227,7 @@ namespace OSVR
 #endif
             }
 
-#if !MANAGED_OSVR_INTERNAL_PINVOKE
+#if !MANAGED_OSVR_INTERNAL_PINVOKE && !WINDOWS_UWP
 
             private class LibraryPathAttempter
             {
@@ -401,7 +435,7 @@ namespace OSVR
 
 #endif
 
-            #endregion Support for locating native libraries
+#endregion Support for locating native libraries
 
             /// @brief Initialize the library.
             /// @param applicationIdentifier A string identifying your application.
@@ -504,7 +538,7 @@ namespace OSVR
             public DisplayConfig GetDisplayConfig()
             {
                 SafeDisplayConfigHandle handle;
-                if(DisplayConfigNative.osvrClientGetDisplay(this.m_context, out handle) != OSVR_RETURN_SUCCESS)
+                if (DisplayConfigNative.osvrClientGetDisplay(this.m_context, out handle) != OSVR_RETURN_SUCCESS)
                 {
                     return null;
                 }
@@ -566,7 +600,7 @@ namespace OSVR
                 return buf.ToString();
             }
 
-            
+
             /// <summary>
             /// Updates the internal "room to world" transformation (applied to all
             /// tracker data for this client context instance) based on the user's head
@@ -579,7 +613,7 @@ namespace OSVR
             public void SetRoomRotationUsingHead()
             {
                 Byte success = osvrClientSetRoomRotationUsingHead(m_context);
-                if(OSVR_RETURN_SUCCESS != success)
+                if (OSVR_RETURN_SUCCESS != success)
                 {
                     throw new ApplicationException("OSVR::SetRoomRotationUsingHead() - native osvrClientSetRoomRotationUsingHead call failed.");
                 }
@@ -594,7 +628,7 @@ namespace OSVR
             public void ClearRoomToWorldTransform()
             {
                 Byte success = osvrClientClearRoomToWorldTransform(m_context);
-                if(OSVR_RETURN_SUCCESS != success)
+                if (OSVR_RETURN_SUCCESS != success)
                 {
                     throw new ApplicationException("OSVR::ClearRoomToWorldTransform() - native osvrClientClearRoomToWorldTransform call failed.");
                 }
