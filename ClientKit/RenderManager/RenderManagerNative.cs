@@ -364,6 +364,12 @@ namespace OSVR.RenderManager
         }
     }
 
+    public class RegisterBufferState
+    {
+        internal OSVR_RenderManagerRegisterBufferState state;
+
+    }
+
     public class RenderManagerOpenGL : RenderManager
     {
         private OSVR_RenderManagerOpenGL mRenderManagerOpenGL;
@@ -372,9 +378,14 @@ namespace OSVR.RenderManager
             string graphicsLibraryName,
             GraphicsLibraryOpenGL graphicsLibrary) : base()
         {
-            RenderManagerNative.osvrCreateRenderManagerOpenGL(
+            var gl = graphicsLibrary.ToNative();
+            byte rc = RenderManagerNative.osvrCreateRenderManagerOpenGL(
                 clientContext.ContextHandle, graphicsLibraryName,
-                graphicsLibrary.ToNative(), out mRenderManager, out mRenderManagerOpenGL);
+                gl, out mRenderManager, out mRenderManagerOpenGL);
+            if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+            {
+                throw new InvalidOperationException("osvrCreateRenderManagerOpenGL call failed.");
+            }
         }
 
         public OpenResultsOpenGL OpenDisplay()
@@ -389,21 +400,97 @@ namespace OSVR.RenderManager
             return ret;
         }
 
-        public void GetRenderInfo(RenderParams renderParams, ref RenderInfoOpenGL[] renderInfoOut)
+        private const uint DefaultColorBufferFormat = 6408 /*GL_RGBA*/; // hard-coded to avoid OpenTK dependency, or any other OpenGL managed bindings library
+
+        public static RenderBufferOpenGL[] CreateRenderBuffers(RenderInfoOpenGL[] renderInfo, bool doubleBuffered, bool oneRenderTargetPerEye, uint format = DefaultColorBufferFormat)
+        {
+            if (renderInfo == null) { throw new ArgumentNullException("renderInfo"); }
+            if(renderInfo.Length != 2)
+            {
+                throw new ArgumentException("Expecting a renderInfo array of length 2", "renderInfo");
+            }
+
+            if(renderInfo[0].Viewport.Width != renderInfo[1].Viewport.Width ||
+               renderInfo[0].Viewport.Height != renderInfo[1].Viewport.Height)
+            {
+                throw new ArgumentException("Expecting viewports for both RenderInfos to be equal in height and width.");
+            }
+
+            int numRenderBuffers = oneRenderTargetPerEye ? 2 : 1;
+            if(doubleBuffered)
+            {
+                numRenderBuffers *= 2;
+            }
+
+            double width = renderInfo[0].Viewport.Width;
+            double height = renderInfo[0].Viewport.Height;
+            if (oneRenderTargetPerEye)
+            {
+                width *= 2.0;
+            }
+
+            RenderBufferOpenGL[] ret = new RenderBufferOpenGL[numRenderBuffers];
+            for(int i = 0; i < ret.Length; i++)
+            {
+                byte rc = RenderManagerNative.osvrRenderManagerCreateColorBufferOpenGL((uint)width, (uint)height, format, out ret[i].ColorBufferName);
+                if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+                {
+                    throw new InvalidOperationException("osvrRenderManagerCreateColorBufferOpenGL call failed");
+                }
+
+                rc = RenderManagerNative.osvrRenderManagerCreateDepthBufferOpenGL((uint)width, (uint)height, out ret[i].DepthStencilBufferName);
+                if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+                {
+                    throw new InvalidOperationException("osvrRenderManagerCreateDepthBufferOpenGL call failed");
+                }
+            }
+            return ret;
+        }
+
+        public bool RegisterRenderBuffers(RenderBufferOpenGL[] renderBuffers, bool appWillNotOverwriteBeforeNewPresent)
+        {
+            OSVR_RenderManagerRegisterBufferState state;
+            Byte rc;
+            rc = RenderManagerNative.osvrRenderManagerStartRegisterRenderBuffers(out state);
+            if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+            {
+                return false;
+            }
+
+            foreach(var buffer in renderBuffers)
+            {
+                rc = RenderManagerNative.osvrRenderManagerRegisterRenderBufferOpenGL(state, buffer);
+                if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+                {
+                    return false;
+                }
+            }
+
+            rc = RenderManagerNative.osvrRenderManagerFinishRegisterRenderBuffers(mRenderManager,
+                state, (OSVR_CBool)(appWillNotOverwriteBeforeNewPresent ? 1 : 0));
+
+            if(rc != ClientContext.OSVR_RETURN_SUCCESS)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool GetRenderInfo(RenderParams renderParams, ref RenderInfoOpenGL[] renderInfoOut)
         {
             byte rc = 0;
             OSVR_RenderInfoCollection renderInfoCollection;
             rc = RenderManagerNative.osvrRenderManagerGetRenderInfoCollection(mRenderManager, renderParams, out renderInfoCollection);
             if(rc == ClientContext.OSVR_RETURN_FAILURE)
             {
-                throw new InvalidOperationException("osvrRenderManagerGetRenderInfoCollection call failed.");
+                return false;
             }
 
             int size;
             rc = RenderManagerNative.osvrRenderManagerGetNumRenderInfoInCollection(renderInfoCollection, out size);
             if(rc == ClientContext.OSVR_RETURN_FAILURE)
             {
-                throw new InvalidOperationException("osvrRenderManagerGetNumRenderInfoInCollection call failed.");
+                return false;
             }
 
             if (renderInfoOut == null || renderInfoOut.Length != size)
@@ -419,7 +506,7 @@ namespace OSVR.RenderManager
                     rc = RenderManagerNative.osvrRenderManagerGetRenderInfoFromCollectionOpenGL(renderInfoCollection, i, out renderInfo);
                     if (rc == ClientContext.OSVR_RETURN_FAILURE)
                     {
-                        throw new InvalidOperationException("osvrRenderManagerGetRenderInfoInCollectionOpenGL call failed.");
+                        return false;
                     }
                     renderInfoOut[i] = RenderInfoOpenGL.FromNative(renderInfo);
                 }
@@ -427,15 +514,16 @@ namespace OSVR.RenderManager
             finally
             {
                 rc = RenderManagerNative.osvrRenderManagerReleaseRenderInfoCollection(renderInfoCollection);
-                if(rc == ClientContext.OSVR_RETURN_FAILURE)
-                {
-                    throw new InvalidOperationException("osvrRenderManagerReleaseRenderInfoCollection call failed.");
-                }
             }
+            if(rc == ClientContext.OSVR_RETURN_FAILURE)
+            {
+                return false;
+            }
+            return true;
         }
 
         // @todo implement default arguments for renderParams and shouldFlipY
-        public void Present(RenderBufferOpenGL[] buffers, RenderInfoOpenGL[] renderInfoUsed, ViewportDescription[] normalizedCroppingViewports,
+        public bool Present(RenderBufferOpenGL[] buffers, RenderInfoOpenGL[] renderInfoUsed, ViewportDescription[] normalizedCroppingViewports,
             RenderParams renderParams, bool shouldFlipY)
         {
             if(buffers == null || renderInfoUsed == null || normalizedCroppingViewports == null ||
@@ -449,7 +537,7 @@ namespace OSVR.RenderManager
             rc = RenderManagerNative.osvrRenderManagerStartPresentRenderBuffers(out presentState);
             if(rc == ClientContext.OSVR_RETURN_FAILURE)
             {
-                throw new InvalidOperationException("osvrRenderManagerStartPresentRenderBuffers call failed.");
+                return false;
             }
 
             for (int i = 0; i < renderInfoUsed.Length; i++)
@@ -458,12 +546,17 @@ namespace OSVR.RenderManager
                     buffers[i], renderInfoUsed[i].ToNative(), normalizedCroppingViewports[i]);
                 if(rc == ClientContext.OSVR_RETURN_FAILURE)
                 {
-                    throw new InvalidOperationException("osvrRenderManagerPresentRenderBufferOpenGL call failed.");
+                    return false;
                 }
             }
 
             rc = RenderManagerNative.osvrRenderManagerFinishPresentRenderBuffers(
                 mRenderManager, presentState, renderParams, shouldFlipY ? (byte)1 : (byte)0);
+            if(rc == ClientContext.OSVR_RETURN_FAILURE)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

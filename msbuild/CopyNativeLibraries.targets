@@ -31,20 +31,37 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Native libraries to grab - a transform gets the equivalent for 64-bit -->
-    <NativeLibrary Include="$(NativeBinDir32)\osvrClient.dll;
-                     $(NativeBinDir32)\osvrClientKit.dll;
-                     $(NativeBinDir32)\osvrCommon.dll;
-                     $(NativeBinDir32)\osvrUtil.dll;
-                     $(NativeBinDir32)\osvrClient.dll;
+    <NativeLibrary Include="$(NativeBinDir32)\d3dcompiler_47.dll;
+                     $(NativeBinDir32)\functionality.dll;
+                     $(NativeBinDir32)\glew32.dll;
                      $(NativeBinDir32)\msvcp120.dll;
                      $(NativeBinDir32)\msvcr120.dll;
+                     $(NativeBinDir32)\osvrAnalysisPluginKit.dll;
+                     $(NativeBinDir32)\osvrClient.dll;
+                     $(NativeBinDir32)\osvrClientKit.dll;
+                     $(NativeBinDir32)\osvrCommon.dll;
                      $(NativeBinDir32)\osvrConnection.dll;
                      $(NativeBinDir32)\osvrJointClientKit.dll;
                      $(NativeBinDir32)\osvrPluginHost.dll;
                      $(NativeBinDir32)\osvrPluginKit.dll;
+                     $(NativeBinDir32)\osvrRenderManager.dll;
                      $(NativeBinDir32)\osvrServer.dll;
                      $(NativeBinDir32)\osvrUSBSerial.dll;
-                     $(NativeBinDir32)\osvrVRPNServer.dll">
+                     $(NativeBinDir32)\osvrUtil.dll;
+                     $(NativeBinDir32)\osvrVRPNServer.dll;
+                     $(NativeBinDir32)\SDL2.dll;
+                     $(NativeBinDir32)\osvrAnalysisPluginKit.pdb;
+                     $(NativeBinDir32)\osvrClient.pdb;
+                     $(NativeBinDir32)\osvrClientKit.pdb;
+                     $(NativeBinDir32)\osvrCommon.pdb;
+                     $(NativeBinDir32)\osvrConnection.pdb;
+                     $(NativeBinDir32)\osvrJointClientKit.pdb;
+                     $(NativeBinDir32)\osvrPluginHost.pdb;
+                     $(NativeBinDir32)\osvrPluginKit.pdb;
+                     $(NativeBinDir32)\osvrServer.pdb;
+                     $(NativeBinDir32)\osvrUSBSerial.pdb;
+                     $(NativeBinDir32)\osvrUtil.pdb;
+                     $(NativeBinDir32)\osvrVRPNServer.pdb">
       <Bits>32</Bits>
       <DestDir>$(OutputPath32)</DestDir>
     </NativeLibrary>

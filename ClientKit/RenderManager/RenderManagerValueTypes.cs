@@ -37,6 +37,16 @@ namespace OSVR.RenderManager
 
         public double NearClipDistanceMeters;
         public double FarClipDistanceMeters;
+
+        public static RenderParams Default
+        {
+            get 
+            {
+                RenderParams ret;
+                RenderManagerNative.osvrRenderManagerGetDefaultRenderParams(out ret);
+                return ret;
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

@@ -109,10 +109,28 @@ namespace OSVR.Samples.RenderManagerGL
                 context.update();
             }
 
-            renderManager.OpenDisplay();
+            var openResults = renderManager.OpenDisplay();
+            if(openResults.Status == OpenStatus.Failure)
+            {
+                throw new InvalidOperationException("Could not open display");
+            }
             RenderInfoOpenGL[] renderInfo = new RenderInfoOpenGL[2];
-            RenderParams renderParams = new RenderParams();
-            renderManager.GetRenderInfo(renderParams, ref renderInfo);
+            RenderParams renderParams = RenderParams.Default;
+            int tryCount = 0;
+            bool gotRenderInfo = false;
+            while (!gotRenderInfo && tryCount++ < 10000)
+            {
+                if (renderManager.GetRenderInfo(renderParams, ref renderInfo))
+                {
+                    gotRenderInfo = true;
+                    break;
+                }
+            }
+
+            if(!gotRenderInfo)
+            {
+                throw new Exception("Couldn't get render info after 10000 tries");
+            }
 
             double width = 0;
             double height = 0;
