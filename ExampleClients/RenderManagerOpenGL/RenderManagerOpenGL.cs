@@ -254,7 +254,10 @@ namespace OSVR.Samples.RenderManagerGL
             renderManager.GetRenderInfo(renderParams, ref renderInfo);
 
             //renderManager.PresentSolidColor(new RGBFloat { R = frameNumber % 255, G = frameNumber % 255, B = 0, });
-            renderManager.Present(buffers, renderInfo, normalizedCroppingViewports, renderParams, false);
+            if (renderInfo.Length != 0)
+            {
+                renderManager.Present(buffers, renderInfo, normalizedCroppingViewports, renderParams, false);
+            }
 
             frameNumber++;
         }

@@ -22,20 +22,21 @@ using OSVR_CBool = System.Boolean;
 
 namespace OSVR.RenderManager
 {
+    // TODO: need to make this struct internal, then have a public version that uses Pose3? as the WorldFromRoomAppend
+    // with conversion function.
+
     [StructLayout(LayoutKind.Sequential)]
     public struct RenderParams
     {
         /// <summary>
         /// Room space to insert
-        /// TODO: this is wrong. needs to be an IntPtr, native struct has this as an OSVR_PoseState*
         /// </summary>
-        public Pose3 WorldFromRoomAppend;
+        public IntPtr WorldFromRoomAppend;
 
         /// <summary>
         /// Overrides head space
-        /// TODO: this is wrong. needs to be an IntPtr, native struct has this as an OSVR_PoseState*
         /// </summary>
-        public Pose3 RoomFromHeadReplace;
+        public IntPtr RoomFromHeadReplace;
 
         public double NearClipDistanceMeters;
         public double FarClipDistanceMeters;
