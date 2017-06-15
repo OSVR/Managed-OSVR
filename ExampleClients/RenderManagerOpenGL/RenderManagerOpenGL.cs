@@ -65,6 +65,31 @@ namespace OSVR.Samples.RenderManagerGL
             glWindow.SwapBuffers();
             return true;
         }
+
+        //protected override bool GetDisplaySizeOverride(UIntPtr display, out int width, out int height)
+        //{
+        //    width = glWindow.Width;
+        //    height = glWindow.Height;
+        //    return true;
+        //}
+
+        protected override bool GetDisplayFrameBuffer(UIntPtr display, out uint frameBufferOut)
+        {
+            frameBufferOut = 0;
+            return true;
+        }
+
+        protected override bool HandleEvents()
+        {
+            glWindow.ProcessEvents();
+            return true;
+        }
+
+        protected override bool RemoveOpenGLContext()
+        {
+            glWindow.Exit();
+            return true;
+        }
     }
 
     class SimpleWindow : GameWindow
@@ -116,10 +141,11 @@ namespace OSVR.Samples.RenderManagerGL
             }
             RenderInfoOpenGL[] renderInfo = new RenderInfoOpenGL[2];
             RenderParams renderParams = RenderParams.Default;
-            int tryCount = 0;
+            //int tryCount = 0;
             bool gotRenderInfo = false;
-            while (!gotRenderInfo && tryCount++ < 10000)
+            while (!gotRenderInfo)
             {
+                context.update();
                 if (renderManager.GetRenderInfo(renderParams, ref renderInfo))
                 {
                     gotRenderInfo = true;

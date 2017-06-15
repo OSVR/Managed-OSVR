@@ -27,11 +27,13 @@ namespace OSVR.RenderManager
     {
         /// <summary>
         /// Room space to insert
+        /// TODO: this is wrong. needs to be an IntPtr, native struct has this as an OSVR_PoseState*
         /// </summary>
         public Pose3 WorldFromRoomAppend;
 
         /// <summary>
         /// Overrides head space
+        /// TODO: this is wrong. needs to be an IntPtr, native struct has this as an OSVR_PoseState*
         /// </summary>
         public Pose3 RoomFromHeadReplace;
 
@@ -140,7 +142,7 @@ namespace OSVR.RenderManager
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public delegate OSVR_CBool GetDisplaySizeOverride(IntPtr data, UIntPtr display, out int width, out int height);
+        public delegate OSVR_CBool GetDisplaySizeOverride(IntPtr data, UIntPtr display, ref int width, ref int height);
     }
 
 
@@ -198,6 +200,7 @@ namespace OSVR.RenderManager
             ret.HandleEvents = HandleEventsNative;
             ret.GetDisplayFrameBuffer = GetDisplayFrameBufferNative;
             ret.GetDisplaySizeOverride = GetDisplaySizeOverrideNative;
+            ret.SetVerticalSync = SetVerticalSyncNative;
 
             // Allocate a native struct on the heap and pin it.
             // @todo does RenderManager take ownership of the lifetime of this object?
@@ -260,9 +263,9 @@ namespace OSVR.RenderManager
             return false;
         }
 
-        protected virtual OSVR_CBool GetDisplaySizeOverride(UIntPtr display, out int width, out int height)
+        protected virtual OSVR_CBool GetDisplaySizeOverride(UIntPtr display, ref int width, ref int height)
         {
-            width = height = 0;
+            //width = height = 0;
             return false;
         }
 
@@ -315,9 +318,9 @@ namespace OSVR.RenderManager
             return GetDisplayFrameBuffer(display, out frameBufferOut);
         }
 
-        private OSVR_CBool GetDisplaySizeOverrideNative(IntPtr data, UIntPtr display, out int width, out int height)
+        private OSVR_CBool GetDisplaySizeOverrideNative(IntPtr data, UIntPtr display, ref int width, ref int height)
         {
-            return GetDisplaySizeOverride(display, out width, out height);
+            return GetDisplaySizeOverride(display, ref width, ref height);
         }
 
         #endregion
