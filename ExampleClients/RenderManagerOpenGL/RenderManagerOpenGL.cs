@@ -39,7 +39,7 @@ namespace OSVR.Samples.RenderManagerGL
             this.glWindow = glWindow;
         }
 
-        protected override bool AddOpenGLContext(ref OpenGLContextParams p)
+        protected override bool AddOpenGLContext(OpenGLContextParams p)
         {
             glWindow.Width = p.Width;
             glWindow.Height = p.Height;

@@ -150,7 +150,7 @@ namespace OSVR
                 LibraryPathAttempter attempt;
                 if (IntPtr.Size == 8)
                 {
-                    attempt = new LibraryPathAttempter(assemblyPath, loadJointClientKitDlls).Attempt("x86_64").Attempt("x64").Attempt("64");
+                    attempt = new LibraryPathAttempter(assemblyPath, loadJointClientKitDlls).Attempt("x64");
                 }
                 else
                 {
@@ -351,7 +351,7 @@ namespace OSVR
                 /// library may only depend on libraries earlier in the list.
                 /// This list contains only the client kit dlls and not the joint client kit dlls.
                 /// </summary>
-                private String[] NativeLibsClientOnly = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit", "osvrRenderManager" };
+                private String[] NativeLibsClientOnly = { "osvrUtil", "osvrCommon", "osvrClient", "osvrClientKit", "d3dcompiler_47", "glew32", "SDL2", "osvrRenderManager" };
 
                 /// <summary>
                 /// Native library names (without lib, .dll, or .so), in

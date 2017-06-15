@@ -115,7 +115,7 @@ namespace OSVR.RenderManager
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public delegate OSVR_CBool AddOpenGLContext(IntPtr data, ref OpenGLContextParams p);
+        public delegate OSVR_CBool AddOpenGLContext(IntPtr data, IntPtr/* OSVR_OpenGLContextParams* */ p);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
@@ -228,7 +228,7 @@ namespace OSVR.RenderManager
 
         }
 
-        protected virtual OSVR_CBool AddOpenGLContext(ref OpenGLContextParams p)
+        protected virtual OSVR_CBool AddOpenGLContext(OpenGLContextParams p)
         {
             return false;
         }
@@ -284,9 +284,14 @@ namespace OSVR.RenderManager
             Destroy();
         }
 
-        private OSVR_CBool AddOpenGLContextNative(IntPtr data, ref OpenGLContextParams p)
+        private OSVR_CBool AddOpenGLContextNative(IntPtr data, IntPtr p)
         {
-            return AddOpenGLContext(ref p);
+            if(p == IntPtr.Zero)
+            {
+                throw new InvalidOperationException("AddOpenGLContextNative - not expecting p to be zero here");
+            }
+            OpenGLContextParams pManaged = (OpenGLContextParams)Marshal.PtrToStructure(p, typeof(OpenGLContextParams));
+            return AddOpenGLContext(pManaged);
         }
 
         private OSVR_CBool RemoveOpenGLContextNative(IntPtr data)
