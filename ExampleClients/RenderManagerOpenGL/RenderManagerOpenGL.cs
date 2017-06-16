@@ -102,6 +102,8 @@ namespace OSVR.Samples.RenderManagerGL
         UInt64 frameNumber = 0;
         int windowFrameBuffer = -1;
         int frameBuffer = -1;
+        double[] projectionMatrix = new double[16];
+        double[] viewMatrix = new double[16];
 
         public SimpleWindow(int width, int height) : base(width, height)
         {
@@ -218,6 +220,11 @@ namespace OSVR.Samples.RenderManagerGL
                 };
             }
 
+            if(!renderManager.RegisterRenderBuffers(buffers, false))
+            {
+                throw new InvalidOperationException("RegisterRenderBuffers call failed.");
+            }
+
             base.OnLoad(e);
         }
 
@@ -231,34 +238,54 @@ namespace OSVR.Samples.RenderManagerGL
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            //GL.Begin(BeginMode.Triangles);
-
-            //GL.Color3(Color.MidnightBlue);
-            //GL.Vertex2(-1.0f, 1.0f);
-            //GL.Color3(Color.SpringGreen);
-            //GL.Vertex2(0.0f, -1.0f);
-            //GL.Color3(Color.Ivory);
-            //GL.Vertex2(1.0f, 1.0f);
-
-            //GL.End();
-
-            //this.SwapBuffers();
-
             context.update();
-
-            RenderInfoOpenGL[] renderInfo = new RenderInfoOpenGL[2];
-            RenderParams renderParams = new RenderParams();
-            renderManager.GetRenderInfo(renderParams, ref renderInfo);
-
-            //renderManager.PresentSolidColor(new RGBFloat { R = frameNumber % 255, G = frameNumber % 255, B = 0, });
-            if (renderInfo.Length != 0)
+            if (renderManager.DoingOkay)
             {
-                renderManager.Present(buffers, renderInfo, normalizedCroppingViewports, renderParams, false);
-            }
+                RenderInfoOpenGL[] renderInfo = new RenderInfoOpenGL[2];
+                RenderParams renderParams = RenderParams.Default;
 
+                if (renderManager.GetRenderInfo(renderParams, ref renderInfo) && renderInfo.Length != 0)
+                {
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBuffer);
+                    GL.Viewport(0, 0, Width, Height);
+                    GL.ClearColor(Color.MidnightBlue);
+                    GL.Clear(ClearBufferMask.ColorBufferBit);
+
+                    for (int i = 0; i < renderInfo.Length; i++)
+                    {
+                        RenderManagerUtils.ProjectionToOpenGL(renderInfo[i].Projection, projectionMatrix);
+                        RenderManagerUtils.PoseStateToOpenGL(renderInfo[i].Pose, viewMatrix);
+
+                        int width = (int)(Width * 0.5);
+                        int x = (int)(i * width);
+
+                        GL.Viewport(x, 0, width, Height);
+
+                        GL.MatrixMode(MatrixMode.Projection);
+                        GL.LoadMatrix(projectionMatrix);
+                        GL.MatrixMode(MatrixMode.Modelview);
+                        GL.LoadMatrix(viewMatrix);
+
+
+                        GL.Begin(PrimitiveType.Triangles);
+
+                        float z = -10.0f;
+                        GL.Color3(Color.MidnightBlue);
+                        GL.Vertex3(-1.0f, 1.0f, z);
+                        GL.Color3(Color.SpringGreen);
+                        GL.Vertex3(0.0f, -1.0f, z);
+                        GL.Color3(Color.Ivory);
+                        GL.Vertex3(1.0f, 1.0f, z);
+
+                        GL.End();
+                    }
+                    //this.SwapBuffers();
+
+
+                    //renderManager.PresentSolidColor(new RGBFloat { R = frameNumber % 255, G = frameNumber % 255, B = 0, });
+                    renderManager.Present(buffers, renderInfo, normalizedCroppingViewports, renderParams, false);
+                }
+            }
             frameNumber++;
         }
     }
