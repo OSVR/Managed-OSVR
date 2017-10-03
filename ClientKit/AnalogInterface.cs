@@ -16,6 +16,7 @@
 /// limitations under the License.
 /// </copyright>
 using System;
+using System.Diagnostics;
 
 namespace OSVR.ClientKit
 {
@@ -58,6 +59,13 @@ namespace OSVR.ClientKit
 
         protected void InterfaceCallback(IntPtr userdata, ref TimeValue timestamp, ref AnalogReport report)
         {
+            if(this == null)
+            {
+                #if DEBUG
+                Debug.WriteLine("[Managed-OSVR]: AnalogInterface.InterfaceCallback called with null this ptr. Perhaps this object was not Diposed properly?");
+                #endif
+                return;
+            }
             OnStateChanged(timestamp, report.sensor, report.state);
         }
     }

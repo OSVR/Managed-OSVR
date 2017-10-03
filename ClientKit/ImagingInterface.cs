@@ -16,6 +16,7 @@
 /// limitations under the License.
 /// </copyright>
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace OSVR.ClientKit
@@ -78,6 +79,13 @@ namespace OSVR.ClientKit
 
         protected void InterfaceCallback(IntPtr userdata, ref TimeValue timestamp, ref ImagingReport report)
         {
+            if(this == null)
+            {
+                #if DEBUG
+                Debug.WriteLine("[Managed-OSVR]: ImagingInterface.InterfaceCallback called with null this ptr. Perhaps this object was not Diposed properly?");
+                #endif
+                return;
+            }
             OnStateChanged(timestamp, report.sensor, report.state);
         }
 
